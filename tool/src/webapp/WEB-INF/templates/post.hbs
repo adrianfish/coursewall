@@ -1,0 +1,50 @@
+	<div id="coursewall-post-outer-container-{{id}}" class="coursewall-post-outer-container">
+		<div class="coursewall-post-inner-container">
+
+            <div class="coursewall-post-topbar">
+                <div class="coursewall-author">
+                    <div class="coursewall-photo" style="background-image:url(/direct/profile/{{creatorId}}/image/thumb)"></div>
+                    <div class="coursewall-author-details">
+                        <div class="coursewall-author-name"><a class="profile" rel="/direct/profile/{{creatorId}}/formatted">{{creatorDisplayName}}</a></div>
+                        <div>
+                            <span class="coursewall-date-label">{{translate 'created_label'}}</span>
+                            <span class="coursewall-date">{{formattedCreatedDate}}</span>
+                        </div>
+                        {{#if isModified}}
+                        <div>
+                            <span class="coursewall-date-label">{{translate 'modified_label'}}</span>
+                            <span class="coursewall-date">{{formattedModifiedDate}}</span>
+                        </div>
+                        {{/if}}
+                    </div>
+                </div>
+			</div> <!-- /coursewall-post-topbar -->
+
+            <div class="coursewall-post-body">
+			    <div id="coursewall-post-content-{{id}}" class="coursewall-post-content">{{{content}}}</div>
+                <div id="coursewall-post-options-{{id}}" class="coursewall-post-options">
+                    <a href="javascript:;" id="coursewall-post-edit-link-{{id}}" class="coursewall-post-edit-link" data-post-id="{{id}}">Edit</a>
+                    <a href="javascript:;" id="coursewall-post-delete-link-{{id}}" class="coursewall-post-delete-link" data-post-id="{{id}}">Delete</a>
+                    <a href="javascript:;" id="coursewall-post-comment-link-{{id}}" class="coursewall-post-comment-link" data-post-id="{{id}}">Comment</a>
+                </div>
+		    </div>
+
+            <div id="coursewall-comment-editor-{{id}}" class="coursewall-comment-editor" style="display: none;">
+                <div class="coursewall-photo coursewall-comment-photo" style="background-image:url(/direct/profile/{{currentUserId}}/image/thumb)"></div>
+                <div class="coursewall-editor-text-wrapper">
+                    <div class="coursewall-editor-text coursewall-comment-editor-text" data-post-id="{{id}}"><textarea id="coursewall-comment-editor-textarea-{{id}}" class="coursewall-comment-textarea" data-post-id="{{id}}">Write a comment ...</textarea></div>
+                    <div id="coursewall-comment-post-buttons-{{id}}">
+                        <button id="coursewall-comment-editor-post-button-{{id}}" class="coursewall-comment-editor-post-button" data-post-id="{{id}}">Post Comment</button>
+                        <button id="coursewall-comment-editor-cancel-button-{{id}}" class="coursewall-comment-editor-cancel-button" data-post-id="{{id}}">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+		</div> <!-- /coursewall-post-inner-container -->
+    </div> <!-- /coursewall-post-outer-container -->
+
+    <div id="coursewall-comments-{{id}}" class="coursewall-comments">
+        {{#each comments}}
+            {{> wrapped_comment}}
+        {{/each}}
+    </div> <!-- coursewall-comments -->

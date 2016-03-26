@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<bean parent="org.sakaiproject.entitybroker.entityprovider.AbstractEntityProvider" 
+		class="org.sakaiproject.coursewall.tool.entityprovider.CoursewallEntityProvider">
+		<property name="coursewallManager"><ref bean="org.sakaiproject.coursewall.api.CoursewallManager"/></property>
+        <property name="coursewallSecurityManager"><ref bean="org.sakaiproject.coursewall.api.CoursewallSecurityManager"/></property>
+        <property name="sakaiProxy"><ref bean="org.sakaiproject.coursewall.api.SakaiProxy"/></property>
+        <property name="threadLocalManager"><ref bean="org.sakaiproject.thread_local.api.ThreadLocalManager"/></property>
+	</bean>
+	
+</beans>

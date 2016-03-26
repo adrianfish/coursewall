@@ -4,10 +4,20 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 			    http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+    <bean id="org.sakaiproject.coursewall.api.PersistenceManager"
+        class="org.sakaiproject.coursewall.impl.PersistenceManagerImpl"
+        init-method="init">
+
+        <property name="sakaiProxy"><ref bean="org.sakaiproject.coursewall.api.SakaiProxy"/></property>
+        <property name="serverConfigurationService"><ref bean="org.sakaiproject.component.api.ServerConfigurationService"/></property>
+        <property name="sqlService"><ref bean="org.sakaiproject.db.api.SqlService"/></property>
+    </bean>
+
     <bean id="org.sakaiproject.coursewall.api.SakaiProxy"
         class="org.sakaiproject.coursewall.impl.SakaiProxyImpl"
         init-method="init">
 
+        <property name="activeToolManager"><ref bean="org.sakaiproject.tool.api.ActiveToolManager"/></property>
         <property name="siteService"><ref bean="org.sakaiproject.site.api.SiteService"/></property>
         <property name="serverConfigurationService"><ref bean="org.sakaiproject.component.api.ServerConfigurationService"/></property>
         <property name="sessionManager"><ref bean="org.sakaiproject.tool.api.SessionManager"/></property>
@@ -17,33 +27,8 @@
         <property name="userDirectoryService"><ref bean="org.sakaiproject.user.api.UserDirectoryService"/></property>
         <property name="entityManager"><ref bean="org.sakaiproject.entity.api.EntityManager"/></property>
         <property name="memoryService"><ref bean="org.sakaiproject.memory.api.MemoryService"/></property>
-        <property name="sqlService"><ref bean="org.sakaiproject.db.api.SqlService"/></property>
         <property name="eventTrackingService"><ref bean="org.sakaiproject.event.api.EventTrackingService"/></property>
-        <property name="notificationService"><ref bean="org.sakaiproject.event.api.NotificationService"/></property>
     </bean>
-    
-    <bean id="org.sakaiproject.coursewall.api.CoursewallUserNotificationPreferencesRegistration"
-      parent="org.sakaiproject.user.api.UserNotificationPreferencesRegistration"
-      class="org.sakaiproject.coursewall.impl.CoursewallUserNotificationPreferencesRegistrationImpl"
-      init-method="init" scope="singleton">
-      <property name="bundleLocation"><value>org.sakaiproject.coursewall.bundle.Messages</value></property>
-      <property name="sectionTitleBundleKey"><value>prefs_title</value></property>
-      <property name="sectionDescriptionBundleKey"><value>prefs_description</value></property>
-      <property name="overrideSectionTitleBundleKey"><value>prefs_title_override</value></property>
-      <property name="defaultValue"><value>3</value></property>
-      <property name="type"><value>sakai:coursewall</value></property>
-      <property name="prefix"><value>coursewall</value></property>
-      <property name="toolId"><value>sakai.coursewall</value></property>
-      <property name="rawOptions">
-         <map>
-            <entry key="1"><value>prefs_opt1</value></entry>
-            <entry key="2"><value>prefs_opt2</value></entry>
-            <entry key="3"><value>prefs_opt3</value></entry>
-         </map>
-      </property>
-     <property name="overrideBySite"><value>true</value></property>
-     <property name="expandByDefault"><value>true</value></property>
-   </bean>
     
     <bean id="org.sakaiproject.coursewall.api.CoursewallSecurityManager"
         class="org.sakaiproject.coursewall.impl.CoursewallSecurityManagerImpl">
@@ -58,14 +43,7 @@
         init-method="init">
         <property name="sakaiProxy"><ref bean="org.sakaiproject.coursewall.api.SakaiProxy"/></property>
         <property name="coursewallSecurityManager"><ref bean="org.sakaiproject.coursewall.api.CoursewallSecurityManager"/></property>
-    </bean>
-
-    <bean id="org.sakaiproject.coursewall.dashboard.CoursewallDashboardIntegration"
-        class="org.sakaiproject.coursewall.dashboard.CoursewallDashboardIntegration"
-        init-method="init">
-        <property name="coursewallManager"><ref bean="org.sakaiproject.coursewall.api.CoursewallManager"/></property>
-        <property name="dashboardLogic"><ref bean="org.sakaiproject.dash.logic.DashboardLogic"/></property>
-        <property name="userDirectoryService"><ref bean="org.sakaiproject.user.api.UserDirectoryService"/></property>
+        <property name="persistenceManager"><ref bean="org.sakaiproject.coursewall.api.PersistenceManager"/></property>
     </bean>
     
 </beans>
