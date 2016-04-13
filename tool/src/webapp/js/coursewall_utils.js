@@ -67,6 +67,8 @@ coursewall.utils = {
                 content: contentSpan.html()
             };
 
+        coursewall.utils.addPermissionsToComment(comment);
+
         coursewall.utils.commentBeingEdited = comment;
         coursewall.utils.renderTemplate('inplace_comment_editor', comment, 'coursewall-comment-' + commentId);
         var textarea = container.find('textarea');
@@ -78,6 +80,7 @@ coursewall.utils = {
 
                     textarea.val('');
                     $('#coursewall-comments-' + postId).show();
+                    coursewall.utils.addPermissionsToComment(savedComment);
                     coursewall.utils.renderTemplate('comment', savedComment, 'coursewall-comment-' + savedComment.id);
                     coursewall.utils.addHandlersToComment(commentId);
                 });
@@ -303,7 +306,7 @@ coursewall.utils = {
         
         return false;
     },
-    decoratePost: function (p) {
+    addPermissionsToPost: function (p) {
 
         p.currentUserId = portal.user.id;
 
@@ -314,14 +317,16 @@ coursewall.utils = {
                         || (coursewall.currentUserPermissions.postUpdateOwn && p.creatorId === portal.user.id);
         p.isModified = p.modifiedDate > p.createdDate;
 
-        p.comments.forEach(function (c) {
+        p.comments.forEach(function (c) { coursewall.utils.addPermissionsToComment(c); });
+    },
+    addPermissionsToComment: function (c) {
 
-            c.modified = c.modifiedDate > c.createdDate;
-            c.canDelete = coursewall.currentUserPermissions.commentDeleteAny
-                            || (coursewall.currentUserPermissions.commentDeleteOwn && c.creatorId === portal.user.id);
-            c.canEdit = coursewall.currentUserPermissions.commentUpdateAny
-                            || (coursewall.currentUserPermissions.commentUpdateOwn && c.creatorId === portal.user.id);
-        });
+        c.canComment = coursewall.currentUserPermissions.commentCreate;
+        c.modified = c.modifiedDate > c.createdDate;
+        c.canDelete = coursewall.currentUserPermissions.commentDeleteAny
+                        || (coursewall.currentUserPermissions.commentDeleteOwn && c.creatorId === portal.user.id);
+        c.canEdit = coursewall.currentUserPermissions.commentUpdateAny
+                        || (coursewall.currentUserPermissions.commentUpdateOwn && c.creatorId === portal.user.id);
     },
     renderTemplate: function (name, data, output) {
 
@@ -330,7 +335,7 @@ coursewall.utils = {
     },
     renderPost: function (post, output) {
 
-        this.decoratePost(post);
+        this.addPermissionsToPost(post);
         this.renderTemplate('post', post, output);
 
         var self = this;

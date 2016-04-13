@@ -4,13 +4,13 @@
     <span id="coursewall-comment-content-{{id}}" class="coursewall-comment-content">{{{content}}}</span>
     <div id="coursewall-comment-options-{{id}}" class="coursewall-comment-options">
         {{#if canEdit}}
-        <a href="javascript:;" id="coursewall-comment-edit-link-{{id}}" class="coursewall-comment-edit-link" data-comment-id="{{id}}" data-creator-id="{{creatorId}}">Edit</a>
+        <a href="javascript:;" id="coursewall-comment-edit-link-{{id}}" class="coursewall-comment-edit-link" data-comment-id="{{id}}" data-creator-id="{{creatorId}}">{{translate 'edit'}}</a>
         {{/if}}
         {{#if canComment}}
-        <a href="javascript:;" class="coursewall-comment-reply-link" data-comment-id="{{id}}">Reply</a>
+        <a href="javascript:;" class="coursewall-comment-reply-link" data-comment-id="{{id}}">{{translate 'reply'}}</a>
         {{/if}}
         {{#if canDelete}}
-        <a href="javascript:;" id="coursewall-comment-delete-link-{{id}}" class="coursewall-comment-delete-link" data-post-id="{{postId}}" data-comment-id="{{id}}">Delete</a>
+        <a href="javascript:;" id="coursewall-comment-delete-link-{{id}}" class="coursewall-comment-delete-link" data-post-id="{{postId}}" data-comment-id="{{id}}">{{translate 'del'}}</a>
         {{/if}}
     </div>
 </div>
