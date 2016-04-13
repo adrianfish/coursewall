@@ -470,6 +470,3 @@ coursewall.utils = {
     }
 };
 
-Handlebars.registerHelper('translate', function (key) {
-    return coursewall.i18n[key];
-});

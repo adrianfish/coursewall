@@ -12,6 +12,9 @@ coursewall.AJAX_TIMEOUT = 5000;
 
 Handlebars.registerPartial('comment', Handlebars.partials['comment']);
 Handlebars.registerPartial('wrapped_comment', Handlebars.partials['wrapped_comment']);
+Handlebars.registerHelper('translate', function (key) {
+    return coursewall.i18n[key];
+});
 
 coursewall.states = {
         POSTS: 'posts',
@@ -51,15 +54,17 @@ coursewall.switchState = function (state, arg) {
 
                     if (this.value === 'Type something ...') {
                         this.value = '';
+                        $('#coursewall-editor-post-button').prop('disabled', false);
                     }
                 }).each(function () {
                     autosize(this);
                 });
 
+            var textarea = $('#coursewall-post-creator-textarea');
+
             // This button is used to send the newly created post.
             $('#coursewall-editor-post-button').click(function (e) {
 
-                var textarea = $('#coursewall-post-creator-textarea');
                 coursewall.utils.storePost('', textarea, function (post) {
 
                         textarea.val('');
@@ -72,6 +77,12 @@ coursewall.switchState = function (state, arg) {
                         coursewall.utils.renderPost(post, newPlaceholderId);
                         textarea.val('');
                     });
+            });
+
+            $('#coursewall-editor-cancel-button').click(function (e) {
+
+                textarea.val(coursewall.i18n.post_editor_initial_text);
+                $('#coursewall-editor-post-button').prop('disabled', true);
             });
 
             coursewall.utils.renderPageOfPosts();

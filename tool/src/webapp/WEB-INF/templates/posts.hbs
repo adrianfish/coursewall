@@ -2,11 +2,12 @@
         <div class="coursewall-photo-text-wrapper">
             <div class="coursewall-photo" style="background-image:url(/direct/profile/{{currentUserId}}/image/thumb)"></div>
             <div class="coursewall-editor-text-wrapper">
-                <div class="coursewall-editor-text"><textarea id="coursewall-post-creator-textarea">Type something ...</textarea></div>
+                <div class="coursewall-editor-text"><textarea id="coursewall-post-creator-textarea">{{translate 'post_editor_initial_text'}}</textarea></div>
             </div>
         </div>
         <div id="coursewall-editor-toolbar">
-            <div id="coursewall-editor-post-button-wrapper"><button id="coursewall-editor-post-button">Post</button></div>
+            <button id="coursewall-editor-post-button" class="coursewall-editor-button" disabled="true">{{translate 'post'}}</button>
+            <button id="coursewall-editor-cancel-button" class="coursewall-editor-button">{{translate 'cancel'}}</button>
         </div>
     </div>
 
