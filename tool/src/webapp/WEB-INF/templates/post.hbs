@@ -23,12 +23,19 @@
             <div class="coursewall-post-body">
 			    <div id="coursewall-post-content-{{id}}" class="coursewall-post-content">{{{content}}}</div>
                 <div id="coursewall-post-options-{{id}}" class="coursewall-post-options">
+                    {{#if canEdit}}
                     <a href="javascript:;" id="coursewall-post-edit-link-{{id}}" class="coursewall-post-edit-link" data-post-id="{{id}}">Edit</a>
+                    {{/if}}
+                    {{#if canDelete}}
                     <a href="javascript:;" id="coursewall-post-delete-link-{{id}}" class="coursewall-post-delete-link" data-post-id="{{id}}">Delete</a>
+                    {{/if}}
+                    {{#if canComment}}
                     <a href="javascript:;" id="coursewall-post-comment-link-{{id}}" class="coursewall-post-comment-link" data-post-id="{{id}}">Comment</a>
+                    {{/if}}
                 </div>
 		    </div>
 
+            {{#if canComment}}
             <div id="coursewall-comment-editor-{{id}}" class="coursewall-comment-editor" style="display: none;">
                 <div class="coursewall-photo coursewall-comment-photo" style="background-image:url(/direct/profile/{{currentUserId}}/image/thumb)"></div>
                 <div class="coursewall-editor-text-wrapper">
@@ -39,6 +46,7 @@
                     </div>
                 </div>
             </div>
+            {{/if}}
 
 		</div> <!-- /coursewall-post-inner-container -->
     </div> <!-- /coursewall-post-outer-container -->

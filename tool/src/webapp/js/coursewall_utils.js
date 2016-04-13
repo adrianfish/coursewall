@@ -307,11 +307,9 @@ coursewall.utils = {
 
         p.currentUserId = portal.user.id;
 
-        p.canComment = true;
-        p.canDelete = portal.user.id === '!admin'
-                        || coursewall.currentUserPermissions.postDeleteAny
-                        || (coursewall.currentUserPermissions.postDeleteOwn
-                            && p.creatorId === portal.user.id);
+        p.canComment = coursewall.currentUserPermissions.commentCreate;
+        p.canDelete = coursewall.currentUserPermissions.postDeleteAny
+                        || (coursewall.currentUserPermissions.postDeleteOwn && p.creatorId === portal.user.id);
         p.canEdit = coursewall.currentUserPermissions.postUpdateAny
                         || (coursewall.currentUserPermissions.postUpdateOwn && p.creatorId === portal.user.id);
         p.isModified = p.modifiedDate > p.createdDate;
@@ -320,11 +318,9 @@ coursewall.utils = {
 
             c.modified = c.modifiedDate > c.createdDate;
             c.canDelete = coursewall.currentUserPermissions.commentDeleteAny
-                            || (coursewall.currentUserPermissions.commentDeleteOwn
-                                && c.creatorId === portal.user.id);
+                            || (coursewall.currentUserPermissions.commentDeleteOwn && c.creatorId === portal.user.id);
             c.canEdit = coursewall.currentUserPermissions.commentUpdateAny
-                            || (coursewall.currentUserPermissions.commentUpdateOwn
-                                && c.creatorId === portal.user.id);
+                            || (coursewall.currentUserPermissions.commentUpdateOwn && c.creatorId === portal.user.id);
         });
     },
     renderTemplate: function (name, data, output) {
