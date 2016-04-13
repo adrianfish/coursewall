@@ -40,7 +40,6 @@
 
 #coursewall-posts-wrapper{
 	clear: both;
-	/*margin-top: 7px;*/
 	margin-left: 0px;
 }
 
@@ -50,8 +49,7 @@
 
 .coursewall-post-outer-container {
     border: solid #E0E0E0 1px;
-    border-top-left-radius: 3px;
-    border-top-right-radius: 3px;
+    border-radius: 3px;
 }
     .coursewall-post-inner-container{
         margin: 5px;
@@ -73,9 +71,9 @@
                 font-size: smaller;
             }
 
-.coursewall-post-without-comments {
+.coursewall-post-with-comments {
     border-bottom-left-radius: 3px;
-    border-bottom-right-radius: 3px;
+    border-bottom-right-radius: 0px;
 }
 
 .coursewall-author-details {
@@ -89,6 +87,7 @@
     }
 
 .coursewall-comments {
+    margin-left: 20px;
     border: solid #E0E0E0;
     border-width: 0 1px 1px 1px;
     border-radius: 0 0 3px 3px;

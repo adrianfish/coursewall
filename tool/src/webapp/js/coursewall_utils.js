@@ -1,9 +1,11 @@
 coursewall.utils = {
 
     POST_WITHOUT_COMMENTS_STYLE: 'coursewall-post-without-comments',
+    POST_WITH_COMMENTS_STYLE: 'coursewall-post-with-comments',
 
     removeRoundedBottomFromPost: function (postId) {
-        $('#coursewall-post-outer-container-' + postId).removeClass(this.POST_WITHOUT_COMMENTS_STYLE);
+        //$('#coursewall-post-outer-container-' + postId).removeClass(this.POST_WITHOUT_COMMENTS_STYLE);
+        $('#coursewall-post-outer-container-' + postId).addClass(this.POST_WITH_COMMENTS_STYLE);
     },
     addHandlersToComment: function (commentId) {
 
@@ -11,7 +13,7 @@ coursewall.utils = {
         $('#coursewall-comment-delete-link-' + commentId).click(coursewall.utils.deleteCommentHandler);
     },
     addRoundedBottomToPost: function (postId) {
-        $('#coursewall-post-outer-container-' + postId).addClass(this.POST_WITHOUT_COMMENTS_STYLE);
+        $('#coursewall-post-outer-container-' + postId).removeClass(this.POST_WITH_COMMENTS_STYLE);
     },
     editPostHandler: function (e) {
 
