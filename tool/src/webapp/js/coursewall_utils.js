@@ -360,6 +360,7 @@ coursewall.utils = {
                             var commentId = savedComment.id;
                         
                             $('#coursewall-comment-editor-' + post.id).hide();
+                            coursewall.utils.addPermissionsToComment(savedComment);
                             var wrappedComment = Handlebars.templates['wrapped_comment'] (savedComment);
                             $('#coursewall-comments-' + post.id).prepend(wrappedComment).show();
                             self.addHandlersToComment(commentId);
