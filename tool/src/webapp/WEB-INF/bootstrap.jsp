@@ -39,7 +39,7 @@
 
             <ul id="coursewall_toolbar" class="navIntraTool actionToolBar" role="menu"></ul>
 
-            <div id="coursewallMainContainer">
+            <div id="coursewall-main-container">
                 <div id="coursewall_content"></div>
             </div>
 
