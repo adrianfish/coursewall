@@ -358,6 +358,6 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
     }
 
     private String escape(String unescaped) {
-        return StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(unescaped));
+        return StringEscapeUtils.escapeJavaScript(unescaped);
     }
 }

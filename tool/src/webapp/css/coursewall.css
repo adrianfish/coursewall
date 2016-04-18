@@ -35,6 +35,7 @@
         .coursewall-editor-text textarea {
             border: 0px;
             width: 100%;
+            height: 30px;
             resize: none;
         }
 
@@ -138,8 +139,8 @@
         border: 1px #E0E0E0 solid;
         border-radius: 3px;
     }
-        .coursewall-comment-editor-text textarea {
-            height: 1em;
+        .coursewall-comment-textarea {
+            height: 30px;
             font-size: smaller;
         }
 

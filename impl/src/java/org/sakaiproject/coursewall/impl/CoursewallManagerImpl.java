@@ -90,7 +90,7 @@ public class CoursewallManagerImpl implements CoursewallManager {
 
     public List<Post> getPosts(QueryBean query) throws Exception {
 
-        Cache cache = sakaiProxy.getCache(POST_CACHE);
+        Cache cache = sakaiProxy.getOrCreateCache(POST_CACHE);
         if (query.queryBySiteId()) {
             String siteId = query.getSiteId();
 
@@ -127,7 +127,7 @@ public class CoursewallManagerImpl implements CoursewallManager {
                     logger.debug("Cache hit on '" + key + "'");
                 }
             }
-            return coursewallSecurityManager.filter((List<Post>) siteMap.get(key), query.getSiteId());
+            return coursewallSecurityManager.filter((List<Post>) siteMap.get(key), siteId);
         } else {
             return coursewallSecurityManager.filter(persistenceManager.getPosts(query), null);
         }
@@ -423,7 +423,7 @@ public class CoursewallManagerImpl implements CoursewallManager {
 
     private void removeSiteFromCaches(String siteId) {
 
-        Cache postCache = sakaiProxy.getCache(POST_CACHE);
+        Cache postCache = sakaiProxy.getOrCreateCache(POST_CACHE);
         postCache.remove(siteId);
     }
 }

@@ -403,7 +403,7 @@ public class SakaiProxyImpl implements SakaiProxy {
         return false;
     }
 
-    public Cache getCache(String cache) {
+    public Cache getOrCreateCache(String cache) {
 
         try {
             Cache c = memoryService.getCache(cache);
