@@ -18,7 +18,8 @@ Handlebars.registerHelper('translate', function (key) {
 
 coursewall.states = {
         POSTS: 'posts',
-        PERMISSIONS: 'permissions'
+        PERMISSIONS: 'permissions',
+        PERMISSIONS_NOT_SET: 'permissions_not_set'
     };
 
 coursewall.switchState = function (state, arg) {
@@ -100,6 +101,8 @@ coursewall.switchState = function (state, arg) {
             };
 
 		coursewall.utils.getSitePermissionMatrix(permissionsCallback);
+	} else if (coursewall.states.PERMISSIONS_NOT_SET === state) {
+        coursewall.utils.renderTemplate('permissions_not_set', {}, 'coursewall_content');
     }
 };
 
@@ -137,8 +140,11 @@ coursewall.switchState = function (state, arg) {
 
                 $("#coursewall_permissions_link").toggle(coursewall.currentUserPermissions.modifyPermissions);
 
-                // Now switch into the requested state
-                coursewall.switchState(coursewall.states.POSTS, coursewall);
+                if (coursewall.currentUserPermissions.postReadAny || coursewall.currentUserPermissions.postCreate) {
+                    coursewall.switchState(coursewall.states.POSTS, {});
+                } else {
+                    coursewall.switchState(coursewall.states.PERMISSIONS_NOT_SET, {});
+                }
             };
 
         coursewall.utils.getCurrentUserPermissions(permissionsCallback);
