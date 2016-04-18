@@ -6,13 +6,13 @@
     <name>COURSEWALL</name>
     <groupId>org.sakaiproject.coursewall</groupId>
     <artifactId>coursewall</artifactId>
-    <version>12-SNAPSHOT</version>
+    <version>11-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
         <groupId>org.sakaiproject</groupId>
         <artifactId>master</artifactId>
-        <version>12-SNAPSHOT</version>
+        <version>11-SNAPSHOT</version>
         <relativePath>../master/pom.xml</relativePath>
     </parent>
 

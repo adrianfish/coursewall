@@ -11,7 +11,7 @@
     <parent>
         <artifactId>coursewall</artifactId>
         <groupId>org.sakaiproject.coursewall</groupId>
-        <version>12-SNAPSHOT</version>
+        <version>11-SNAPSHOT</version>
     </parent>
   
     <dependencies>
