@@ -47,8 +47,6 @@ import org.sakaiproject.memory.api.SimpleConfiguration;
 import org.sakaiproject.site.api.Site;
 import org.sakaiproject.site.api.SiteService;
 import org.sakaiproject.site.api.ToolConfiguration;
-import org.sakaiproject.tool.api.ActiveTool;
-import org.sakaiproject.tool.api.ActiveToolManager;
 import org.sakaiproject.tool.api.Session;
 import org.sakaiproject.tool.api.SessionManager;
 import org.sakaiproject.tool.api.Tool;
@@ -66,7 +64,6 @@ public class SakaiProxyImpl implements SakaiProxy {
 
     private final Logger logger = Logger.getLogger(SakaiProxyImpl.class);
 
-    private ActiveToolManager activeToolManager;
     private AuthzGroupService authzGroupService;
     private EntityManager entityManager;
     private EventTrackingService eventTrackingService;
@@ -82,9 +79,6 @@ public class SakaiProxyImpl implements SakaiProxy {
     public void init() {
     }
 
-    public ActiveTool getActiveTool(String id) {
-        return activeToolManager.getActiveTool(id);
-    }
 
     public Session getCurrentSession() {
         return sessionManager.getCurrentSession();

@@ -11,7 +11,6 @@
 
             var coursewall = {
                 postId: '${postId}',
-                placementId: '${placementId}',
                 i18n: {}
             };
         

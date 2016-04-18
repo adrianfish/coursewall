@@ -23,14 +23,11 @@ import org.sakaiproject.authz.api.Role;
 import org.sakaiproject.entity.api.EntityProducer;
 import org.sakaiproject.memory.api.Cache;
 import org.sakaiproject.site.api.Site;
-import org.sakaiproject.tool.api.ActiveTool;
 import org.sakaiproject.tool.api.Session;
 import org.sakaiproject.tool.api.Tool;
 import org.sakaiproject.tool.api.ToolSession;
 
 public interface SakaiProxy {
-
-    public ActiveTool getActiveTool(String id);
 
     public String getCurrentSiteId();
 

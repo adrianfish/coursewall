@@ -18,7 +18,6 @@ Handlebars.registerHelper('translate', function (key) {
 
 coursewall.states = {
         POSTS: 'posts',
-        POST: 'post',
         PERMISSIONS: 'permissions'
     };
 
@@ -87,7 +86,7 @@ coursewall.switchState = function (state, arg) {
 
             coursewall.utils.renderPageOfPosts();
         });
-	} else if ('permissions' === state) {
+	} else if (coursewall.states.PERMISSIONS === state) {
 	    $('#coursewall_toolbar > li > span').removeClass('current');
 	    $('#coursewall_permissions_link > span').addClass('current');
 
@@ -125,7 +124,7 @@ coursewall.switchState = function (state, arg) {
         coursewall.utils.renderTemplate('toolbar', {} ,'coursewall_toolbar');
 
         $('#coursewall_permissions_link>span>a').click(function (e) {
-            location.href = '/portal/site/' + portal.siteId + '/tool/' + coursewall.placementId + '/permissions';
+            coursewall.switchState(coursewall.states.PERMISSIONS);
         });
 
         var permissionsCallback = function (permissions) {

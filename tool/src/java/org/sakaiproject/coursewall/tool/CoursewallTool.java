@@ -11,15 +11,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 
-import org.sakaiproject.authz.api.PermissionsHelper;
 import org.sakaiproject.coursewall.api.CoursewallManager;
 import org.sakaiproject.coursewall.api.SakaiProxy;
 import org.sakaiproject.component.api.ComponentManager;
-import org.sakaiproject.tool.api.ActiveTool;
 import org.sakaiproject.tool.api.Session;
-import org.sakaiproject.tool.api.Tool;
-import org.sakaiproject.tool.api.ToolException;
-import org.sakaiproject.tool.api.ToolSession;
 import org.sakaiproject.util.RequestFilter;
 import org.sakaiproject.util.ResourceLoader;
 
@@ -92,44 +87,10 @@ public class CoursewallTool extends HttpServlet {
             language += "_" + country;
         }
 
-        String pathInfo = request.getPathInfo();
+        request.setAttribute("sakaiHtmlHead", (String) request.getAttribute("sakai.html.head"));
+        request.setAttribute("isolanguage", language);
 
-        String[] pathParts = (pathInfo == null) ? new String[] {} : pathInfo.split("/");
-
-        for (String part : pathParts) {
-            System.out.println("part: " + part);
-        }
-
-        String siteId = sakaiProxy.getCurrentSiteId();
-
-        String placementId = (String) request.getAttribute(Tool.PLACEMENT_ID);
-
-        if (pathParts.length > 1 && "permissions".equals(pathParts[1])) {
-            ToolSession toolSession = sakaiProxy.getCurrentToolSession();
-            toolSession.setAttribute(PermissionsHelper.TARGET_REF, "/site/" + siteId);
-            toolSession.setAttribute(PermissionsHelper.DESCRIPTION, "permissions");
-            toolSession.setAttribute(PermissionsHelper.PREFIX, "coursewall.");
-
-            Tool tool = sakaiProxy.getCurrentTool();
-
-            String portalUrl = sakaiProxy.getPortalUrl();
-            String returnUrl = portalUrl + "/site/" + siteId + "/tool/" + placementId;
-            ActiveTool helperTool = sakaiProxy.getActiveTool("sakai.permissions.helper");
-            toolSession.setAttribute(Tool.HELPER_DONE_URL, returnUrl);
-
-            try {
-                helperTool.help(request, response, "", "");
-            } catch (ToolException te) {
-                logger.error("Failed to launch permissions helper", te);
-            }
-        } else {
-            request.setAttribute("sakaiHtmlHead", (String) request.getAttribute("sakai.html.head"));
-            
-            request.setAttribute("isolanguage", language);
-            request.setAttribute("placementId", placementId);
-
-            response.setContentType("text/html");
-            request.getRequestDispatcher("/WEB-INF/bootstrap.jsp").include(request, response);  
-        }
+        response.setContentType("text/html");
+        request.getRequestDispatcher("/WEB-INF/bootstrap.jsp").include(request, response);
     }
 }

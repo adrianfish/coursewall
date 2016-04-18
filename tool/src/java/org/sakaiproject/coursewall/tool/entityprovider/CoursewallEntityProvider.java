@@ -39,12 +39,7 @@ import org.sakaiproject.entitybroker.exception.EntityException;
 import org.sakaiproject.entitybroker.util.AbstractEntityProvider;
 import org.sakaiproject.site.api.Site;
 import org.sakaiproject.site.api.ToolConfiguration;
-import org.sakaiproject.tool.api.ActiveTool;
 import org.sakaiproject.tool.api.Session;
-import org.sakaiproject.tool.api.Tool;
-import org.sakaiproject.tool.api.ToolException;
-import org.sakaiproject.tool.api.ToolSession;
-import org.sakaiproject.thread_local.api.ThreadLocalManager;
 
 public class CoursewallEntityProvider extends AbstractEntityProvider implements RequestAware, AutoRegisterEntityProvider, Outputable, Describeable, ActionsExecutable, ReferenceParseable {
     
@@ -60,9 +55,6 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
 
     @Setter
     private SakaiProxy sakaiProxy;
-
-    @Setter
-    private ThreadLocalManager threadLocalManager;
 
     @Setter
     private RequestGetter requestGetter;
@@ -347,13 +339,13 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
         return sakaiProxy.getSitePermissions(siteId);
     }
 
-    @EntityCustomAction(action = "savePerms", viewKey = EntityView.VIEW_NEW)
+    @EntityCustomAction(action = "savePermissions", viewKey = EntityView.VIEW_NEW)
     public String handleSavePermissions(EntityView view, Map<String, Object> params) {
 
         String userId = developerHelperService.getCurrentUserId();
         
         if (userId == null) {
-            throw new EntityException("You must be logged in to retrieve perms", "", HttpServletResponse.SC_UNAUTHORIZED);
+            throw new EntityException("You must be logged in to save permissions", "", HttpServletResponse.SC_UNAUTHORIZED);
         }
 
         String siteId = (String) params.get("siteId");
@@ -363,54 +355,6 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
         } else {
             throw new EntityException("Failed to set perms", "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
-    }
-
-    @EntityCustomAction(action = "permissions", viewKey = EntityView.VIEW_LIST)
-    public String handlePermissions(Map<String, Object> params) {
-
-        String userId = developerHelperService.getCurrentUserId();
-        
-        if (userId == null) {
-            throw new EntityException("You must be logged in to retrieve perms", "", HttpServletResponse.SC_UNAUTHORIZED);
-        }
-
-        String siteId = (String) params.get("siteId");
-
-        if (StringUtils.isBlank(siteId)) {
-            throw new EntityException("You must supply a site id", "", HttpServletResponse.SC_BAD_REQUEST);
-        }
-
-        Site site = sakaiProxy.getSiteOrNull(siteId);
-
-        if (site != null) {
-            ToolConfiguration tc = site.getToolForCommonId("sakai.coursewall");
-
-            // parameters for helper
-            Session session = sakaiProxy.getCurrentSession();
-            ToolSession toolSession = session.getToolSession(tc.getId());
-            sakaiProxy.setCurrentToolSession(toolSession);
-            threadLocalManager.set("sakai:ToolComponent:current.placement", tc);
-
-            toolSession.setAttribute(PermissionsHelper.TARGET_REF, site.getReference());
-            toolSession.setAttribute(PermissionsHelper.DESCRIPTION, "permissions");
-            toolSession.setAttribute(PermissionsHelper.PREFIX, "coursewall.");
-
-            String portalUrl = sakaiProxy.getPortalUrl();
-            String returnUrl = portalUrl + "/tool/" + tc.getPageId();
-
-            toolSession.setAttribute(Tool.HELPER_DONE_URL, returnUrl);
-
-            ActiveTool helperTool = sakaiProxy.getActiveTool("sakai.permissions.helper");
-            try {
-                helperTool.help(requestGetter.getRequest(), requestGetter.getResponse(), "", "");
-            } catch (ToolException te) {
-                LOG.error("Failed to launch permissions helper", te);
-            }
-        } else {
-            throw new EntityException("Invalid site id", "", HttpServletResponse.SC_BAD_REQUEST);
-        }
-
-        return null;
     }
 
     private String escape(String unescaped) {

@@ -8,7 +8,6 @@
 		<property name="coursewallManager"><ref bean="org.sakaiproject.coursewall.api.CoursewallManager"/></property>
         <property name="coursewallSecurityManager"><ref bean="org.sakaiproject.coursewall.api.CoursewallSecurityManager"/></property>
         <property name="sakaiProxy"><ref bean="org.sakaiproject.coursewall.api.SakaiProxy"/></property>
-        <property name="threadLocalManager"><ref bean="org.sakaiproject.thread_local.api.ThreadLocalManager"/></property>
 	</bean>
 	
 </beans>

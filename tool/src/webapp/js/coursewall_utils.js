@@ -151,7 +151,7 @@ coursewall.utils = {
     savePermissions: function () {
 
         var myData = { siteId: portal.siteId };
-        $('.coursewall_permission_checkbox').each(function (b) {
+        $('.coursewall-permission-checkbox').each(function (b) {
 
             if (this.checked) {
                 myData[this.id] = 'true';
@@ -161,7 +161,7 @@ coursewall.utils = {
         });
 
         $.ajax( {
-            url: "/direct/coursewall/savePerms",
+            url: "/direct/coursewall/savePermissions",
             type: 'POST',
             data: myData,
             dataType: 'text',
