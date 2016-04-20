@@ -110,7 +110,7 @@ coursewall.utils = {
     getCurrentUserPermissions: function (callback) {
 
         $.ajax( {
-            url: "/direct/coursewall/userPerms.json?siteId=" + portal.siteId,
+            url: "/direct/coursewall/userPerms.json?siteId=" + coursewall.siteId,
             dataType: "json",
             cache: false,
             timeout: coursewall.AJAX_TIMEOUT
@@ -123,7 +123,7 @@ coursewall.utils = {
     getSitePermissionMatrix: function (callback) {
 
         $.ajax( {
-            url: "/direct/coursewall/perms.json?siteId=" + portal.siteId,
+            url: "/direct/coursewall/perms.json?siteId=" + coursewall.siteId,
             dataType: "json",
             cache: false,
             timeout: coursewall.AJAX_TIMEOUT
@@ -150,7 +150,7 @@ coursewall.utils = {
     },
     savePermissions: function () {
 
-        var myData = { siteId: portal.siteId };
+        var myData = { siteId: coursewall.siteId };
         $('.coursewall-permission-checkbox').each(function (b) {
 
             if (this.checked) {
@@ -238,7 +238,7 @@ coursewall.utils = {
         var post = {
                 'id': postId,
                 'content': content,
-                'siteId': portal.siteId
+                'siteId': coursewall.siteId
             };
                 
         $.ajax({
@@ -258,7 +258,7 @@ coursewall.utils = {
                 'id': commentId,
                 'postId': postId,
                 'content': text,
-                'siteId': portal.siteId
+                'siteId': coursewall.siteId
             };
 
         $.ajax( {
@@ -281,7 +281,7 @@ coursewall.utils = {
         }
         
         $.ajax( {
-            url: '/direct/coursewall/deleteComment?siteId=' + portal.siteId + '&commentId=' + commentId,
+            url: '/direct/coursewall/deleteComment?siteId=' + coursewall.siteId + '&commentId=' + commentId,
             timeout: coursewall.AJAX_TIMEOUT
         }).done(function (text, status) {
             callback();
@@ -310,13 +310,13 @@ coursewall.utils = {
     },
     addPermissionsToPost: function (p) {
 
-        p.currentUserId = portal.user.id;
+        p.currentUserId = coursewall.userId;
 
         p.canComment = coursewall.currentUserPermissions.commentCreate;
         p.canDelete = coursewall.currentUserPermissions.postDeleteAny
-                        || (coursewall.currentUserPermissions.postDeleteOwn && p.creatorId === portal.user.id);
+                        || (coursewall.currentUserPermissions.postDeleteOwn && p.creatorId === coursewall.userId);
         p.canEdit = coursewall.currentUserPermissions.postUpdateAny
-                        || (coursewall.currentUserPermissions.postUpdateOwn && p.creatorId === portal.user.id);
+                        || (coursewall.currentUserPermissions.postUpdateOwn && p.creatorId === coursewall.userId);
         p.isModified = p.modifiedDate > p.createdDate;
 
         p.comments.forEach(function (c) { coursewall.utils.addPermissionsToComment(c); });
@@ -326,9 +326,9 @@ coursewall.utils = {
         c.canComment = coursewall.currentUserPermissions.commentCreate;
         c.modified = c.modifiedDate > c.createdDate;
         c.canDelete = coursewall.currentUserPermissions.commentDeleteAny
-                        || (coursewall.currentUserPermissions.commentDeleteOwn && c.creatorId === portal.user.id);
+                        || (coursewall.currentUserPermissions.commentDeleteOwn && c.creatorId === coursewall.userId);
         c.canEdit = coursewall.currentUserPermissions.commentUpdateAny
-                        || (coursewall.currentUserPermissions.commentUpdateOwn && c.creatorId === portal.user.id);
+                        || (coursewall.currentUserPermissions.commentUpdateOwn && c.creatorId === coursewall.userId);
     },
     renderTemplate: function (name, data, output) {
 
@@ -364,7 +364,7 @@ coursewall.utils = {
                             $('#coursewall-comment-editor-' + post.id).hide();
                             coursewall.utils.addPermissionsToComment(savedComment);
                             var wrappedComment = Handlebars.templates['wrapped_comment'] (savedComment);
-                            $('#coursewall-comments-' + post.id).prepend(wrappedComment).show();
+                            $('#coursewall-comments-' + post.id).append(wrappedComment).show();
                             self.addHandlersToComment(commentId);
                             self.removeRoundedBottomFromPost(post.id);
                         });
@@ -406,7 +406,7 @@ coursewall.utils = {
         var loadImage = $('#coursewall-loading-image')
         loadImage.show();
 
-        var url = '/direct/coursewall/posts/' + portal.siteId + '.json?page=' + coursewall.page;
+        var url = '/direct/coursewall/posts/' + coursewall.siteId + '.json?page=' + coursewall.page;
 
         $.ajax( { url : url, dataType: "json", cache: false, timeout: coursewall.AJAX_TIMEOUT})
             .done(function (data) {
