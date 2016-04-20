@@ -51,7 +51,7 @@
 
 .coursewall-post-outer-container {
     border: solid #E0E0E0 1px;
-    border-radius: 3px;
+    border-radius: 3px 3px 0px 3px;
 }
     .coursewall-post-inner-container{
         margin: 5px;
