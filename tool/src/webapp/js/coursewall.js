@@ -34,8 +34,8 @@ coursewall.switchState = function (state, arg) {
 	if (coursewall.states.POSTS === state) {
 
         var templateData = {
-                currentUserId: portal.user.id,
-                siteId: portal.siteId
+                currentUserId: coursewall.userId,
+                siteId: coursewall.siteId
             };
 
         // renderPageOfPosts uses this. Set it to the start page
@@ -108,7 +108,7 @@ coursewall.switchState = function (state, arg) {
 
 (function ($) {
 
-	if (!portal.siteId) {
+	if (!coursewall.siteId) {
 		alert('The site id MUST be supplied as page parameters');
 		return;
 	}

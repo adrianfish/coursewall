@@ -11,7 +11,9 @@
 
             var coursewall = {
                 postId: '${postId}',
-                i18n: {}
+                i18n: {},
+                siteId: '${siteId}',
+                userId: '${userId}'
             };
         
         </script>
