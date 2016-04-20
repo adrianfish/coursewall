@@ -110,18 +110,6 @@
                 <version>4.0.5</version>
                 <executions>
                     <execution>
-                        <id>partials</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>precompile</goal>
-                        </goals>
-                        <configuration>
-                            <output>${project.build.directory}/${project.build.finalName}/templates/partials.js</output>
-                            <prefix>${basedir}/src/webapp/WEB-INF/partials</prefix>
-                            <amd>false</amd>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>templates</id>
                         <phase>prepare-package</phase>
                         <goals>

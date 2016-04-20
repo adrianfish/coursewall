@@ -12,6 +12,7 @@ coursewall.AJAX_TIMEOUT = 5000;
 
 Handlebars.registerPartial('comment', Handlebars.partials['comment']);
 Handlebars.registerPartial('wrapped_comment', Handlebars.partials['wrapped_comment']);
+Handlebars.registerPartial('inplace_comment_editor', Handlebars.partials['inplace_comment_editor']);
 Handlebars.registerHelper('translate', function (key) {
     return coursewall.i18n[key];
 });
@@ -65,7 +66,7 @@ coursewall.switchState = function (state, arg) {
             // This button is used to send the newly created post.
             $('#coursewall-editor-post-button').click(function (e) {
 
-                coursewall.utils.storePost('', textarea, function (post) {
+                coursewall.utils.savePost('', textarea.val(), function (post) {
 
                         textarea.val('');
 

@@ -138,10 +138,10 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
         }
     }
 
-    @EntityCustomAction(action = "storePost", viewKey = EntityView.VIEW_NEW)
-    public ActionReturn handleStorePost(Map<String, Object> params) {
+    @EntityCustomAction(action = "savePost", viewKey = EntityView.VIEW_NEW)
+    public ActionReturn handleSavePost(Map<String, Object> params) {
 
-        LOG.debug("handleStorePost");
+        LOG.debug("handleSavePost");
 
         String userId = developerHelperService.getCurrentUserId();
 
@@ -231,10 +231,10 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
         }
     }
 
-    @EntityCustomAction(action = "storeComment", viewKey = EntityView.VIEW_NEW)
-    public ActionReturn handleStoreComment(Map<String, Object> params) {
+    @EntityCustomAction(action = "saveComment", viewKey = EntityView.VIEW_NEW)
+    public ActionReturn handleSaveComment(Map<String, Object> params) {
 
-        LOG.debug("handleStoreComment");
+        LOG.debug("handleSaveComment");
 
         String userId = developerHelperService.getCurrentUserId();
 

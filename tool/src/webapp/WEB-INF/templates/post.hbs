@@ -26,33 +26,28 @@
                     {{#if canEdit}}
                     <a href="javascript:;" id="coursewall-post-edit-link-{{id}}" class="coursewall-post-edit-link" data-post-id="{{id}}">{{translate 'edit'}}</a>
                     {{/if}}
-                    {{#if canComment}}
+                    {{!--#if canComment}}
                     <a href="javascript:;" id="coursewall-post-comment-link-{{id}}" class="coursewall-post-comment-link" data-post-id="{{id}}">{{translate 'comment'}}</a>
-                    {{/if}}
+                    {{/if--}}
                     {{#if canDelete}}
                     <a href="javascript:;" id="coursewall-post-delete-link-{{id}}" class="coursewall-post-delete-link" data-post-id="{{id}}">{{translate 'del'}}</a>
                     {{/if}}
                 </div>
 		    </div>
 
-            {{#if canComment}}
-            <div id="coursewall-comment-editor-{{id}}" class="coursewall-comment-editor" style="display: none;">
-                <div class="coursewall-photo coursewall-comment-photo" style="background-image:url(/direct/profile/{{currentUserId}}/image/thumb)"></div>
-                <div class="coursewall-editor-text-wrapper">
-                    <div class="coursewall-editor-text coursewall-comment-editor-text" data-post-id="{{id}}"><textarea id="coursewall-comment-editor-textarea-{{id}}" class="coursewall-comment-textarea" data-post-id="{{id}}">Write a comment ...</textarea></div>
-                    <div id="coursewall-comment-post-buttons-{{id}}">
-                        <button id="coursewall-comment-editor-post-button-{{id}}" class="coursewall-comment-editor-post-button" data-post-id="{{id}}">{{translate 'post_comment'}}</button>
-                        <button id="coursewall-comment-editor-cancel-button-{{id}}" class="coursewall-comment-editor-cancel-button" data-post-id="{{id}}">{{translate 'cancel'}}</button>
-                    </div>
-                </div>
-            </div>
-            {{/if}}
-
 		</div> <!-- /coursewall-post-inner-container -->
     </div> <!-- /coursewall-post-outer-container -->
 
     <div id="coursewall-comments-{{id}}" class="coursewall-comments">
+        <div id="coursewall-comments-container-{{id}}">
         {{#each comments}}
             {{> wrapped_comment}}
         {{/each}}
+        </div>
+        {{#if canComment}}
+        <a href="javascript:;" id="coursewall-create-comment-link-{{id}}" class="coursewall-create-comment-link" data-post-id="{{id}}">{{translate 'comment'}}</a>
+        {{/if}}
+        <div id="coursewall-comment-creator-{{id}}" class="coursewall-comment-creator">
+        {{> inplace_comment_editor}}
+        </div>
     </div> <!-- coursewall-comments -->
