@@ -10,10 +10,10 @@ import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
 
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import org.sakaiproject.authz.api.PermissionsHelper;
 import org.sakaiproject.coursewall.api.datamodel.Comment;
@@ -41,11 +41,13 @@ import org.sakaiproject.site.api.Site;
 import org.sakaiproject.site.api.ToolConfiguration;
 import org.sakaiproject.tool.api.Session;
 
+/**
+ * @author Adrian Fish (adrian.r.fish@gmail.com)
+ */
+@Slf4j
 public class CoursewallEntityProvider extends AbstractEntityProvider implements RequestAware, AutoRegisterEntityProvider, Outputable, Describeable, ActionsExecutable, ReferenceParseable {
     
     public final static String ENTITY_PREFIX = "coursewall";
-
-    private final Logger LOG = Logger.getLogger(getClass());
 
     @Setter
     private CoursewallManager coursewallManager;
@@ -117,8 +119,8 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
             } else {
                 int end = start + pageSize;
 
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("end: " + end);
+                if (log.isDebugEnabled()) {
+                    log.debug("end: " + end);
                 }
 
                 data.postsTotal = postsTotal;
@@ -133,7 +135,7 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
 
             return new ActionReturn(data);
         } catch (Exception e) {
-            LOG.error("Caught exception whilst getting posts.", e);
+            log.error("Caught exception whilst getting posts.", e);
             throw new EntityException("Failed to retrieve posts for site " + siteId, "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
@@ -141,7 +143,7 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
     @EntityCustomAction(action = "savePost", viewKey = EntityView.VIEW_NEW)
     public ActionReturn handleSavePost(Map<String, Object> params) {
 
-        LOG.debug("handleSavePost");
+        log.debug("handleSavePost");
 
         String userId = developerHelperService.getCurrentUserId();
 
@@ -186,7 +188,7 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
     @EntityCustomAction(action = "deletePost", viewKey = EntityView.VIEW_LIST)
     public ActionReturn handleDeletePost(Map<String, Object> params) {
 
-        LOG.debug("handleDeletePost");
+        log.debug("handleDeletePost");
 
         if (developerHelperService.getCurrentUserId() == null) {
             throw new EntityException("You need to be logged in to delete comments"
@@ -209,7 +211,7 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
     @EntityCustomAction(action = "deleteComment", viewKey = EntityView.VIEW_LIST)
     public ActionReturn handleDeleteComment(Map<String, Object> params) {
 
-        LOG.debug("handleDeleteComment");
+        log.debug("handleDeleteComment");
 
         if (developerHelperService.getCurrentUserId() == null) {
             throw new EntityException("You need to be logged in to delete comments"
@@ -234,7 +236,7 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
     @EntityCustomAction(action = "saveComment", viewKey = EntityView.VIEW_NEW)
     public ActionReturn handleSaveComment(Map<String, Object> params) {
 
-        LOG.debug("handleSaveComment");
+        log.debug("handleSaveComment");
 
         String userId = developerHelperService.getCurrentUserId();
 
@@ -290,7 +292,7 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
         try {
             posts = coursewallManager.getPosts(query);
         } catch (Exception e) {
-            LOG.error("Caught exception whilst getting posts.", e);
+            log.error("Caught exception whilst getting posts.", e);
             throw new EntityException("Failed to retrieve posts for user " + requestedUserId,"",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 

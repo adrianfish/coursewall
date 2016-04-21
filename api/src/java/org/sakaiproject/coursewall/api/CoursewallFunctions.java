@@ -1,5 +1,8 @@
 package org.sakaiproject.coursewall.api;
 
+/**
+ * @author Adrian Fish (adrian.r.fish@gmail.com)
+ */
 public class CoursewallFunctions {
 
     public static final String COURSEWALL_POST_CREATE = "coursewall.post.create";

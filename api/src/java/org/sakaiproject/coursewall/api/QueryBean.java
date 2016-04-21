@@ -24,6 +24,9 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * @author Adrian Fish (adrian.r.fish@gmail.com)
+ */
 @Getter @Setter
 public class QueryBean {
 

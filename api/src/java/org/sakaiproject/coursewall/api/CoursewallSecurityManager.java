@@ -22,6 +22,9 @@ import java.util.List;
 import org.sakaiproject.coursewall.api.datamodel.Post;
 import org.sakaiproject.site.api.Site;
 
+/**
+ * @author Adrian Fish (adrian.r.fish@gmail.com)
+ */
 public interface CoursewallSecurityManager {
 
     public boolean canCurrentUserCommentOnPost(Post post);

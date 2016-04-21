@@ -7,6 +7,9 @@ import org.sakaiproject.coursewall.api.datamodel.Post;
 import org.sakaiproject.entity.api.Entity;
 import org.sakaiproject.entity.api.EntityProducer;
 
+/**
+ * @author Adrian Fish (adrian.r.fish@gmail.com)
+ */
 public interface CoursewallManager extends EntityProducer {
 
     public static final String ENTITY_PREFIX = "coursewall";

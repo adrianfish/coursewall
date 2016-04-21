@@ -8,7 +8,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
 import org.sakaiproject.db.api.SqlReader;
 import org.sakaiproject.db.api.SqlService;
 import org.sakaiproject.component.api.ServerConfigurationService;
@@ -18,13 +21,11 @@ import org.sakaiproject.coursewall.api.PersistenceManager;
 import org.sakaiproject.coursewall.api.QueryBean;
 import org.sakaiproject.coursewall.api.SakaiProxy;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter @Setter
+/**
+ * @author Adrian Fish (adrian.r.fish@gmail.com)
+ */
+@Getter @Setter @Slf4j
 public class PersistenceManagerImpl implements PersistenceManager {
-
-    private final Logger logger = Logger.getLogger(PersistenceManagerImpl.class);
 
     private static final String POST_SELECT = "SELECT * FROM COURSEWALL_POST WHERE ID = ?";
     private static final String SITE_POSTS_SELECT = "SELECT * FROM COURSEWALL_POST WHERE SITE_ID = ? ORDER BY CREATED_DATE DESC";
@@ -51,8 +52,8 @@ public class PersistenceManagerImpl implements PersistenceManager {
 
     public boolean postExists(String postId) {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("postExists(" + postId + ")");
+        if (log.isDebugEnabled()) {
+            log.debug("postExists(" + postId + ")");
         }
 
         List<Post> posts = sqlService.dbRead(POST_SELECT
@@ -72,8 +73,8 @@ public class PersistenceManagerImpl implements PersistenceManager {
 
     public List<Post> getAllPost(String siteId, boolean populate) throws Exception {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("getAllPost(" + siteId + ")");
+        if (log.isDebugEnabled()) {
+            log.debug("getAllPost(" + siteId + ")");
         }
 
         return sqlService.dbRead(SITE_POSTS_SELECT
@@ -92,7 +93,7 @@ public class PersistenceManagerImpl implements PersistenceManager {
                     try {
                         return new Comment(result);
                     } catch (SQLException sqle) {
-                        logger.error("Failed to get comment", sqle);
+                        log.error("Failed to get comment", sqle);
                         return null;
                     }
                 }
@@ -133,7 +134,7 @@ public class PersistenceManagerImpl implements PersistenceManager {
 
     public Post savePost(Post post) {
 
-        logger.debug("savePost()");
+        log.debug("savePost()");
 
         if (postExists(post.getId())) {
 
@@ -157,8 +158,8 @@ public class PersistenceManagerImpl implements PersistenceManager {
 
     public boolean deletePost(Post post) {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("deletePost(" + post.getId() + ")");
+        if (log.isDebugEnabled()) {
+            log.debug("deletePost(" + post.getId() + ")");
         }
 
         Runnable transaction = new Runnable() {
@@ -242,7 +243,7 @@ public class PersistenceManagerImpl implements PersistenceManager {
                                     comment.setUrl(url);
                                     return comment;
                                 } catch (SQLException sqle) {
-                                    logger.error("Failed to read comment from DB.", sqle);
+                                    log.error("Failed to read comment from DB.", sqle);
                                     return null;
                                 }
                             }
@@ -251,7 +252,7 @@ public class PersistenceManagerImpl implements PersistenceManager {
             }
             return post;
         } catch (SQLException sqle) {
-            logger.error("Failed to read post from DB.", sqle);
+            log.error("Failed to read post from DB.", sqle);
             return null;
         }
     }

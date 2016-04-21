@@ -22,7 +22,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
 import org.sakaiproject.authz.api.AuthzGroup;
 import org.sakaiproject.authz.api.AuthzGroupService;
 import org.sakaiproject.authz.api.AuthzPermissionException;
@@ -57,12 +59,11 @@ import org.sakaiproject.user.api.UserDirectoryService;
 import org.sakaiproject.user.api.UserNotDefinedException;
 import org.sakaiproject.util.FormattedText;
 
-import lombok.Setter;
-
-@Setter
+/**
+ * @author Adrian Fish (adrian.r.fish@gmail.com)
+ */
+@Setter @Slf4j
 public class SakaiProxyImpl implements SakaiProxy {
-
-    private final Logger logger = Logger.getLogger(SakaiProxyImpl.class);
 
     private AuthzGroupService authzGroupService;
     private EntityManager entityManager;
@@ -95,7 +96,7 @@ public class SakaiProxyImpl implements SakaiProxy {
         try {
             site = siteService.getSite(siteId);
         } catch (IdUnusedException idue) {
-            logger.warn("No site with id '" + siteId + "'");
+            log.warn("No site with id '" + siteId + "'");
         }
 
         return site;
@@ -203,7 +204,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 
             return role.isAllowed(function);
         } catch (Exception e) {
-            logger.error("Caught exception while performing function test", e);
+            log.error("Caught exception while performing function test", e);
         }
 
         return false;
@@ -318,7 +319,7 @@ public class SakaiProxyImpl implements SakaiProxy {
                 perms.put(role.getId(), filteredFunctions);
             }
         } catch (Exception e) {
-            logger.error("Failed to get current site permissions.", e);
+            log.error("Failed to get current site permissions.", e);
         }
 
         return perms;
@@ -336,7 +337,7 @@ public class SakaiProxyImpl implements SakaiProxy {
         try {
             site = siteService.getSite(siteId);
         } catch (IdUnusedException ide) {
-            logger.warn(userId + " attempted to update COURSEWALL permissions for unknown site " + siteId);
+            log.warn(userId + " attempted to update COURSEWALL permissions for unknown site " + siteId);
             return false;
         }
 
@@ -355,7 +356,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 
                 if (!siteRole.isAllowed(CoursewallFunctions.COURSEWALL_MODIFY_PERMISSIONS) && !siteRole.isAllowed("site.upd")) {
                     if (siteHelperRole == null || !siteHelperRole.isAllowed(CoursewallFunctions.COURSEWALL_MODIFY_PERMISSIONS)) {
-                        logger.warn(userId + " attempted to update COURSEWALL permissions for site " + site.getTitle());
+                        log.warn(userId + " attempted to update COURSEWALL permissions for site " + site.getTitle());
                         return false;
                     }
                 }
@@ -397,7 +398,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 
             return true;
         } catch (GroupNotDefinedException gnde) {
-            logger.error("No realm defined for site (" + siteId + ").");
+            log.error("No realm defined for site (" + siteId + ").");
         }
 
         return false;
@@ -412,7 +413,7 @@ public class SakaiProxyImpl implements SakaiProxy {
             }
             return c;
         } catch (Exception e) {
-            logger.error("Exception whilst retrieving '" + cache + "' cache. Returning null ...", e);
+            log.error("Exception whilst retrieving '" + cache + "' cache. Returning null ...", e);
             return null;
         }
     }

@@ -1,5 +1,8 @@
 package org.sakaiproject.coursewall.api;
 
+/**
+ * @author Adrian Fish (adrian.r.fish@gmail.com)
+ */
 public class XmlDefs {
 
     public static final String POST = "post";
