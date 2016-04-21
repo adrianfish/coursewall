@@ -22,8 +22,8 @@ import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
-import org.apache.log4j.Logger;
 import org.sakaiproject.authz.api.Role;
 import org.sakaiproject.authz.api.SecurityService;
 import org.sakaiproject.coursewall.api.datamodel.Post;
@@ -35,10 +35,11 @@ import org.sakaiproject.site.api.SiteService;
 import org.sakaiproject.site.api.ToolConfiguration;
 import org.sakaiproject.tool.api.ToolManager;
 
-@Setter
+/**
+ * @author Adrian Fish (adrian.r.fish@gmail.com)
+ */
+@Setter @Slf4j
 public class CoursewallSecurityManagerImpl implements CoursewallSecurityManager {
-
-    private static final Logger logger = Logger.getLogger(CoursewallSecurityManagerImpl.class);
 
     private SakaiProxy  sakaiProxy;
     private SecurityService securityService;
@@ -47,7 +48,7 @@ public class CoursewallSecurityManagerImpl implements CoursewallSecurityManager 
 
     public boolean canCurrentUserCommentOnPost(Post post) {
 
-        logger.debug("canCurrentUserCommentOnPost()");
+        log.debug("canCurrentUserCommentOnPost()");
 
         if (sakaiProxy.isAllowedFunction(CoursewallFunctions.COURSEWALL_COMMENT_CREATE, post.getSiteId())) {
             return true;

@@ -9,8 +9,7 @@ import java.util.Set;
 import java.util.Stack;
 
 import lombok.Setter;
-
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import org.sakaiproject.coursewall.api.CoursewallFunctions;
 import org.sakaiproject.coursewall.api.CoursewallManager;
@@ -32,10 +31,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-@Setter
+/**
+ * @author Adrian Fish (adrian.r.fish@gmail.com)
+ */
+@Setter @Slf4j
 public class CoursewallManagerImpl implements CoursewallManager {
-
-    private final Logger logger = Logger.getLogger(CoursewallManagerImpl.class);
 
     private PersistenceManager persistenceManager;
     private CoursewallSecurityManager coursewallSecurityManager;
@@ -43,11 +43,11 @@ public class CoursewallManagerImpl implements CoursewallManager {
 
     public void init() {
         
-        if (logger.isDebugEnabled()) {
-            logger.debug("init()");
+        if (log.isDebugEnabled()) {
+            log.debug("init()");
         }
 
-        logger.info("Registering Coursewall functions ...");
+        log.info("Registering Coursewall functions ...");
 
         sakaiProxy.registerFunction(CoursewallFunctions.COURSEWALL_POST_CREATE);
         sakaiProxy.registerFunction(CoursewallFunctions.COURSEWALL_POST_READ_ANY);
@@ -64,7 +64,7 @@ public class CoursewallManagerImpl implements CoursewallManager {
         sakaiProxy.registerFunction(CoursewallFunctions.COURSEWALL_COMMENT_DELETE_OWN);
         sakaiProxy.registerFunction(CoursewallFunctions.COURSEWALL_MODIFY_PERMISSIONS);
 
-        logger.info("Registered Coursewall functions ...");
+        log.info("Registered Coursewall functions ...");
 
         sakaiProxy.registerEntityProducer(this);
     }
@@ -75,8 +75,8 @@ public class CoursewallManagerImpl implements CoursewallManager {
 
     public Post getPostHeader(String postId) throws Exception {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("getUnfilteredPost(" + postId + ")");
+        if (log.isDebugEnabled()) {
+            log.debug("getUnfilteredPost(" + postId + ")");
         }
 
         Post post = persistenceManager.getPost(postId, false);
@@ -95,13 +95,13 @@ public class CoursewallManagerImpl implements CoursewallManager {
             String siteId = query.getSiteId();
 
             if (!cache.containsKey(siteId)) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Cache miss on site id: " + siteId);
+                if (log.isDebugEnabled()) {
+                    log.debug("Cache miss on site id: " + siteId);
                 }
                 cache.put(siteId, new HashMap<String, List<Post>>());
             } else {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Cache hit on site id: " + siteId);
+                if (log.isDebugEnabled()) {
+                    log.debug("Cache hit on site id: " + siteId);
                 }
             }
 
@@ -113,18 +113,18 @@ public class CoursewallManagerImpl implements CoursewallManager {
                 key = query.getCreator();
             }
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("KEY: " + key);
+            if (log.isDebugEnabled()) {
+                log.debug("KEY: " + key);
             }
 
             if (!siteMap.containsKey(key)) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Cache miss on '" + key + "'. It will be added.");
+                if (log.isDebugEnabled()) {
+                    log.debug("Cache miss on '" + key + "'. It will be added.");
                 }
                 siteMap.put(key, persistenceManager.getPosts(query));
             } else {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Cache hit on '" + key + "'");
+                if (log.isDebugEnabled()) {
+                    log.debug("Cache hit on '" + key + "'");
                 }
             }
             return coursewallSecurityManager.filter((List<Post>) siteMap.get(key), siteId);
@@ -141,10 +141,10 @@ public class CoursewallManagerImpl implements CoursewallManager {
                 removeSiteFromCaches(newOrUpdatedPost.getSiteId());
                 return newOrUpdatedPost;
             } else {
-                logger.error("Failed to save post");
+                log.error("Failed to save post");
             }
         } catch (Exception e) {
-            logger.error("Caught exception whilst saving post", e);
+            log.error("Caught exception whilst saving post", e);
         }
 
         return null;
@@ -177,7 +177,7 @@ public class CoursewallManagerImpl implements CoursewallManager {
                 return savedComment;
             }
         } catch (Exception e) {
-            logger.error("Caught exception whilst saving comment", e);
+            log.error("Caught exception whilst saving comment", e);
         }
 
         return null;
@@ -191,7 +191,7 @@ public class CoursewallManagerImpl implements CoursewallManager {
                 return true;
             }
         } catch (Exception e) {
-            logger.error("Caught exception whilst deleting comment.", e);
+            log.error("Caught exception whilst deleting comment.", e);
         }
 
         return false;
@@ -203,8 +203,8 @@ public class CoursewallManagerImpl implements CoursewallManager {
 
     public String archive(String siteId, Document doc, Stack stack, String archivePath, List attachments) {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("archive(siteId:" + siteId + ",archivePath:" + archivePath + ")");
+        if (log.isDebugEnabled()) {
+            log.debug("archive(siteId:" + siteId + ",archivePath:" + archivePath + ")");
         }
 
         StringBuilder results = new StringBuilder();
@@ -238,7 +238,7 @@ public class CoursewallManagerImpl implements CoursewallManager {
             results.append(getLabel() + ": Finished. " + postCount + " post(s) archived.\n");
         } catch (Exception any) {
             results.append(getLabel() + ": exception caught. Message: " + any.getMessage());
-            logger.warn(getLabel() + " exception caught. Message: " + any.getMessage());
+            log.warn(getLabel() + " exception caught. Message: " + any.getMessage());
         }
 
         stack.pop();
@@ -251,8 +251,8 @@ public class CoursewallManagerImpl implements CoursewallManager {
      */
     public String merge(String siteId, Element root, String archivePath, String fromSiteId, Map attachmentNames, Map userIdTrans, Set userListAllowImport) {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("merge(siteId:" + siteId + ",root tagName:" + root.getTagName() + ",archivePath:" + archivePath + ",fromSiteId:" + fromSiteId);
+        if (log.isDebugEnabled()) {
+            log.debug("merge(siteId:" + siteId + ",root tagName:" + root.getTagName() + ",archivePath:" + archivePath + ",fromSiteId:" + fromSiteId);
         }
 
         StringBuilder results = new StringBuilder();
@@ -265,7 +265,7 @@ public class CoursewallManagerImpl implements CoursewallManager {
         for (int i = 0; i < numberPosts; i++) {
             Node child = postNodes.item(i);
             if (child.getNodeType() != Node.ELEMENT_NODE) {
-                logger.error("Post nodes should be elements. Skipping ...");
+                log.error("Post nodes should be elements. Skipping ...");
                 continue;
             }
 
@@ -295,8 +295,8 @@ public class CoursewallManagerImpl implements CoursewallManager {
      */
     public Entity getEntity(Reference ref) {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("getEntity(Ref ID:" + ref.getId() + ")");
+        if (log.isDebugEnabled()) {
+            log.debug("getEntity(Ref ID:" + ref.getId() + ")");
         }
 
         Entity rv = null;
@@ -311,7 +311,7 @@ public class CoursewallManagerImpl implements CoursewallManager {
                 rv = persistenceManager.getPost(postId, true);
             }
         } catch (Exception e) {
-            logger.warn("getEntity(): " + e);
+            log.warn("getEntity(): " + e);
         }
 
         return rv;
@@ -322,8 +322,8 @@ public class CoursewallManagerImpl implements CoursewallManager {
      */
     public Collection getEntityAuthzGroups(Reference ref, String userId) {
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("getEntityAuthzGroups(Ref ID:" + ref.getId() + "," + userId + ")");
+        if (log.isDebugEnabled()) {
+            log.debug("getEntityAuthzGroups(Ref ID:" + ref.getId() + "," + userId + ")");
         }
 
         List ids = new ArrayList();
@@ -345,7 +345,7 @@ public class CoursewallManagerImpl implements CoursewallManager {
             Entity entity = persistenceManager.getPost(postId, false);
             return entity.getProperties();
         } catch (Exception e) {
-            logger.warn("getEntity(): " + e);
+            log.warn("getEntity(): " + e);
             return null;
         }
     }
@@ -415,7 +415,7 @@ public class CoursewallManagerImpl implements CoursewallManager {
             if (persistenceManager.postExists(postId))
                 return true;
         } catch (Exception e) {
-            logger.error("entityExists threw an exception", e);
+            log.error("entityExists threw an exception", e);
         }
 
         return false;

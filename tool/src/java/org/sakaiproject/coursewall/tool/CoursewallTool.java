@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import org.sakaiproject.coursewall.api.CoursewallManager;
 import org.sakaiproject.coursewall.api.SakaiProxy;
@@ -19,11 +19,10 @@ import org.sakaiproject.util.RequestFilter;
 import org.sakaiproject.util.ResourceLoader;
 
 /**
- * @author Adrian Fish (a.fish@lancaster.ac.uk)
+ * @author Adrian Fish (adrian.r.fish@gmail.com)
  */
+@Slf4j
 public class CoursewallTool extends HttpServlet {
-
-    private Logger logger = Logger.getLogger(getClass());
 
     private SakaiProxy sakaiProxy;
     private CoursewallManager coursewallManager;
@@ -32,7 +31,7 @@ public class CoursewallTool extends HttpServlet {
 
         super.init(config);
 
-        logger.debug("init");
+        log.debug("init");
         
         try {
             ComponentManager componentManager = org.sakaiproject.component.cover.ComponentManager.getInstance();
@@ -45,7 +44,7 @@ public class CoursewallTool extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
-        logger.debug("doGet()");
+        log.debug("doGet()");
 
         String userId = null;
         Session session = (Session) request.getAttribute(RequestFilter.ATTR_SESSION);
@@ -77,7 +76,7 @@ public class CoursewallTool extends HttpServlet {
         }
 
         if (locale == null || rl == null) {
-            logger.error("Failed to load the site or user i18n bundle");
+            log.error("Failed to load the site or user i18n bundle");
         }
 
         String language = locale.getLanguage();

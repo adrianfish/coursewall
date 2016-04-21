@@ -27,6 +27,9 @@ import org.sakaiproject.tool.api.Session;
 import org.sakaiproject.tool.api.Tool;
 import org.sakaiproject.tool.api.ToolSession;
 
+/**
+ * @author Adrian Fish (adrian.r.fish@gmail.com)
+ */
 public interface SakaiProxy {
 
     public String getCurrentSiteId();

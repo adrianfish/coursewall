@@ -6,6 +6,9 @@ import org.sakaiproject.coursewall.api.datamodel.Comment;
 import org.sakaiproject.coursewall.api.datamodel.Post;
 import org.sakaiproject.coursewall.api.QueryBean;
 
+/**
+ * @author Adrian Fish (adrian.r.fish@gmail.com)
+ */
 public interface PersistenceManager {
 
     public boolean postExists(String postId);
