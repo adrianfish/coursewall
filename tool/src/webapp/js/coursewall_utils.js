@@ -353,6 +353,8 @@ coursewall.utils = {
     renderPost: function (post, output) {
 
         this.addPermissionsToPost(post);
+        post.currentUserId = coursewall.userId;
+
         this.renderTemplate('post', post, output);
 
         var self = this;

@@ -1,4 +1,4 @@
-<div class="coursewall-photo coursewall-comment-photo" style="background-image:url(/direct/profile/{{creatorId}}/image/thumb)"></div>
+<div class="coursewall-photo coursewall-comment-photo" style="background-image:url(/direct/profile/{{#if currentUserId}}{{currentUserId}}{{else}}{{creatorId}}{{/if}}/image/thumb)"></div>
 <div class="coursewall-editor-text-wrapper">
     <div class="coursewall-editor-text coursewall-comment-editor-text" data-post-id="{{id}}"><textarea id="coursewall-comment-textarea-{{id}}" class="coursewall-comment-textarea" data-post-id="{{id}}"></textarea></div>
     <div id="coursewall-comment-post-buttons-{{id}}">
