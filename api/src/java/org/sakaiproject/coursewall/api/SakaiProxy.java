@@ -81,5 +81,5 @@ public interface SakaiProxy {
 
     public boolean setPermissionsForSite(String siteId, Map<String, Object> params);
 
-    public Cache getOrCreateCache(String cache);
+    public Cache getCache(String cache);
 }

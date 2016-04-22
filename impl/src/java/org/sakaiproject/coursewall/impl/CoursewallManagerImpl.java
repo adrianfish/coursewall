@@ -90,46 +90,27 @@ public class CoursewallManagerImpl implements CoursewallManager {
 
     public List<Post> getPosts(QueryBean query) throws Exception {
 
-        Cache cache = sakaiProxy.getOrCreateCache(POST_CACHE);
+        Cache cache = sakaiProxy.getCache(POST_CACHE);
         if (query.queryBySiteId()) {
             String siteId = query.getSiteId();
 
-            if (!cache.containsKey(siteId)) {
+            List<Post> posts = (List<Post>) cache.get(siteId);
+            if (posts == null) {
                 if (log.isDebugEnabled()) {
-                    log.debug("Cache miss on site id: " + siteId);
+                    log.debug("Cache miss or expired on site id: " + siteId);
                 }
-                cache.put(siteId, new HashMap<String, List<Post>>());
+                List<Post> unfilteredPosts = persistenceManager.getPosts(query);
+                cache.put(siteId, unfilteredPosts);
+                return coursewallSecurityManager.filter(unfilteredPosts, siteId);
             } else {
                 if (log.isDebugEnabled()) {
                     log.debug("Cache hit on site id: " + siteId);
                 }
+                return coursewallSecurityManager.filter(posts, siteId);
             }
 
-            Map<String, List<Post>> siteMap = (Map<String, List<Post>>) cache.get(siteId);
-
-            String key = ALL;
-
-            if (query.queryByCreator()) {
-                key = query.getCreator();
-            }
-
-            if (log.isDebugEnabled()) {
-                log.debug("KEY: " + key);
-            }
-
-            if (!siteMap.containsKey(key)) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Cache miss on '" + key + "'. It will be added.");
-                }
-                siteMap.put(key, persistenceManager.getPosts(query));
-            } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("Cache hit on '" + key + "'");
-                }
-            }
-            return coursewallSecurityManager.filter((List<Post>) siteMap.get(key), siteId);
         } else {
-            return coursewallSecurityManager.filter(persistenceManager.getPosts(query), null);
+            return new ArrayList<Post>();
         }
     }
 
@@ -422,8 +403,6 @@ public class CoursewallManagerImpl implements CoursewallManager {
     }
 
     private void removeSiteFromCaches(String siteId) {
-
-        Cache postCache = sakaiProxy.getOrCreateCache(POST_CACHE);
-        postCache.remove(siteId);
+        sakaiProxy.getCache(POST_CACHE).remove(siteId);
     }
 }

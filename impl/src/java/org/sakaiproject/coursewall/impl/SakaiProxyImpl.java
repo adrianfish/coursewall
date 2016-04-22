@@ -404,14 +404,10 @@ public class SakaiProxyImpl implements SakaiProxy {
         return false;
     }
 
-    public Cache getOrCreateCache(String cache) {
+    public Cache getCache(String cache) {
 
         try {
-            Cache c = memoryService.getCache(cache);
-            if (c == null) {
-                c = memoryService.createCache(cache, new SimpleConfiguration(0));
-            }
-            return c;
+            return memoryService.getCache(cache);
         } catch (Exception e) {
             log.error("Exception whilst retrieving '" + cache + "' cache. Returning null ...", e);
             return null;
