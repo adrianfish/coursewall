@@ -20,7 +20,6 @@ public interface CoursewallManager extends EntityProducer {
     public static final String COURSEWALL_COMMENT_DELETED = "coursewall.comment.deleted";
 
     public static final String POST_CACHE = "org.sakaiproject.coursewall.sortedPostCache";
-    public static final String ALL = "all";
 
     public Post getPost(String postId, boolean includeComments);
 
