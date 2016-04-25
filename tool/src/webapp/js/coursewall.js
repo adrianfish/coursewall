@@ -85,8 +85,20 @@ coursewall.switchState = function (state, arg) {
                 textarea.val(coursewall.i18n.post_editor_initial_text);
                 $('#coursewall-editor-post-button').prop('disabled', true);
             });
-
-            coursewall.utils.renderPageOfPosts();
+            
+            if (window.parent === window) {
+                coursewall.utils.renderPageOfPosts();
+            } else {
+                coursewall.utils.renderPageOfPosts(true);
+                try {
+                    if (window.frameElement) {
+                        setMainFrameHeight(window.frameElement.id);
+                    }
+                } catch (err) {
+                    // This is likely under an LTI provision scenario.
+                    // XSS protection will block this call.
+                }
+            }
         });
 	} else if (coursewall.states.PERMISSIONS === state) {
 	    $('#coursewall_toolbar > li > span').removeClass('current');
