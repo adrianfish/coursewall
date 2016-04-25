@@ -402,23 +402,24 @@ coursewall.utils = {
             comments.find('.coursewall-comment-delete-link').click(coursewall.utils.deleteCommentHandler);
         });
     },
-    renderPageOfPosts: function (args) {
+    renderPageOfPosts: function (all) {
 
         var self = this;
 
         var loadImage = $('#coursewall-loading-image')
         loadImage.show();
 
-        var url = '/direct/coursewall/posts/' + coursewall.siteId + '.json?page=' + coursewall.page;
+        var url = '/direct/coursewall/posts/' + coursewall.siteId + '.json?page=';
+        url += (all) ? '-1' : coursewall.page;
 
-        $.ajax( { url : url, dataType: "json", cache: false, timeout: coursewall.AJAX_TIMEOUT})
+        $.ajax( { url : url, dataType: "json", cache: false, timeout: coursewall.AJAX_TIMEOUT })
             .done(function (data) {
 
                 if (data.status === 'END') {
                     $(window).off('scroll.coursewall');
                     loadImage.hide();
                 } else {
-                    $(window).off('scroll.coursewall').on('scroll.coursewall', coursewall.utils.getScrollFunction(args, coursewall.utils.renderPageOfPosts));
+                    $(window).off('scroll.coursewall').on('scroll.coursewall', coursewall.utils.getScrollFunction(coursewall.utils.renderPageOfPosts));
                 }
 
                 coursewall.postsTotal = data.postsTotal;
@@ -449,31 +450,19 @@ coursewall.utils = {
                 alert("Failed to get posts. Reason: " + errorThrown);
             });
     },
-    checkScroll: function () {
-
-        // Check if there is no scroll rendered and there are more pages
-
-        // Check if body height is lower than window height (scrollbar missed, maybe you need to get more pages automatically)
-        if ($("body").height() <= $(window).height()) {
-            setTimeout(function () {
-
-                if (coursewall.postsTotal > coursewall.postsRendered && coursewall.postsRendered > 0 && coursewall.postsRendered % 10 === 0) {
-                    $("body").data("scroll-coursewall", true);
-                    $(window).trigger('scroll.coursewall');
-                }
-            }, 100);
-        }
-    },
-    getScrollFunction: function (args, callback) {
+    getScrollFunction: function (callback) {
 
         var scroller = function () {
             
-            var wintop = $(window).scrollTop(), docheight = $(document).height(), winheight = $(window).height();
+            var win = $(window);
+            var wintop = win.scrollTop();
+            var winheight = win.height();
+            var docheight = $(document).height()
 
-            if  ((wintop/(docheight-winheight)) > 0.95 || $("body").data("scroll-coursewall") === true) {
-                $("body").data("scroll-coursewall", false);
-                $(window).off('scroll.coursewall');
-                callback(args);
+            if  ((wintop/(docheight-winheight)) > 0.95 || $('body').data('scroll-coursewall') === true) {
+                $('body').data('scroll-coursewall', false);
+                win.off('scroll.coursewall');
+                callback();
             }
         };
 

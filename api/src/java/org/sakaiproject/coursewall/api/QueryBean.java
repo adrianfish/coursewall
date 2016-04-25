@@ -34,7 +34,6 @@ public class QueryBean {
     private String siteId = "";
     private String title = "";
     private String caller = "";
-    private int page = 0;
 
     public boolean hasConditions() {
         return creator.length() > 0 || siteId.length() > 0 || title.length() > 0;

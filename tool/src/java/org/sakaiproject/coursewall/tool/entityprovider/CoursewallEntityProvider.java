@@ -104,33 +104,37 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
         query.setSiteId(siteId);
 
         try {
-            int page = Integer.parseInt((String) params.get("page"));
-            System.out.println("PAGE:" + page);
-            query.setPage(page);
             posts = coursewallManager.getPosts(query);
-            int pageSize = 20;
-            int start  = page * pageSize;
-            int postsTotal = posts.size();
 
             PostsData data = new PostsData();
+            data.postsTotal = posts.size();
 
-            if (start >= postsTotal) {
+            int page = Integer.parseInt((String) params.get("page"));
+
+            if (page == -1) {
                 data.status = "END";
+                data.posts = posts;
             } else {
-                int end = start + pageSize;
 
-                if (log.isDebugEnabled()) {
-                    log.debug("end: " + end);
-                }
+                int pageSize = 20;
+                int start  = page * pageSize;
 
-                data.postsTotal = postsTotal;
-
-                if (end >= postsTotal) {
-                    end = postsTotal;
+                if (start >= data.postsTotal) {
                     data.status = "END";
-                }
+                } else {
+                    int end = start + pageSize;
 
-                data.posts = posts.subList(start, end);
+                    if (log.isDebugEnabled()) {
+                        log.debug("end: " + end);
+                    }
+
+                    if (end >= data.postsTotal) {
+                        end = data.postsTotal;
+                        data.status = "END";
+                    }
+
+                    data.posts = posts.subList(start, end);
+                }
             }
 
             return new ActionReturn(data);
