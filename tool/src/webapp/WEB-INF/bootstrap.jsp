@@ -26,7 +26,6 @@
         <script type="text/javascript" src="/library/js/jquery/cluetip/1.2.10/jquery.cluetip.min.js"></script>
         <script type="text/javascript" src="/coursewall-tool/lib/jquery.i18n.properties.js"></script>
         <script type="text/javascript" src="/coursewall-tool/lib/handlebars.runtime-v4.0.5.js"></script>
-        <script type="text/javascript" src="/coursewall-tool/templates/partials.js"></script>
         <script type="text/javascript" src="/coursewall-tool/templates/templates.js"></script>
         <script type="text/javascript" src="/coursewall-tool/lib/autosize.min.js"></script>
         <script type="text/javascript" src="/coursewall-tool/lib/sakai_utils.js"></script>
