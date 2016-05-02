@@ -10,7 +10,6 @@
         <script type="text/javascript">
 
             var coursewall = {
-                postId: '${postId}',
                 i18n: {},
                 siteId: '${siteId}',
                 userId: '${userId}'
