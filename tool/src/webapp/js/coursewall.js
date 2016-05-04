@@ -137,11 +137,13 @@ coursewall.switchState = function (state, arg) {
             coursewall.monthMappings[m] = i + 1;
         });
 
-        coursewall.utils.renderTemplate('toolbar', {} ,'coursewall_toolbar');
+        if (!coursewall.assignmentId) {
+            coursewall.utils.renderTemplate('toolbar', {} ,'coursewall_toolbar');
 
-        $('#coursewall_permissions_link>span>a').click(function (e) {
-            coursewall.switchState(coursewall.states.PERMISSIONS);
-        });
+            $('#coursewall_permissions_link>span>a').click(function (e) {
+                coursewall.switchState(coursewall.states.PERMISSIONS);
+            });
+        }
 
         var permissionsCallback = function (permissions) {
 

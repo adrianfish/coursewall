@@ -24,6 +24,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import org.sakaiproject.assignment.api.AssignmentService;
 import org.sakaiproject.authz.api.Role;
 import org.sakaiproject.authz.api.SecurityService;
 import org.sakaiproject.coursewall.api.datamodel.Post;
@@ -102,9 +103,15 @@ public class CoursewallSecurityManagerImpl implements CoursewallSecurityManager 
      */
     public List<Post> filter(List<Post> posts, String contextId, boolean byAssignment) {
 
-        if (!byAssignment) {
-            boolean readAny = securityService.unlock(CoursewallFunctions.COURSEWALL_POST_READ_ANY, "/site/" + contextId);
-            return (readAny) ? posts : new ArrayList<Post>();
+        if (posts != null && posts.size() > 0) {
+            if (!byAssignment) {
+                boolean readAny = securityService.unlock(CoursewallFunctions.COURSEWALL_POST_READ_ANY, "/site/" + contextId);
+                return (readAny) ? posts : new ArrayList<Post>();
+            } else {
+                String siteId = posts.get(0).getSiteId();
+                boolean readAny = securityService.unlock(AssignmentService.SECURE_ADD_ASSIGNMENT_SUBMISSION, "/site/" + siteId);
+                return (readAny) ? posts : new ArrayList<Post>();
+            }
         } else {
             return posts;
         }
