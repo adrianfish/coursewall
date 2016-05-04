@@ -88,7 +88,7 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
         
         String siteId = view.getPathSegment(2);
 
-        if(siteId == null) {
+        if (siteId == null) {
             throw new EntityException(
                 "Bad request: To get the posts in a site you need a url like '/direct/coursewall/posts/SITEID.json'"
                                             , "", HttpServletResponse.SC_BAD_REQUEST);
@@ -97,11 +97,17 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
         if (coursewallSecurityManager.getSiteIfCurrentUserCanAccessTool(siteId) == null) {
             throw new EntityException("Access denied.", "", HttpServletResponse.SC_UNAUTHORIZED);
         }
-        
+
         List<Post> posts = new ArrayList<Post>();
 
         QueryBean query = new QueryBean();
         query.setSiteId(siteId);
+
+        String assignmentId = (String) params.get("assignmentId");
+
+        if (assignmentId != null) {
+            query.setAssignmentId(assignmentId);
+        }
 
         try {
             posts = coursewallManager.getPosts(query);
@@ -174,6 +180,13 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
         post.setId(id);
         post.setCreatorId(userId);
         post.setSiteId(siteId);
+
+        String assignmentId = (String) params.get("assignmentId");
+
+        if (assignmentId != null) {
+            post.setAssignmentId(assignmentId);
+        }
+
         post.setContent(content);
 
         Post createdOrUpdatedPost = coursewallManager.savePost(post);
@@ -275,38 +288,6 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
         } else {
             return new ActionReturn("FAIL");
         }
-    }
-
-    @EntityCustomAction(action = "user", viewKey = EntityView.VIEW_LIST)
-    public List<Post> handleUser(EntityView view, Map<String, Object> params) {
-        
-        String callingUserId = developerHelperService.getCurrentUserId();
-        
-        if (callingUserId == null) {
-            throw new EntityException("You must be logged in to retrieve a post","",HttpServletResponse.SC_UNAUTHORIZED);
-        }
-        
-        String requestedUserId = view.getPathSegment(2);
-        
-        List<Post> posts = new ArrayList<Post>();
-
-        QueryBean query = new QueryBean();
-        query.setCreator(requestedUserId);
-
-        try {
-            posts = coursewallManager.getPosts(query);
-        } catch (Exception e) {
-            log.error("Caught exception whilst getting posts.", e);
-            throw new EntityException("Failed to retrieve posts for user " + requestedUserId,"",HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        }
-
-        List<Post> filteredPosts = coursewallSecurityManager.filter(posts, null);
-        
-        for (Post filteredPost : filteredPosts) {
-            filteredPost.minimise();
-        }
-        
-        return filteredPosts;
     }
 
     @EntityCustomAction(action = "userPerms", viewKey = EntityView.VIEW_LIST)

@@ -17,10 +17,6 @@
 
 package org.sakaiproject.coursewall.api;
 
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,24 +26,18 @@ import lombok.Setter;
 @Getter @Setter
 public class QueryBean {
 
-    private String creator = "";
     private String siteId = "";
-    private String title = "";
-    private String caller = "";
+    private String assignmentId = "";
 
     public boolean hasConditions() {
-        return creator.length() > 0 || siteId.length() > 0 || title.length() > 0;
+        return siteId.length() > 0 || assignmentId.length() > 0;
     }
 
     public boolean queryBySiteId() {
         return !siteId.equals("");
     }
 
-    public boolean queryByTitle() {
-        return title.length() > 0;
-    }
-
-    public boolean queryByCreator() {
-        return !creator.trim().equals("");
+    public boolean queryByAssignmentId() {
+        return !assignmentId.equals("");
     }
 }

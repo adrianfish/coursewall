@@ -85,32 +85,27 @@ public class CoursewallManagerImpl implements CoursewallManager {
     }
 
     private List<Post> getPosts(String siteId) throws Exception {
-        return coursewallSecurityManager.filter(persistenceManager.getAllPost(siteId), siteId);
+        return coursewallSecurityManager.filter(persistenceManager.getAllPost(siteId), siteId, false);
     }
 
     public List<Post> getPosts(QueryBean query) throws Exception {
 
         Cache cache = sakaiProxy.getCache(POST_CACHE);
-        if (query.queryBySiteId()) {
-            String siteId = query.getSiteId();
+        boolean byAssignment = query.queryByAssignmentId();
 
-            List<Post> posts = (List<Post>) cache.get(siteId);
-            if (posts == null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Cache miss or expired on site id: " + siteId);
-                }
-                List<Post> unfilteredPosts = persistenceManager.getPosts(query);
-                cache.put(siteId, unfilteredPosts);
-                return coursewallSecurityManager.filter(unfilteredPosts, siteId);
-            } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("Cache hit on site id: " + siteId);
-                }
-                return coursewallSecurityManager.filter(posts, siteId);
-            }
+        String cacheId = (byAssignment) ? query.getAssignmentId() : query.getSiteId();
 
+        List<Post> posts = (List<Post>) cache.get(cacheId);
+        if (posts == null) {
+            if (log.isDebugEnabled()) log.debug("Cache miss or expired on id: " + cacheId);
+            List<Post> unfilteredPosts = persistenceManager.getPosts(query);
+            cache.put(cacheId, unfilteredPosts);
+            return coursewallSecurityManager.filter(unfilteredPosts, cacheId, byAssignment);
         } else {
-            return new ArrayList<Post>();
+            if (log.isDebugEnabled()) {
+                log.debug("Cache hit on id: " + cacheId);
+            }
+            return coursewallSecurityManager.filter(posts, cacheId, byAssignment);
         }
     }
 
@@ -119,7 +114,7 @@ public class CoursewallManagerImpl implements CoursewallManager {
         try {
             Post newOrUpdatedPost = persistenceManager.savePost(post);
             if (newOrUpdatedPost != null) {
-                removeSiteFromCaches(newOrUpdatedPost.getSiteId());
+                removeContextIdFromCache(post.getContextId());
                 return newOrUpdatedPost;
             } else {
                 log.error("Failed to save post");
@@ -138,7 +133,7 @@ public class CoursewallManagerImpl implements CoursewallManager {
             if (coursewallSecurityManager.canCurrentUserDeletePost(post)) {
                 if (persistenceManager.deletePost(post)) {
                     // Invalidate all caches for this site
-                    removeSiteFromCaches(post.getSiteId());
+                    removeContextIdFromCache(post.getContextId());
                     return true;
                 }
             }
@@ -149,12 +144,12 @@ public class CoursewallManagerImpl implements CoursewallManager {
         return false;
     }
 
-    public Comment saveComment(String siteId, Comment comment) {
+    public Comment saveComment(String contextId, Comment comment) {
 
         try {
             Comment savedComment = persistenceManager.saveComment(comment);
             if (savedComment != null) {
-                removeSiteFromCaches(siteId);
+                removeContextIdFromCache(contextId);
                 return savedComment;
             }
         } catch (Exception e) {
@@ -164,11 +159,11 @@ public class CoursewallManagerImpl implements CoursewallManager {
         return null;
     }
 
-    public boolean deleteComment(String siteId, String commentId) {
+    public boolean deleteComment(String contextId, String commentId) {
 
         try {
             if (persistenceManager.deleteComment(commentId)) {
-                removeSiteFromCaches(siteId);
+                removeContextIdFromCache(contextId);
                 return true;
             }
         } catch (Exception e) {
@@ -402,7 +397,7 @@ public class CoursewallManagerImpl implements CoursewallManager {
         return false;
     }
 
-    private void removeSiteFromCaches(String siteId) {
-        sakaiProxy.getCache(POST_CACHE).remove(siteId);
+    private void removeContextIdFromCache(String contextId) {
+        sakaiProxy.getCache(POST_CACHE).remove(contextId);
     }
 }

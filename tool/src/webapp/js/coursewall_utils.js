@@ -251,7 +251,8 @@ coursewall.utils = {
         var post = {
                 'id': postId,
                 'content': content,
-                'siteId': coursewall.siteId
+                'siteId': coursewall.siteId,
+                'assignmentId': coursewall.assignmentId
             };
                 
         $.ajax({
@@ -411,6 +412,12 @@ coursewall.utils = {
 
         var url = '/direct/coursewall/posts/' + coursewall.siteId + '.json?page=';
         url += (all) ? '-1' : coursewall.page;
+
+        if (coursewall.assignmentId) {
+            url += '&assignmentId=' + coursewall.assignmentId;
+        }
+
+        console.log(url);
 
         $.ajax( { url : url, dataType: "json", cache: false, timeout: coursewall.AJAX_TIMEOUT })
             .done(function (data) {
