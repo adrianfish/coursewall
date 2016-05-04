@@ -11,6 +11,8 @@ import java.sql.SQLException;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.apache.commons.lang.StringUtils;
+
 import org.sakaiproject.coursewall.api.datamodel.Comment;
 import org.sakaiproject.coursewall.api.CoursewallManager;
 import org.sakaiproject.coursewall.api.XmlDefs;
@@ -36,6 +38,7 @@ public class Post implements Entity {
     private long modifiedDate = -1L;
     private int numberOfComments = 0;
     private String siteId;
+    private String assignmentId;
     private String url = "";
 
     public Post() {
@@ -49,6 +52,7 @@ public class Post implements Entity {
 
         this.setId(rs.getString("ID"));
         this.setSiteId(rs.getString("SITE_ID"));
+        this.setAssignmentId(rs.getString("ASSIGNMENT_ID"));
         this.setContent(rs.getString("CONTENT"));
         this.setCreatedDate(rs.getTimestamp("CREATED_DATE").getTime());
         this.setModifiedDate(rs.getTimestamp("MODIFIED_DATE").getTime());
@@ -235,5 +239,14 @@ public class Post implements Entity {
         content = "";
         numberOfComments = comments.size();
         comments = new ArrayList<Comment>();
+    }
+
+    public String getContextId() {
+
+        if (!StringUtils.isBlank(assignmentId)) {
+            return assignmentId;
+        } else {
+            return siteId;
+        }
     }
 }
