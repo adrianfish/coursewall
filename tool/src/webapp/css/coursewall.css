@@ -39,6 +39,11 @@
             height: 32px;
             resize: none;
         }
+        #coursewall-post-creator-editor {
+            min-height: 32px;
+            height: auto;
+            max-height: 2000px;
+        }
 
 #coursewall-posts-wrapper{
 	clear: both;
@@ -71,6 +76,9 @@
         }
             .coursewall-post-options {
                 font-size: smaller;
+            }
+            .coursewall-post-edit-buttons {
+                display: none;
             }
 
 .coursewall-post-with-comments {
@@ -209,3 +217,15 @@
     font-weight: bold;
     margin-top: 10px;
 }
+
+.coursewall-og-fragment {
+    border: solid #E0E0E0 1px;
+    padding: 5px;
+    width: 482px;
+}
+    .coursewall-og-title {
+        font-weight: bold;
+    }
+    .coursewall-og-description {
+        font-size: smaller;
+    }

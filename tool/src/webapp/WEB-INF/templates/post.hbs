@@ -33,6 +33,10 @@
                     <a href="javascript:;" id="coursewall-post-delete-link-{{id}}" class="coursewall-post-delete-link" data-post-id="{{id}}">{{translate 'del'}}</a>
                     {{/if}}
                 </div>
+                <div id="coursewall-post-edit-buttons-{{id}}" class="coursewall-post-edit-buttons">
+                    <button id="coursewall-inplace-post-editor-post-button-{{id}}">{{translate 'post'}}</button>
+                    <button onclick="coursewall.utils.cancelPostEdit('{{id}}');">{{translate 'cancel'}}</button>
+                </div>
 		    </div>
 
 		</div> <!-- /coursewall-post-inner-container -->

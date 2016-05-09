@@ -1,5 +1,14 @@
 package org.sakaiproject.coursewall.tool.entityprovider;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -48,6 +57,9 @@ import org.sakaiproject.tool.api.Session;
 public class CoursewallEntityProvider extends AbstractEntityProvider implements RequestAware, AutoRegisterEntityProvider, Outputable, Describeable, ActionsExecutable, ReferenceParseable {
     
     public final static String ENTITY_PREFIX = "coursewall";
+
+    private final static String USER_AGENT
+        = "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2";
 
     @Setter
     private CoursewallManager coursewallManager;
@@ -170,7 +182,7 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
                                                 , "", HttpServletResponse.SC_BAD_REQUEST);
         }
 
-        content = escape(content);
+        //content = escape(content);
 
         String id = (String) params.get("id");
 
@@ -319,7 +331,7 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
 
         String siteId = (String) params.get("siteId");
 
-        if (siteId == null || siteId.length() <= 0) {
+        if (StringUtils.isBlank(siteId)) {
             throw new EntityException("No siteId supplied", "", HttpServletResponse.SC_BAD_REQUEST);
         }
 
@@ -344,7 +356,64 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
         }
     }
 
+    @EntityCustomAction(action = "getUrlMarkup", viewKey = EntityView.VIEW_LIST)
+    public ActionReturn getUrlMarkup(OutputStream outputStream, EntityView view, Map<String, Object> params) {
+
+        String userId = developerHelperService.getCurrentUserId();
+        
+        if (userId == null) {
+            throw new EntityException("You must be logged in to get html", "", HttpServletResponse.SC_UNAUTHORIZED);
+        }
+
+        String urlString = (String) params.get("url");
+
+        if (StringUtils.isBlank(urlString)) {
+            throw new EntityException("No url supplied", "", HttpServletResponse.SC_BAD_REQUEST);
+        }
+
+        try {
+            URL url = new URL(urlString);
+            URLConnection conn = url.openConnection();
+            conn.setRequestProperty("User-Agent", USER_AGENT);
+            conn.connect();
+            String contentEncoding = conn.getContentEncoding();
+            String contentType = conn.getContentType();
+
+            if (contentType != null 
+                    && (contentType.startsWith("text/html")
+                            || contentType.startsWith("application/xhtml+xml")
+                            || contentType.startsWith("application/xml"))) {
+                String mimeType = contentType.split(";")[0].trim();
+                if (log.isDebugEnabled()) {
+                    log.debug("mimeType: " + mimeType);
+                    log.debug("encoding: " + contentEncoding);
+                }
+
+                BufferedReader reader
+                    = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                BufferedWriter writer
+                    = new BufferedWriter(new OutputStreamWriter(outputStream));
+
+                String line = null;
+                while ((line = reader.readLine()) != null) {
+                    writer.write(line);
+                }
+
+                return new ActionReturn(contentEncoding, mimeType, outputStream);
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Invalid content type " + contentType + ". Throwing bad request ...");
+                }
+                throw new EntityException("Url content type not supported", "", HttpServletResponse.SC_BAD_REQUEST);
+            }
+        } catch (MalformedURLException mue) {
+            throw new EntityException("Invalid url supplied", "", HttpServletResponse.SC_BAD_REQUEST);
+        } catch (IOException ioe) {
+            throw new EntityException("Failed to download url contents", "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     private String escape(String unescaped) {
-        return StringEscapeUtils.escapeJavaScript(unescaped);
+        return StringEscapeUtils.escapeJava(unescaped);
     }
 }
