@@ -2,12 +2,70 @@ coursewall.utils = {
 
     POST_WITHOUT_COMMENTS_STYLE: 'coursewall-post-without-comments',
     POST_WITH_COMMENTS_STYLE: 'coursewall-post-with-comments',
+    OGP_IMAGE_REGEX: /og:image" content="([^"]*)"/,
+    TWITTER_IMAGE_REGEX: /twitter:image" content="([^"]*)"/,
+    OGP_TITLE_REGEX: /og:title" content="([^"]*)"/,
+    OGP_DESCRIPTION_REGEX: /og:description" content="([^"&#]*)"/,
+    OGP_SITE_NAME_REGEX: /og:site_name" content="([^"]*)"/,
 
     fromHtml: function (html) {
         return html.replace(/<br>/g, '\n');
     },
     toHtml: function (text) {
         return text.replace(/\r\n|\n|\r/g, '<br>');
+    },
+    getOGPMarkup: function (url, callback) {
+
+        var self = this;
+
+        $.get('/direct/coursewall/getUrlMarkup?url=' + url, function (markup) {
+
+            var div = document.createElement('div');
+
+            var title = '';
+            var matches = markup.match(self.OGP_TITLE_REGEX);
+            if (matches && matches.length == 2) {
+                title = matches[1];
+                div.innerHTML = title;
+                title = $(div).html();
+            }
+
+
+            var image = '';
+            var matches = markup.match(self.TWITTER_IMAGE_REGEX);
+            if (matches && matches.length == 2) {
+                image = matches[1];
+            } else {
+                matches = markup.match(self.OGP_IMAGE_REGEX);
+                if (matches && matches.length == 2) {
+                    image = matches[1];
+                }
+            }
+
+            var description = '';
+            var matches = markup.match(self.OGP_DESCRIPTION_REGEX);
+            if (matches && matches.length == 2) {
+                description = matches[1];
+                div.innerHTML = description;
+                description = $(div).html();
+            }
+
+            var siteName = '';
+            var matches = markup.match(self.OGP_SITE_NAME_REGEX);
+            if (matches && matches.length == 2) {
+                siteName = matches[1];
+            }
+
+            if (!title && !image) {
+                callback(null);
+            } else {
+                callback(Handlebars.templates['og_fragment']({title: title,
+                                                                image: image,
+                                                                url: url,
+                                                                description: description,
+                                                                siteName: siteName}));
+            }
+        });
     },
     addHandlersToComment: function (commentId) {
 
@@ -19,21 +77,19 @@ coursewall.utils = {
         var postId = this.dataset.postId;
         var contentDiv = $('#coursewall-post-content-' + postId);
         coursewall.utils.oldContent = contentDiv.html();
-        var replacedContent = coursewall.utils.fromHtml(coursewall.utils.oldContent);
-        var editorTemplate = Handlebars.templates['inplace_post_editor'];
-        var editorMarkup = editorTemplate({postId: postId, content: replacedContent});
-        contentDiv.html(editorMarkup);
+        contentDiv.prop('contenteditable', true).focus();
+        var postEditButtons = $('#coursewall-post-edit-buttons-'+ postId);
+        postEditButtons.show();
 
         $(document).ready(function () {
 
-            var textarea = $('#coursewall-inplace-post-editor-' + postId);
-            textarea.each(function () { autosize(this); }).focus();
-            $('#coursewall-inplace-post-editor-post-button-' + postId).click(function (e) {
+            $('#coursewall-inplace-post-editor-post-button-' + postId).off('click').click(function (e) {
 
-                coursewall.utils.savePost(postId, textarea.val(), function () {
+                coursewall.utils.savePost(postId, contentDiv.html(), function () {
 
-                        contentDiv.html(coursewall.utils.toHtml(textarea.val()));
+                        contentDiv.prop('contenteditable', false);
                         $('#coursewall-post-options-' + postId).show();
+                        postEditButtons.hide();
                     });
                 });
         });
@@ -50,7 +106,9 @@ coursewall.utils = {
 
         var contentDiv = $('#coursewall-post-content-' + postId);
         contentDiv.html(this.oldContent);
+        contentDiv.prop('contenteditable', false);
         $('#coursewall-post-options-' + postId).show();
+        $('#coursewall-post-edit-buttons-'+ postId).hide();
     },
     editCommentHandler: function (e) {
 
@@ -474,6 +532,23 @@ coursewall.utils = {
         };
 
         return scroller;
+    },
+    placeCaretAtEnd: function (el) {
+
+        el.focus();
+        if (typeof window.getSelection != "undefined"
+                && typeof document.createRange != "undefined") {
+            var range = document.createRange();
+            range.selectNodeContents(el);
+            range.collapse(false);
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        } else if (typeof document.body.createTextRange != "undefined") {
+            var textRange = document.body.createTextRange();
+            textRange.moveToElementText(el);
+            textRange.collapse(false);
+            textRange.select();
+        }
     }
 };
-
