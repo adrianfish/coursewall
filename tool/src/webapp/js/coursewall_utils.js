@@ -144,8 +144,7 @@ coursewall.utils = {
             console.log(tmp);
             textarea.val(coursewall.utils.fromHtml(comment.content));
             textarea.each(function () { autosize(this); }).focus();
-            //textarea.trigger('autosize:update');
-            //
+
             $('#coursewall-inplace-comment-editor-cancel-button-' + comment.id).click(function (e) {
 
                 coursewall.utils.renderTemplate(
@@ -168,9 +167,24 @@ coursewall.utils = {
     },
     deleteCommentHandler: function (e) {
 
+        if (!confirm(coursewall.i18n.delete_comment_message)) {
+            return false;
+        }
+
         var commentId = this.dataset.commentId;
+        var postId = this.dataset.postId;
+        var numComments = $('#coursewall-comments-' + postId + ' .coursewall-comment').length;
+        if (numComments <= 2) {
+            $('#coursewall-hide-comments-link-' + postId).hide();
+            $('#coursewall-show-comments-link-' + postId).hide();
+        }
+        var commentToDelete = $('#coursewall-comment-' + commentId);
+
+        if (commentToDelete.hasClass('coursewall-comment-latest')) {
+            commentToDelete.prev().removeClass('coursewall-comment-not-latest').addClass('coursewall-comment-latest').show();
+        }
         coursewall.utils.deleteComment(commentId, function () {
-                $('#coursewall-comment-' + commentId).remove();
+                commentToDelete.remove();
             });
     },
     cancelCommentEdit: function (commentId) {
@@ -284,8 +298,14 @@ coursewall.utils = {
         post.formattedCreatedDate = this.formatDate(post.createdDate);
         post.formattedModifiedDate = this.formatDate(post.modifiedDate);
 
-        post.comments.forEach(function (c) {
+        post.comments.forEach(function (c, index) {
 
+            if (index < (post.comments.length - 1)) {
+                c.orderClass = 'coursewall-comment-not-latest';
+            } else {
+                c.orderClass = 'coursewall-comment-latest';
+                c.isLatest = true;
+            }
             c.formattedCreatedDate = coursewall.utils.formatDate(c.createdDate);
             c.formattedModifiedDate = coursewall.utils.formatDate(c.modifiedDate);
         });
@@ -349,10 +369,6 @@ coursewall.utils = {
         return false;
     },
     deleteComment: function (commentId, callback) {
-                        
-        if (!confirm(coursewall.i18n.delete_comment_message)) {
-            return false;
-        }
         
         $.ajax( {
             url: '/direct/coursewall/deleteComment?siteId=' + coursewall.siteId + '&commentId=' + commentId,
@@ -438,6 +454,21 @@ coursewall.utils = {
                 commentLink.show();
             });
 
+            var showCommentsLink = $('#coursewall-show-comments-link-' + post.id);
+            var hideCommentsLink = $('#coursewall-hide-comments-link-' + post.id);
+            showCommentsLink.click(function (e) {
+
+                $('#coursewall-comments-' + post.id + ' .coursewall-comment-not-latest').show();
+                showCommentsLink.hide();
+                hideCommentsLink.show();
+            });
+            hideCommentsLink.click(function (e) {
+
+                $('#coursewall-comments-' + post.id + ' .coursewall-comment-not-latest').hide();
+                hideCommentsLink.hide();
+                showCommentsLink.show();
+            });
+
             $('#coursewall-inplace-comment-editor-post-button-' + post.id).click(function (e) {
 
                 coursewall.utils.saveComment('', post.id, textarea.val(), function (savedComment) {
@@ -449,12 +480,30 @@ coursewall.utils = {
                         creator.hide();
                         commentLink.show();
 
+                        var numComments = $('#coursewall-comments-' + post.id + ' .coursewall-comment').length;
+
+                        if (numComments > 0) {
+                            $('#coursewall-comments-' + post.id + ' .coursewall-comment-latest')
+                                .removeClass('coursewall-comment-latest')
+                                .addClass('coursewall-comment-not-latest')
+                                .hide();
+                            showCommentsLink.show();
+                        }
+
                         coursewall.utils.addPermissionsToComment(savedComment);
+                        savedComment.formattedCreatedDate = coursewall.utils.formatDate(savedComment.createdDate);
+                        savedComment.orderClass = 'coursewall-comment-latest';
+                        savedComment.isLatest = true;
                         var wrappedComment = Handlebars.templates['wrapped_comment'] (savedComment);
                         $('#coursewall-comments-container-' + post.id).append(wrappedComment);
+
                         self.addHandlersToComment(commentId);
                     });
             });
+
+            if (post.comments.length <= 1) {
+                showCommentsLink.hide();
+            }
 
             var comments = $('#coursewall-comments-' + post.id);
             comments.find('.coursewall-comment-edit-link').click(coursewall.utils.editCommentHandler);
@@ -474,8 +523,6 @@ coursewall.utils = {
         if (coursewall.assignmentId) {
             url += '&assignmentId=' + coursewall.assignmentId;
         }
-
-        console.log(url);
 
         $.ajax( { url : url, dataType: "json", cache: false, timeout: coursewall.AJAX_TIMEOUT })
             .done(function (data) {
@@ -508,6 +555,7 @@ coursewall.utils = {
 
                     // Now render them into their placeholders
                     posts.forEach(function (p) { coursewall.utils.renderPost(p, 'coursewall-post-' + p.id); });
+
                     loadImage.hide();
                 });
                 coursewall.page += 1;

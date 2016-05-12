@@ -32,13 +32,6 @@
     .coursewall-editor-text {
         overflow: auto;
     }
-
-        #coursewall-post-creator-textarea {
-            border: 0px;
-            width: 100%;
-            height: 32px;
-            resize: none;
-        }
         #coursewall-post-creator-editor {
             min-height: 32px;
             height: auto;
@@ -80,6 +73,10 @@
             .coursewall-post-edit-buttons {
                 display: none;
             }
+        .coursewall-comment-expander {
+            margin-left: 3px;
+            font-size: smaller;
+        }
 
 .coursewall-post-with-comments {
     border-bottom-left-radius: 3px;
@@ -132,7 +129,6 @@
                 font-weight: bold;
             }
             .coursewall-comment-content {
-                font-size: smaller;
                 white-space: normal;
             }
             .coursewall-comment-options {
