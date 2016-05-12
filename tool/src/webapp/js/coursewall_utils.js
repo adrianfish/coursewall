@@ -483,11 +483,13 @@ coursewall.utils = {
                         var numComments = $('#coursewall-comments-' + post.id + ' .coursewall-comment').length;
 
                         if (numComments > 0) {
-                            $('#coursewall-comments-' + post.id + ' .coursewall-comment-latest')
-                                .removeClass('coursewall-comment-latest')
-                                .addClass('coursewall-comment-not-latest')
-                                .hide();
-                            showCommentsLink.show();
+                            var latestComment = $('#coursewall-comments-' + post.id + ' .coursewall-comment-latest');
+                            latestComment.removeClass('coursewall-comment-latest')
+                                            .addClass('coursewall-comment-not-latest');
+                            if (numComments == 1 || showCommentsLink.is(':visible')) {
+                                latestComment.hide();
+                                showCommentsLink.show();
+                            }
                         }
 
                         coursewall.utils.addPermissionsToComment(savedComment);
