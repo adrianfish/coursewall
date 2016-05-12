@@ -44,6 +44,8 @@
 
     <div id="coursewall-comments-{{id}}" class="coursewall-comments">
         <div id="coursewall-comments-container-{{id}}">
+        <div class="coursewall-comment-expander"><a href="javascript:;" id="coursewall-show-comments-link-{{id}}">{{translate 'show_comments'}}</a></div>
+        <div class="coursewall-comment-expander"><a href="javascript:;" id="coursewall-hide-comments-link-{{id}}" style="display: none;">{{translate 'hide_comments'}}</a></div>
         {{#each comments}}
             {{> wrapped_comment}}
         {{/each}}
