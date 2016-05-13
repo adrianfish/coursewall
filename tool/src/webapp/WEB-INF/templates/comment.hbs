@@ -1,19 +1,19 @@
-<div class="coursewall-comment-photo" style="background-image:url(/direct/profile/{{creatorId}}/image/thumb)"></div>
-<div class="coursewall-comment-body">
-    <span id="coursewall-comment-author-name-{{id}}" class="coursewall-comment-author-name"><a class="profile" rel="/direct/profile/{{creatorId}}/formatted">{{creatorDisplayName}}</a></span>
-    <span id="coursewall-comment-content-{{id}}" class="coursewall-comment-content">{{{content}}}</span>
-    <div id="coursewall-comment-options-{{id}}" class="coursewall-comment-options">
+<div class="cw-comment-photo" style="background-image:url(/direct/profile/{{creatorId}}/image/thumb)"></div>
+<div class="cw-comment-body">
+    <span id="cw-comment-author-name-{{id}}" class="cw-comment-author-name"><a class="profile" rel="/direct/profile/{{creatorId}}/formatted">{{creatorDisplayName}}</a></span>
+    <span id="cw-comment-content-{{id}}" class="cw-comment-content">{{{content}}}</span>
+    <div id="cw-comment-options-{{id}}" class="cw-comment-options">
         {{#if canEdit}}
-        <a href="javascript:;" id="coursewall-comment-edit-link-{{id}}" class="coursewall-comment-edit-link" data-comment-id="{{id}}" data-creator-id="{{creatorId}}">{{translate 'edit'}}</a>
+        <a href="javascript:;" id="cw-comment-edit-link-{{id}}" class="cw-comment-edit-link" data-comment-id="{{id}}" data-creator-id="{{creatorId}}">{{translate 'edit'}}</a>
         {{/if}}
         {{!--
         {{#if canComment}}
-        <a href="javascript:;" class="coursewall-comment-reply-link" data-comment-id="{{id}}">{{translate 'reply'}}</a>
+        <a href="javascript:;" class="cw-comment-reply-link" data-comment-id="{{id}}">{{translate 'reply'}}</a>
         {{/if}}
         --}}
         {{#if canDelete}}
-        <a href="javascript:;" id="coursewall-comment-delete-link-{{id}}" class="coursewall-comment-delete-link" data-post-id="{{postId}}" data-comment-id="{{id}}">{{translate 'del'}}</a>
+        <a href="javascript:;" id="cw-comment-delete-link-{{id}}" class="cw-comment-delete-link" data-post-id="{{postId}}" data-comment-id="{{id}}">{{translate 'del'}}</a>
         {{/if}}
-        <span class="coursewall-date">{{formattedCreatedDate}}</span>
+        <span class="cw-date">{{formattedCreatedDate}}</span>
     </div>
 </div>

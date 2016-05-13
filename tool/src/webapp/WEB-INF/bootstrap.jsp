@@ -37,10 +37,10 @@
 
         <div class="portletBody">
 
-            <ul id="coursewall_toolbar" class="navIntraTool actionToolBar" role="menu"></ul>
+            <ul id="cw-toolbar" class="navIntraTool actionToolBar" role="menu"></ul>
 
-            <div id="coursewall-main-container">
-                <div id="coursewall_content"></div>
+            <div id="cw-main-container">
+                <div id="cw-content"></div>
             </div>
 
         </div> <!-- /portletBody-->
