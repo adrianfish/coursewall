@@ -17,27 +17,12 @@
 
 package org.sakaiproject.coursewall.api;
 
-import lombok.Getter;
-import lombok.Setter;
-
 /**
  * @author Adrian Fish (adrian.r.fish@gmail.com)
  */
-@Getter @Setter
 public class QueryBean {
 
-    private String siteId = "";
-    private String assignmentId = "";
-
-    public boolean hasConditions() {
-        return siteId.length() > 0 || assignmentId.length() > 0;
-    }
-
-    public boolean queryBySiteId() {
-        return !siteId.equals("");
-    }
-
-    public boolean queryByAssignmentId() {
-        return !assignmentId.equals("");
-    }
+    public String wallId = "";
+    public String siteId = "";
+    public String embedder = "";
 }

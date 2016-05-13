@@ -30,7 +30,7 @@ public interface CoursewallSecurityManager {
     public boolean canCurrentUserCommentOnPost(Post post);
     public boolean canCurrentUserDeletePost(Post post) throws SecurityException;
     public boolean canCurrentUserEditPost(Post post);
-    public List<Post> filter(List<Post> posts, String contextId, boolean byAssignment);
+    public List<Post> filter(List<Post> posts, String siteId, String embedder);
     public boolean canCurrentUserReadPost(Post post);
     public Site getSiteIfCurrentUserCanAccessTool(String siteId);
 }

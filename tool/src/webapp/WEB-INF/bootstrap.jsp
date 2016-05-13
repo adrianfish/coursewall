@@ -11,7 +11,9 @@
 
             var coursewall = {
                 i18n: {},
+                wallId: '${siteId}',
                 siteId: '${siteId}',
+                embedder: 'SITE',
                 userId: '${userId}'
             };
         

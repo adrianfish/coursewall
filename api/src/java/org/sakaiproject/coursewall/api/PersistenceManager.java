@@ -20,5 +20,4 @@ public interface PersistenceManager {
     public Post savePost(Post post);
     public boolean deletePost(Post post);
     public Post getPost(String postId, boolean loadComments);
-    public List<Post> getPosts(QueryBean query) throws Exception;
 }

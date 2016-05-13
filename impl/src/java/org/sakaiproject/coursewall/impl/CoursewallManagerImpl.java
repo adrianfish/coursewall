@@ -69,43 +69,25 @@ public class CoursewallManagerImpl implements CoursewallManager {
         sakaiProxy.registerEntityProducer(this);
     }
 
-    public Post getPost(String postId, boolean includeComments) {
-        return persistenceManager.getPost(postId, includeComments);
-    }
-
-    public Post getPostHeader(String postId) throws Exception {
-
-        if (log.isDebugEnabled()) {
-            log.debug("getUnfilteredPost(" + postId + ")");
-        }
-
-        Post post = persistenceManager.getPost(postId, false);
-        post.setContent("");
-        return post;
-    }
-
     private List<Post> getPosts(String siteId) throws Exception {
-        return coursewallSecurityManager.filter(persistenceManager.getAllPost(siteId), siteId, false);
+        return coursewallSecurityManager.filter(persistenceManager.getAllPost(siteId), siteId, "SITE");
     }
 
     public List<Post> getPosts(QueryBean query) throws Exception {
 
         Cache cache = sakaiProxy.getCache(POST_CACHE);
-        boolean byAssignment = query.queryByAssignmentId();
 
-        String cacheId = (byAssignment) ? query.getAssignmentId() : query.getSiteId();
-
-        List<Post> posts = (List<Post>) cache.get(cacheId);
+        List<Post> posts = (List<Post>) cache.get(query.wallId);
         if (posts == null) {
-            if (log.isDebugEnabled()) log.debug("Cache miss or expired on id: " + cacheId);
-            List<Post> unfilteredPosts = persistenceManager.getPosts(query);
-            cache.put(cacheId, unfilteredPosts);
-            return coursewallSecurityManager.filter(unfilteredPosts, cacheId, byAssignment);
+            if (log.isDebugEnabled()) log.debug("Cache miss or expired on id: " + query.wallId);
+            List<Post> unfilteredPosts = persistenceManager.getAllPost(query.wallId, true);
+            cache.put(query.wallId, unfilteredPosts);
+            return coursewallSecurityManager.filter(unfilteredPosts, query.siteId, query.embedder);
         } else {
             if (log.isDebugEnabled()) {
-                log.debug("Cache hit on id: " + cacheId);
+                log.debug("Cache hit on id: " + query.wallId);
             }
-            return coursewallSecurityManager.filter(posts, cacheId, byAssignment);
+            return coursewallSecurityManager.filter(posts, query.siteId, query.embedder);
         }
     }
 
@@ -114,7 +96,7 @@ public class CoursewallManagerImpl implements CoursewallManager {
         try {
             Post newOrUpdatedPost = persistenceManager.savePost(post);
             if (newOrUpdatedPost != null) {
-                removeContextIdFromCache(post.getContextId());
+                removeContextIdFromCache(post.getWallId());
                 return newOrUpdatedPost;
             } else {
                 log.error("Failed to save post");
@@ -133,7 +115,7 @@ public class CoursewallManagerImpl implements CoursewallManager {
             if (coursewallSecurityManager.canCurrentUserDeletePost(post)) {
                 if (persistenceManager.deletePost(post)) {
                     // Invalidate all caches for this site
-                    removeContextIdFromCache(post.getContextId());
+                    removeContextIdFromCache(post.getWallId());
                     return true;
                 }
             }
@@ -144,12 +126,12 @@ public class CoursewallManagerImpl implements CoursewallManager {
         return false;
     }
 
-    public Comment saveComment(String contextId, Comment comment) {
+    public Comment saveComment(String wallId, Comment comment) {
 
         try {
             Comment savedComment = persistenceManager.saveComment(comment);
             if (savedComment != null) {
-                removeContextIdFromCache(contextId);
+                removeContextIdFromCache(wallId);
                 return savedComment;
             }
         } catch (Exception e) {
@@ -159,11 +141,11 @@ public class CoursewallManagerImpl implements CoursewallManager {
         return null;
     }
 
-    public boolean deleteComment(String contextId, String commentId) {
+    public boolean deleteComment(String wallId, String commentId) {
 
         try {
             if (persistenceManager.deleteComment(commentId)) {
-                removeContextIdFromCache(contextId);
+                removeContextIdFromCache(wallId);
                 return true;
             }
         } catch (Exception e) {

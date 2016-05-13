@@ -21,18 +21,13 @@ public interface CoursewallManager extends EntityProducer {
 
     public static final String POST_CACHE = "org.sakaiproject.coursewall.sortedPostCache";
 
-    public Post getPost(String postId, boolean includeComments);
-
-    // Used by Dashboard integration
-    public Post getPostHeader(String postId) throws Exception;
-
     public List<Post> getPosts(QueryBean query) throws Exception;
 
     public Post savePost(Post post);
 
     public boolean deletePost(String postId);
 
-    public Comment saveComment(String siteId, Comment comment);
+    public Comment saveComment(String wallId, Comment comment);
 
-    public boolean deleteComment(String siteId, String commentId);
+    public boolean deleteComment(String wallId, String commentId);
 }

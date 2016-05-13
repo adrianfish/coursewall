@@ -101,16 +101,17 @@ public class CoursewallSecurityManagerImpl implements CoursewallSecurityManager 
      * Tests whether the current user can read each Post and if not, filters
      * that post out of the resulting list
      */
-    public List<Post> filter(List<Post> posts, String contextId, boolean byAssignment) {
+    public List<Post> filter(List<Post> posts, String siteId, String embedder) {
 
         if (posts != null && posts.size() > 0) {
-            if (!byAssignment) {
-                boolean readAny = securityService.unlock(CoursewallFunctions.COURSEWALL_POST_READ_ANY, "/site/" + contextId);
+            if (embedder.equals("SITE")) {
+                boolean readAny = securityService.unlock(CoursewallFunctions.COURSEWALL_POST_READ_ANY, "/site/" + siteId);
                 return (readAny) ? posts : new ArrayList<Post>();
-            } else {
-                String siteId = posts.get(0).getSiteId();
+            } else if (embedder.equals("ASSIGNMENT")) {
                 boolean readAny = securityService.unlock(AssignmentService.SECURE_ADD_ASSIGNMENT_SUBMISSION, "/site/" + siteId);
                 return (readAny) ? posts : new ArrayList<Post>();
+            } else {
+                return new ArrayList<Post>();
             }
         } else {
             return posts;

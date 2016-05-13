@@ -75,7 +75,7 @@ public interface SakaiProxy {
 
     public String getCoursewallToolId(String siteId);
 
-    public Set<String> getSitePermissionsForCurrentUser(String siteId);
+    public Set<String> getSitePermissionsForCurrentUser(String siteId, String embedder);
 
     public Map<String, Set<String>> getSitePermissions(String siteId);
 
