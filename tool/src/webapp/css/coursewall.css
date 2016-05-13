@@ -1,20 +1,20 @@
-.coursewall-post-editor {
+.cw-post-editor {
     border: solid #E0E0E0 1px;
     border-radius: 3px;
     margin-top: 10px;
 }
-    .coursewall-photo-text-wrapper {
+    .cw-photo-text-wrapper {
         padding: 8px;
     }
-    #coursewall-editor-toolbar {
+    #cw-editor-toolbar {
         width: 100%;
         border-top: 1px solid #e9eaed;
     }
-        #coursewall-editor-post-button {
+        #cw-editor-post-button {
             margin-left: 7px;
         }
 
-.coursewall-photo {
+.cw-photo {
     width: 20%;
     min-width: 32px;
     max-width: 32px;
@@ -25,92 +25,92 @@
     border-radius: 50%;
 }
 
-.coursewall-editor-text-wrapper {
+.cw-editor-text-wrapper {
     padding-left: 10px;
     overflow: auto;
 }
-    .coursewall-editor-text {
+    .cw-editor-text {
         overflow: auto;
     }
-        #coursewall-post-creator-editor {
+        #cw-post-creator-editor {
             min-height: 32px;
             height: auto;
             max-height: 2000px;
         }
 
-#coursewall-posts-wrapper{
+#cw-posts-wrapper{
 	clear: both;
 	margin-left: 0px;
 }
 
-.coursewall-post {
+.cw-post {
     margin-bottom: 5px;
 }
 
-.coursewall-post-outer-container {
+.cw-post-outer-container {
     border: solid #E0E0E0 1px;
     border-radius: 3px 3px 0px 3px;
 }
-    .coursewall-post-inner-container{
+    .cw-post-inner-container{
         margin: 5px;
     }
-        .coursewall-post-topbar {
+        .cw-post-topbar {
             overflow: auto;
         }
-            .coursewall-author {
+            .cw-author {
                 float: left;
                 font-size: 12px;
                 font-family: Verdana, Arial, Helvetica, sans-serif;
                 overflow: auto;
             }
-        .coursewall-post-body {
+        .cw-post-body {
             clear: top;
             margin-bottom: 5px;
         }
-            .coursewall-post-options {
+            .cw-post-options {
                 font-size: smaller;
             }
-            .coursewall-post-edit-buttons {
+            .cw-post-edit-buttons {
                 display: none;
             }
-        .coursewall-comment-expander {
+        .cw-comment-expander {
             margin-left: 3px;
             font-size: smaller;
         }
 
-.coursewall-post-with-comments {
+.cw-post-with-comments {
     border-bottom-left-radius: 3px;
     border-bottom-right-radius: 0px;
 }
 
-.coursewall-author-details {
+.cw-author-details {
 	float: left;
     padding-left: 10px;
 }
-    .coursewall-author-name {
+    .cw-author-name {
         font-weight: bold;
         color: #2a94c0;
         font-size: 14px;
     }
 
-.coursewall-comments {
+.cw-comments {
     margin-left: 20px;
     border: solid #E0E0E0;
     border-width: 0 1px 1px 1px;
     border-radius: 0 0 3px 3px;
     background-color: #EFEFEF;
 }
-    .coursewall-create-comment-link { padding-left: 10px; }
-    .coursewall-comment-creator {
+    .cw-create-comment-link { padding-left: 10px; }
+    .cw-comment-creator {
         display: none;
         padding: 10px 10px 0px 10px;
     }
-    .coursewall-comment {
+    .cw-comment {
         padding: 10px;
         overflow: auto;
         white-space: nowrap;
     }
-        .coursewall-comment-photo {
+        .cw-comment-photo {
             min-width: 26px;
             max-width: 26px;
             height: 26px;
@@ -120,36 +120,36 @@
             display: inline-block;
             vertical-align: top;
         }
-        .coursewall-comment-body {
+        .cw-comment-body {
             display: inline-block;
             padding-left: 10px;
             padding-right: 10px;
         }
-            .coursewall-comment-author-name {
+            .cw-comment-author-name {
                 font-weight: bold;
             }
-            .coursewall-comment-content {
+            .cw-comment-content {
                 white-space: normal;
             }
-            .coursewall-comment-options {
+            .cw-comment-options {
                 font-size: smaller;
             }
 
-.coursewall-date {
+.cw-date {
 	font-style: italic;
 	font-size: smaller;
 }
 
-.coursewall-comment-editor {
+.cw-comment-editor {
     border-top: solid #E0E0E0 1px;
     padding: 3px;
 }
-    .coursewall-comment-editor-text {
+    .cw-comment-editor-text {
         border: 1px #E0E0E0 solid;
         background-color: #FFFFFF;
         border-radius: 3px;
     }
-        .coursewall-comment-textarea {
+        .cw-comment-textarea {
             font-size: smaller;
             border: 0px;
             width: 100%;
@@ -197,11 +197,11 @@
 	color: #900;
 }
 
-.coursewall-permissions-table th {
+.cw-permissions-table th {
     padding-right: 5px;
 }
 
-#coursewall-permissions-not-set-message {
+#cw-permissions-not-set-message {
     background-color: #EFEFEF;
     color: #000000;
     border: solid #000000 1px;
@@ -214,14 +214,14 @@
     margin-top: 10px;
 }
 
-.coursewall-og-fragment {
+.cw-og-fragment {
     border: solid #E0E0E0 1px;
     padding: 5px;
     width: 482px;
 }
-    .coursewall-og-title {
+    .cw-og-title {
         font-weight: bold;
     }
-    .coursewall-og-description {
+    .cw-og-description {
         font-size: smaller;
     }

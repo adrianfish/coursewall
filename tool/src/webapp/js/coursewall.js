@@ -30,7 +30,7 @@ coursewall.switchState = function (state, arg) {
 	// Just in case we have a floating cluetip hanging about
 	$('#cluetip').hide();
 
-    $("#coursewall-post-editor").toggle(coursewall.currentUserPermissions.postCreate);
+    $("#cw-post-editor").toggle(coursewall.currentUserPermissions.postCreate);
 
 	if (coursewall.states.POSTS === state) {
 
@@ -45,18 +45,18 @@ coursewall.switchState = function (state, arg) {
 
         coursewall.currentPosts = [];
 
-        coursewall.utils.renderTemplate(coursewall.states.POSTS, templateData, 'coursewall_content');
+        coursewall.utils.renderTemplate(coursewall.states.POSTS, templateData, 'cw-content');
 
         $(document).ready(function () {
 
-            $('.coursewall-post-editor').toggle(coursewall.currentUserPermissions.postCreate);
+            $('.cw-post-editor').toggle(coursewall.currentUserPermissions.postCreate);
 
-            var editor = $('#coursewall-post-creator-editor');
+            var editor = $('#cw-post-creator-editor');
             editor.click(function (e) {
 
                 if (this.innerHTML == 'Type something ...') {
                     this.innerHTML = '';
-                    $('#coursewall-editor-post-button').prop('disabled', false);
+                    $('#cw-editor-post-button').prop('disabled', false);
                 }
             }).on('paste', function (e) {
 
@@ -89,25 +89,25 @@ coursewall.switchState = function (state, arg) {
                 e.preventDefault();
             });
 
-            $('#coursewall-editor-post-button').click(function (e) {
+            $('#cw-editor-post-button').click(function (e) {
 
                 coursewall.utils.savePost('', editor.html(), function (post) {
 
                         editor.html('');
 
-                        var newPlaceholderId = 'coursewall-post-' + post.id;
+                        var newPlaceholderId = 'cw-post-' + post.id;
 
-                        $('#coursewall-posts').prepend(
-                            '<div id=\"' + newPlaceholderId + '\" class=\"coursewall-post\"></div>');
+                        $('#cw-posts').prepend(
+                            '<div id=\"' + newPlaceholderId + '\" class=\"cw-post\"></div>');
                         coursewall.utils.addFormattedDateToPost(post);
                         coursewall.utils.renderPost(post, newPlaceholderId);
                     });
             });
 
-            $('#coursewall-editor-cancel-button').click(function (e) {
+            $('#cw-editor-cancel-button').click(function (e) {
 
                 editor.html(coursewall.i18n.post_editor_initial_text);
-                $('#coursewall-editor-post-button').prop('disabled', true);
+                $('#cw-editor-post-button').prop('disabled', true);
             });
             
             if (window.parent === window) {
@@ -125,12 +125,12 @@ coursewall.switchState = function (state, arg) {
             }
         });
 	} else if (coursewall.states.PERMISSIONS === state) {
-	    $('#coursewall_toolbar > li > span').removeClass('current');
-	    $('#coursewall_permissions_link > span').addClass('current');
+	    $('#cw-toolbar > li > span').removeClass('current');
+	    $('#cw-permissions-link > span').addClass('current');
 
         var permissionsCallback = function (perms) {
 
-                coursewall.utils.renderTemplate('permissions', {'perms': perms}, 'coursewall_content');
+                coursewall.utils.renderTemplate('permissions', {'perms': perms}, 'cw-content');
 
                 $(document).ready(function () {
                     $('#coursewall_permissions_save_button').click(coursewall.utils.savePermissions);
@@ -139,7 +139,7 @@ coursewall.switchState = function (state, arg) {
 
 		coursewall.utils.getSitePermissionMatrix(permissionsCallback);
 	} else if (coursewall.states.PERMISSIONS_NOT_SET === state) {
-        coursewall.utils.renderTemplate('permissions_not_set', {}, 'coursewall_content');
+        coursewall.utils.renderTemplate('permissions_not_set', {}, 'cw-content');
     }
 };
 
@@ -162,9 +162,9 @@ coursewall.switchState = function (state, arg) {
         });
 
         if (!coursewall.assignmentId) {
-            coursewall.utils.renderTemplate('toolbar', {} ,'coursewall_toolbar');
+            coursewall.utils.renderTemplate('toolbar', {} ,'cw-toolbar');
 
-            $('#coursewall_permissions_link>span>a').click(function (e) {
+            $('#cw-permissions-link>span>a').click(function (e) {
                 coursewall.switchState(coursewall.states.PERMISSIONS);
             });
         }
@@ -177,7 +177,7 @@ coursewall.switchState = function (state, arg) {
                     return;
                 }
 
-                $("#coursewall_permissions_link").toggle(coursewall.currentUserPermissions.modifyPermissions);
+                $("#cw-permissions-link").toggle(coursewall.currentUserPermissions.modifyPermissions);
 
                 if (coursewall.currentUserPermissions.postReadAny || coursewall.currentUserPermissions.postCreate) {
                     coursewall.switchState(coursewall.states.POSTS, {});
