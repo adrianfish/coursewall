@@ -35,8 +35,7 @@ coursewall.switchState = function (state, arg) {
 	if (coursewall.states.POSTS === state) {
 
         var templateData = {
-                currentUserId: coursewall.userId,
-                siteId: coursewall.siteId
+                currentUserId: coursewall.userId
             };
 
         // renderPageOfPosts uses this. Set it to the start page
@@ -145,8 +144,8 @@ coursewall.switchState = function (state, arg) {
 
 (function ($) {
 
-	if (!coursewall.siteId) {
-		alert('The site id MUST be supplied as page parameters');
+	if (!coursewall.wallId) {
+		alert('The wallId MUST be supplied as page parameters');
 		return;
 	}
 
@@ -161,7 +160,7 @@ coursewall.switchState = function (state, arg) {
             coursewall.monthMappings[m] = i + 1;
         });
 
-        if (!coursewall.assignmentId) {
+        if (!coursewall.wallId) {
             coursewall.utils.renderTemplate('toolbar', {} ,'cw-toolbar');
 
             $('#cw-permissions-link>span>a').click(function (e) {

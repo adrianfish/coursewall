@@ -195,7 +195,7 @@ coursewall.utils = {
     getCurrentUserPermissions: function (callback) {
 
         $.ajax( {
-            url: "/direct/coursewall/userPerms.json?siteId=" + coursewall.siteId,
+            url: "/direct/coursewall/userPerms.json?siteId=" + coursewall.siteId + '&embedder=' + coursewall.embedder,
             dataType: "json",
             cache: false,
             timeout: coursewall.AJAX_TIMEOUT
@@ -208,7 +208,7 @@ coursewall.utils = {
     getSitePermissionMatrix: function (callback) {
 
         $.ajax( {
-            url: "/direct/coursewall/perms.json?siteId=" + coursewall.siteId,
+            url: "/direct/coursewall/perms.json?wallId=" + coursewall.wallId,
             dataType: "json",
             cache: false,
             timeout: coursewall.AJAX_TIMEOUT
@@ -235,7 +235,7 @@ coursewall.utils = {
     },
     savePermissions: function () {
 
-        var myData = { siteId: coursewall.siteId };
+        var myData = { wallId: coursewall.wallId };
         $('.cw-permission-checkbox').each(function (b) {
 
             if (this.checked) {
@@ -329,8 +329,9 @@ coursewall.utils = {
         var post = {
                 'id': postId,
                 'content': content,
+                'wallId': coursewall.wallId,
                 'siteId': coursewall.siteId,
-                'assignmentId': coursewall.assignmentId
+                'embedder': coursewall.embedder
             };
                 
         $.ajax({
@@ -352,7 +353,9 @@ coursewall.utils = {
                 'id': commentId,
                 'postId': postId,
                 'content': content,
-                'siteId': coursewall.siteId
+                'wallId': coursewall.wallId,
+                'siteId': coursewall.siteId,
+                'embedder': coursewall.embedder
             };
 
         $.ajax( {
@@ -371,7 +374,7 @@ coursewall.utils = {
     deleteComment: function (commentId, callback) {
         
         $.ajax( {
-            url: '/direct/coursewall/deleteComment?siteId=' + coursewall.siteId + '&commentId=' + commentId,
+            url: '/direct/coursewall/deleteComment?wallId=' + coursewall.wallId + '&commentId=' + commentId,
             timeout: coursewall.AJAX_TIMEOUT
         }).done(function (text, status) {
             callback();
@@ -519,12 +522,9 @@ coursewall.utils = {
         var loadImage = $('#cw-loading-image')
         loadImage.show();
 
-        var url = '/direct/coursewall/posts/' + coursewall.siteId + '.json?page=';
+        var url = '/direct/coursewall/posts/' + coursewall.wallId + '.json?siteId='
+                        + coursewall.siteId + '&embedder=' + coursewall.embedder + '&page=';
         url += (all) ? '-1' : coursewall.page;
-
-        if (coursewall.assignmentId) {
-            url += '&assignmentId=' + coursewall.assignmentId;
-        }
 
         $.ajax( { url : url, dataType: "json", cache: false, timeout: coursewall.AJAX_TIMEOUT })
             .done(function (data) {

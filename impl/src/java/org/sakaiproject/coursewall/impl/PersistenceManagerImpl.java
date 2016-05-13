@@ -27,16 +27,24 @@ import org.sakaiproject.coursewall.api.SakaiProxy;
 @Getter @Setter @Slf4j
 public class PersistenceManagerImpl implements PersistenceManager {
 
-    private static final String POST_SELECT = "SELECT * FROM COURSEWALL_POST WHERE ID = ?";
-    private static final String SITE_POSTS_SELECT = "SELECT * FROM COURSEWALL_POST WHERE SITE_ID = ? ORDER BY CREATED_DATE DESC";
+    private static final String POST_SELECT
+        = "SELECT cp.*,cw.ID as WALL_ID,cw.SITE_ID,cw.EMBEDDER FROM COURSEWALL_POST as cp, COURSEWALL_WALL as cw, COURSEWALL_WALL_POST as cwp "
+            + "WHERE cp.ID = ? AND cp.ID = cwp.POST_ID and cwp.WALL_ID = cw.ID";
+    private static final String WALL_SELECT = "SELECT * FROM COURSEWALL_WALL WHERE ID = ?";
+    private static final String WALL_POSTS_SELECT
+        = "SELECT cw.ID as WALL_ID,cw.SITE_ID,cw.EMBEDDER,cp.* FROM COURSEWALL_WALL as cw,COURSEWALL_WALL_POST as cwp,COURSEWALL_POST as cp "
+            + "WHERE cw.ID = ? AND cwp.WALL_ID = cw.ID AND cp.ID = cwp.POST_ID ORDER BY CREATED_DATE DESC";
+    private static final String WALL_POST_INSERT = "INSERT INTO COURSEWALl_WALL_POST VALUES(?,?)";
+    private static final String WALL_INSERT = "INSERT INTO COURSEWALl_WALL VALUES(?,?,?)";
     private static final String COMMENT_SELECT = "SELECT * FROM COURSEWALL_COMMENT WHERE ID = ?";
     private static final String COMMENTS_SELECT = "SELECT * FROM COURSEWALL_COMMENT WHERE POST_ID = ? ORDER BY CREATED_DATE ASC";
     private static final String COMMENT_INSERT = "INSERT INTO COURSEWALL_COMMENT VALUES(?,?,?,?,?,?)";
     private static final String COMMENT_UPDATE = "UPDATE COURSEWALL_COMMENT SET CONTENT = ?, MODIFIED_DATE = ? WHERE ID = ?";
     private static final String COMMENT_DELETE = "DELETE FROM COURSEWALL_COMMENT WHERE ID = ?";
     private static final String POST_UPDATE = "UPDATE COURSEWALL_POST SET CONTENT = ?, MODIFIED_DATE = ? WHERE ID = ?";
-    private static final String POST_INSERT = "INSERT INTO COURSEWALL_POST VALUES (?,?,?,?,?,?,?)";
+    private static final String POST_INSERT = "INSERT INTO COURSEWALL_POST VALUES (?,?,?,?,?)";
     private static final String POST_DELETE = "DELETE FROM COURSEWALL_POST WHERE ID = ?";
+    private static final String WALL_POST_DELETE = "DELETE FROM COURSEWALL_WALL_POST WHERE POST_ID = ?";
     private static final String COMMENTS_DELETE = "DELETE FROM COURSEWALL_COMMENT WHERE POST_ID = ?";
 
     private SakaiProxy sakaiProxy;
@@ -67,18 +75,18 @@ public class PersistenceManagerImpl implements PersistenceManager {
         return posts.size() > 0;
     }
 
-    public List<Post> getAllPost(String siteId) throws Exception {
-        return getAllPost(siteId, false);
+    public List<Post> getAllPost(String wallId) throws Exception {
+        return getAllPost(wallId, false);
     }
 
-    public List<Post> getAllPost(String siteId, boolean populate) throws Exception {
+    public List<Post> getAllPost(String wallId, boolean populate) throws Exception {
 
         if (log.isDebugEnabled()) {
-            log.debug("getAllPost(" + siteId + ")");
+            log.debug("getAllPost(" + wallId + ")");
         }
 
-        return sqlService.dbRead(SITE_POSTS_SELECT
-                , new Object[] {siteId}
+        return sqlService.dbRead(WALL_POSTS_SELECT
+                , new Object[] {wallId}
                 , new SqlReader<Post>() {
                     public Post readSqlResultRecord(ResultSet result) {
                         return loadPostFromResult(result, populate);
@@ -142,15 +150,41 @@ public class PersistenceManagerImpl implements PersistenceManager {
                                     , new Timestamp(new Date().getTime())
                                     , post.getId() });
         } else {
-            post.setId(UUID.randomUUID().toString());
-            sqlService.dbWrite(POST_INSERT
-                , new Object [] { post.getId()
-                                    , post.getSiteId()
-                                    , post.getAssignmentId()
-                                    , post.getContent()
-                                    , post.getCreatorId()
-                                    , new Timestamp(post.getCreatedDate())
-                                    , new Timestamp(post.getModifiedDate())});
+            Runnable transaction = new Runnable() {
+
+                public void run() {
+
+                    // Test if the wall exists.
+                    List<String> wallIds = sqlService.dbRead(WALL_SELECT
+                        , new Object[] {post.getWallId()}
+                        , new SqlReader<String>() {
+                            public String readSqlResultRecord(ResultSet result) {
+                                try {
+                                    return result.getString("ID");
+                                } catch (SQLException sqle) {
+                                    return null;
+                                }
+                            }
+                        });
+
+                    if (wallIds.size() == 0) {
+                        // Wall doesn't exist yet. Create it.
+                        sqlService.dbWrite(WALL_INSERT
+                            , new Object [] { post.getWallId(), post.getSiteId(), post.getEmbedder() });
+                    }
+
+                    post.setId(UUID.randomUUID().toString());
+                    sqlService.dbWrite(POST_INSERT
+                        , new Object [] { post.getId()
+                                            , post.getContent()
+                                            , post.getCreatorId()
+                                            , new Timestamp(post.getCreatedDate())
+                                            , new Timestamp(post.getModifiedDate())});
+                    sqlService.dbWrite(WALL_POST_INSERT
+                        , new Object [] { post.getWallId(), post.getId() });
+                }
+            };
+            sqlService.transact(transaction, "COURSEWALL_POST_CREATION_TRANSACTION");
         }
 
         return getPost(post.getId(), false);
@@ -166,8 +200,10 @@ public class PersistenceManagerImpl implements PersistenceManager {
 
             public void run() {
 
-                sqlService.dbWrite(COMMENTS_DELETE, new Object [] { post.getId() });
-                sqlService.dbWrite(POST_DELETE, new Object [] { post.getId() });
+                Object[] params = new Object [] { post.getId() };
+                sqlService.dbWrite(COMMENTS_DELETE, params);
+                sqlService.dbWrite(WALL_POST_DELETE, params);
+                sqlService.dbWrite(POST_DELETE, params);
             }
         };
 
@@ -183,45 +219,6 @@ public class PersistenceManagerImpl implements PersistenceManager {
             });
 
         return posts.get(0);
-    }
-
-    public List<Post> getPosts(QueryBean query) throws Exception {
-
-        StringBuilder statement = new StringBuilder();
-
-        statement.append("SELECT * FROM ").append("COURSEWALL_POST");
-
-        List params = new ArrayList();
-
-        if (query.hasConditions()) {
-            statement.append(" WHERE ");
-
-            // we know that there are conditions. Build the statement
-            if (query.queryBySiteId()) {
-                statement.append("SITE_ID = ? AND ");
-                params.add(query.getSiteId());
-            }
-
-            if (query.queryByAssignmentId()) {
-                statement.append("ASSIGNMENT_ID = ? AND ");
-                params.add(query.getAssignmentId());
-            } else {
-                statement.append("ASSIGNMENT_ID IS NULL AND ");
-            }
-        }
-
-
-        // At this point, we know that there is an AND at the end of the
-        // statement. Remove it. 4 is the length of AND with the last space.
-        statement = new StringBuilder(statement.toString().substring(0, statement.length() - 4));
-
-        statement.append("ORDER BY CREATED_DATE DESC");
-
-        return sqlService.dbRead(statement.toString(), params.toArray(), new SqlReader<Post>() {
-                public Post readSqlResultRecord(ResultSet result) {
-                    return loadPostFromResult(result, true);
-                }
-            });
     }
 
     private Post loadPostFromResult(ResultSet result, boolean loadComments) {

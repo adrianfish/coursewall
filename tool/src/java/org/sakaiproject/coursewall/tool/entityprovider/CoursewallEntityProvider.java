@@ -98,28 +98,28 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
             throw new EntityException("You must be logged in to retrieve a post", "", HttpServletResponse.SC_UNAUTHORIZED);
         }
         
-        String siteId = view.getPathSegment(2);
+        String wallId = view.getPathSegment(2);
+        String siteId = (String) params.get("siteId");
+        String embedder = (String) params.get("embedder");
 
-        if (siteId == null) {
+        if (StringUtils.isBlank(wallId) || StringUtils.isBlank(siteId) || StringUtils.isBlank(embedder)) {
             throw new EntityException(
-                "Bad request: To get the posts in a site you need a url like '/direct/coursewall/posts/SITEID.json'"
+                "Bad request: To get the posts in a wall you need a url like '/direct/coursewall/posts/WALLID.json?siteId=siteId&embedder=SITE'"
                                             , "", HttpServletResponse.SC_BAD_REQUEST);
         }
         
+        /*
         if (coursewallSecurityManager.getSiteIfCurrentUserCanAccessTool(siteId) == null) {
             throw new EntityException("Access denied.", "", HttpServletResponse.SC_UNAUTHORIZED);
         }
+        */
 
         List<Post> posts = new ArrayList<Post>();
 
         QueryBean query = new QueryBean();
-        query.setSiteId(siteId);
-
-        String assignmentId = (String) params.get("assignmentId");
-
-        if (assignmentId != null) {
-            query.setAssignmentId(assignmentId);
-        }
+        query.wallId = wallId;
+        query.siteId = siteId;
+        query.embedder = embedder;
 
         try {
             posts = coursewallManager.getPosts(query);
@@ -176,9 +176,12 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
 
         String content = (String) params.get("content");
         String siteId = (String) params.get("siteId");
+        String wallId = (String) params.get("wallId");
+        String embedder = (String) params.get("embedder");
 
-        if (StringUtils.isBlank(content) || StringUtils.isBlank(siteId)) {
-            throw new EntityException("You must supply a siteId and some content"
+        if (StringUtils.isBlank(content) || StringUtils.isBlank(siteId)
+                || StringUtils.isBlank(wallId) || StringUtils.isBlank(embedder)) {
+            throw new EntityException("You must supply a siteId, wallId, embedder and some content"
                                                 , "", HttpServletResponse.SC_BAD_REQUEST);
         }
 
@@ -192,13 +195,8 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
         post.setId(id);
         post.setCreatorId(userId);
         post.setSiteId(siteId);
-
-        String assignmentId = (String) params.get("assignmentId");
-
-        if (assignmentId != null) {
-            post.setAssignmentId(assignmentId);
-        }
-
+        post.setWallId(wallId);
+        post.setEmbedder(embedder);
         post.setContent(content);
 
         Post createdOrUpdatedPost = coursewallManager.savePost(post);
@@ -247,15 +245,15 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
                                                 , "", HttpServletResponse.SC_FORBIDDEN);
         }
 
-        String siteId = (String) params.get("siteId");
+        String wallId = (String) params.get("wallId");
         String commentId = (String) params.get("commentId");
 
-        if (StringUtils.isBlank(siteId) || StringUtils.isBlank(commentId)) {
-            throw new EntityException("You must supply a siteId and a commentId"
+        if (StringUtils.isBlank(wallId) || StringUtils.isBlank(commentId)) {
+            throw new EntityException("You must supply a wallId and a commentId"
                                                 , "", HttpServletResponse.SC_BAD_REQUEST);
         }
 
-        if (coursewallManager.deleteComment(siteId, commentId)) {
+        if (coursewallManager.deleteComment(wallId, commentId)) {
             return new ActionReturn("SUCCESS");
         } else {
             return new ActionReturn("FAIL");
@@ -271,10 +269,11 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
 
         String postId = (String) params.get("postId");
         String content = (String) params.get("content");
+        String wallId = (String) params.get("wallId");
         String siteId = (String) params.get("siteId");
 
-        if (StringUtils.isBlank(content) || StringUtils.isBlank(siteId) || StringUtils.isBlank(postId)) {
-            throw new EntityException("You must supply a siteId, postId and some content"
+        if (StringUtils.isBlank(content) || StringUtils.isBlank(wallId) || StringUtils.isBlank(postId) || StringUtils.isBlank(siteId)) {
+            throw new EntityException("You must supply a wallId, siteId, postId and some content"
                                                 , "", HttpServletResponse.SC_BAD_REQUEST);
         }
 
@@ -290,10 +289,10 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
 
         boolean isNew = "".equals(comment.getId());
 
-        Comment savedComment = coursewallManager.saveComment(siteId, comment);
+        Comment savedComment = coursewallManager.saveComment(wallId, comment);
         if (savedComment != null) {
             if (isNew) {
-                String reference = CoursewallManager.REFERENCE_ROOT + "/" + siteId + "/posts/" + postId + "/comments/" + comment.getId();
+                String reference = CoursewallManager.REFERENCE_ROOT + "/" + wallId + "/posts/" + postId + "/comments/" + comment.getId();
                 sakaiProxy.postEvent(CoursewallManager.COURSEWALL_COMMENT_CREATED, reference, siteId);
             }
             return new ActionReturn(savedComment);
@@ -308,16 +307,17 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
         String userId = developerHelperService.getCurrentUserId();
         
         if (userId == null) {
-            throw new EntityException("You must be logged in to retrieve perms","",HttpServletResponse.SC_UNAUTHORIZED);
+            throw new EntityException("You must be logged in to retrieve perms", "", HttpServletResponse.SC_UNAUTHORIZED);
         }
 
         String siteId = (String) params.get("siteId");
+        String embedder = (String) params.get("embedder");
 
-        if (siteId == null || siteId.length() <= 0) {
-            throw new EntityException("No siteId supplied","",HttpServletResponse.SC_BAD_REQUEST);
+        if (StringUtils.isBlank(siteId) || StringUtils.isBlank(embedder)) {
+            throw new EntityException("No siteId or embedder supplied", "", HttpServletResponse.SC_BAD_REQUEST);
         }
 
-        return sakaiProxy.getSitePermissionsForCurrentUser(siteId);
+        return sakaiProxy.getSitePermissionsForCurrentUser(siteId, embedder);
     }
 
     @EntityCustomAction(action = "perms", viewKey = EntityView.VIEW_LIST)

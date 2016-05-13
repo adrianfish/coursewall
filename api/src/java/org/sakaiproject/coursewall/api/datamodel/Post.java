@@ -37,8 +37,9 @@ public class Post implements Entity {
     private String id = "";
     private long modifiedDate = -1L;
     private int numberOfComments = 0;
+    private String embedder;
     private String siteId;
-    private String assignmentId;
+    private String wallId;
     private String url = "";
 
     public Post() {
@@ -51,8 +52,9 @@ public class Post implements Entity {
     public Post(ResultSet rs) throws SQLException {
 
         this.setId(rs.getString("ID"));
+        this.setEmbedder(rs.getString("EMBEDDER"));
+        this.setWallId(rs.getString("WALL_ID"));
         this.setSiteId(rs.getString("SITE_ID"));
-        this.setAssignmentId(rs.getString("ASSIGNMENT_ID"));
         this.setContent(rs.getString("CONTENT"));
         this.setCreatedDate(rs.getTimestamp("CREATED_DATE").getTime());
         this.setModifiedDate(rs.getTimestamp("MODIFIED_DATE").getTime());
@@ -87,7 +89,7 @@ public class Post implements Entity {
      * @return
      */
     public String getReference() {
-        return CoursewallManager.REFERENCE_ROOT + Entity.SEPARATOR + siteId + Entity.SEPARATOR + "posts" + Entity.SEPARATOR + id;
+        return CoursewallManager.REFERENCE_ROOT + Entity.SEPARATOR + wallId + Entity.SEPARATOR + "posts" + Entity.SEPARATOR + id;
     }
 
     /**
@@ -239,14 +241,5 @@ public class Post implements Entity {
         content = "";
         numberOfComments = comments.size();
         comments = new ArrayList<Comment>();
-    }
-
-    public String getContextId() {
-
-        if (!StringUtils.isBlank(assignmentId)) {
-            return assignmentId;
-        } else {
-            return siteId;
-        }
     }
 }

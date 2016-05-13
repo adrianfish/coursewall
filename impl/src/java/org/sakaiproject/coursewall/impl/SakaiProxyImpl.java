@@ -245,7 +245,7 @@ public class SakaiProxyImpl implements SakaiProxy {
         }
     }
 
-    public Set<String> getSitePermissionsForCurrentUser(String siteId) {
+    public Set<String> getSitePermissionsForCurrentUser(String siteId, String embedder) {
 
         String userId = getCurrentUserId();
 
