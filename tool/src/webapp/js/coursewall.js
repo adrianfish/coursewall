@@ -35,7 +35,8 @@ coursewall.switchState = function (state, arg) {
 	if (coursewall.states.POSTS === state) {
 
         var templateData = {
-                currentUserId: coursewall.userId
+                currentUserId: coursewall.userId,
+                isUserSite: coursewall.isUserSite
             };
 
         // renderPageOfPosts uses this. Set it to the start page
@@ -144,7 +145,7 @@ coursewall.switchState = function (state, arg) {
 
 (function ($) {
 
-	if (!coursewall.wallId) {
+	if (!coursewall.isUserSite && !coursewall.wallId) {
 		alert('The wallId MUST be supplied as page parameters');
 		return;
 	}
@@ -168,24 +169,29 @@ coursewall.switchState = function (state, arg) {
             });
         }
 
-        var permissionsCallback = function (permissions) {
+        if (coursewall.isUserSite) {
+            coursewall.currentUserPermissions = new CoursewallPermissions(['coursewall.post.read.any','coursewall.post.create']);
+            coursewall.switchState(coursewall.states.POSTS, {});
+        } else {
+            var permissionsCallback = function (permissions) {
 
-                coursewall.currentUserPermissions = new CoursewallPermissions(permissions);
+                    coursewall.currentUserPermissions = new CoursewallPermissions(permissions);
 
-                if (coursewall.currentUserPermissions == null) {
-                    return;
-                }
+                    if (coursewall.currentUserPermissions == null) {
+                        return;
+                    }
 
-                $("#cw-permissions-link").toggle(coursewall.currentUserPermissions.modifyPermissions);
+                    $("#cw-permissions-link").toggle(coursewall.currentUserPermissions.modifyPermissions);
 
-                if (coursewall.currentUserPermissions.postReadAny || coursewall.currentUserPermissions.postCreate) {
-                    coursewall.switchState(coursewall.states.POSTS, {});
-                } else {
-                    coursewall.switchState(coursewall.states.PERMISSIONS_NOT_SET, {});
-                }
-            };
+                    if (coursewall.currentUserPermissions.postReadAny || coursewall.currentUserPermissions.postCreate) {
+                        coursewall.switchState(coursewall.states.POSTS, {});
+                    } else {
+                        coursewall.switchState(coursewall.states.PERMISSIONS_NOT_SET, {});
+                    }
+                };
 
-        coursewall.utils.getCurrentUserPermissions(permissionsCallback);
+            coursewall.utils.getCurrentUserPermissions(permissionsCallback);
+        }
     };
 
     $.i18n.properties({

@@ -14,7 +14,8 @@
                 wallId: '${siteId}',
                 siteId: '${siteId}',
                 embedder: 'SITE',
-                userId: '${userId}'
+                userId: '${userId}',
+                isUserSite: ${isUserSite}
             };
         
         </script>

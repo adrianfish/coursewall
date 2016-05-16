@@ -44,6 +44,8 @@
         <property name="sakaiProxy"><ref bean="org.sakaiproject.coursewall.api.SakaiProxy"/></property>
         <property name="coursewallSecurityManager"><ref bean="org.sakaiproject.coursewall.api.CoursewallSecurityManager"/></property>
         <property name="persistenceManager"><ref bean="org.sakaiproject.coursewall.api.PersistenceManager"/></property>
+        <property name="profileConnectionsLogic"><ref bean="org.sakaiproject.profile2.logic.ProfileConnectionsLogic"/></property>
+        <property name="profileWallLogic"><ref bean="org.sakaiproject.profile2.logic.ProfileWallLogic"/></property>
     </bean>
     
 </beans>

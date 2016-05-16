@@ -116,10 +116,13 @@ public class CoursewallEntityProvider extends AbstractEntityProvider implements 
 
         List<Post> posts = new ArrayList<Post>();
 
+        boolean isUserSite = sakaiProxy.isUserSite(siteId);
+
         QueryBean query = new QueryBean();
         query.wallId = wallId;
         query.siteId = siteId;
         query.embedder = embedder;
+        query.isUserSite = isUserSite;
 
         try {
             posts = coursewallManager.getPosts(query);

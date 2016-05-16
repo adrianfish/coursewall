@@ -1,10 +1,6 @@
 package org.sakaiproject.coursewall.api.datamodel;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -18,6 +14,7 @@ import org.sakaiproject.coursewall.api.CoursewallManager;
 import org.sakaiproject.coursewall.api.XmlDefs;
 import org.sakaiproject.entity.api.Entity;
 import org.sakaiproject.entity.api.ResourceProperties;
+import org.sakaiproject.profile2.model.WallItem;
 import org.sakaiproject.util.BaseResourceProperties;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -59,6 +56,14 @@ public class Post implements Entity {
         this.setCreatedDate(rs.getTimestamp("CREATED_DATE").getTime());
         this.setModifiedDate(rs.getTimestamp("MODIFIED_DATE").getTime());
         this.setCreatorId(rs.getString("CREATOR_ID"));
+    }
+
+    public Post(WallItem wallItem) {
+        
+        this.setId(UUID.randomUUID().toString());
+        this.setContent(wallItem.getText());
+        this.setCreatedDate(wallItem.getDate().getTime());
+        this.setCreatorId(wallItem.getCreatorUuid());
     }
 
     public void addComment(Comment comment) {
