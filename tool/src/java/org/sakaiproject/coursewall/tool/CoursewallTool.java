@@ -89,7 +89,9 @@ public class CoursewallTool extends HttpServlet {
         request.setAttribute("sakaiHtmlHead", (String) request.getAttribute("sakai.html.head"));
         request.setAttribute("isolanguage", language);
         request.setAttribute("userId", userId);
-        request.setAttribute("siteId", sakaiProxy.getCurrentSiteId());
+        String siteId = sakaiProxy.getCurrentSiteId();
+        request.setAttribute("siteId", siteId);
+        request.setAttribute("isUserSite", sakaiProxy.isUserSite(siteId));
 
         response.setContentType("text/html");
         request.getRequestDispatcher("/WEB-INF/bootstrap.jsp").include(request, response);

@@ -413,4 +413,8 @@ public class SakaiProxyImpl implements SakaiProxy {
             return null;
         }
     }
+
+    public boolean isUserSite(String siteId) {
+        return siteService.isUserSite(siteId);
+    }
 }

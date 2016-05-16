@@ -25,4 +25,5 @@ public class QueryBean {
     public String wallId = "";
     public String siteId = "";
     public String embedder = "";
+    public boolean isUserSite = false;
 }

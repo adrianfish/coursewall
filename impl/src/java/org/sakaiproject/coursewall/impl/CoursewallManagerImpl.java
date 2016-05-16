@@ -25,6 +25,10 @@ import org.sakaiproject.entity.api.HttpAccess;
 import org.sakaiproject.entity.api.Reference;
 import org.sakaiproject.entity.api.ResourceProperties;
 import org.sakaiproject.memory.api.Cache;
+import org.sakaiproject.profile2.logic.ProfileConnectionsLogic;
+import org.sakaiproject.profile2.logic.ProfileWallLogic;
+import org.sakaiproject.profile2.model.BasicConnection;
+import org.sakaiproject.profile2.model.WallItem;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -40,6 +44,8 @@ public class CoursewallManagerImpl implements CoursewallManager {
     private PersistenceManager persistenceManager;
     private CoursewallSecurityManager coursewallSecurityManager;
     private SakaiProxy sakaiProxy;
+    private ProfileConnectionsLogic profileConnectionsLogic;
+    private ProfileWallLogic profileWallLogic;
 
     public void init() {
         
@@ -75,19 +81,35 @@ public class CoursewallManagerImpl implements CoursewallManager {
 
     public List<Post> getPosts(QueryBean query) throws Exception {
 
-        Cache cache = sakaiProxy.getCache(POST_CACHE);
-
-        List<Post> posts = (List<Post>) cache.get(query.wallId);
-        if (posts == null) {
-            if (log.isDebugEnabled()) log.debug("Cache miss or expired on id: " + query.wallId);
-            List<Post> unfilteredPosts = persistenceManager.getAllPost(query.wallId, true);
-            cache.put(query.wallId, unfilteredPosts);
-            return coursewallSecurityManager.filter(unfilteredPosts, query.siteId, query.embedder);
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug("Cache hit on id: " + query.wallId);
+        if (query.isUserSite) {
+            List<Post> posts = new ArrayList<Post>();
+            List<BasicConnection> connections = profileConnectionsLogic.getBasicConnectionsForUser(sakaiProxy.getCurrentUserId());
+            for (BasicConnection basicConnection : connections) {
+                List<WallItem> wallItems = profileWallLogic.getWallItemsForUser(basicConnection.getUuid());
+                for (WallItem wallItem : wallItems) {
+                    Post post = new Post(wallItem);
+                    post.setCreatorDisplayName(
+                        sakaiProxy.getDisplayNameForTheUser(post.getCreatorId()));
+                    posts.add(post);
+                }
             }
-            return coursewallSecurityManager.filter(posts, query.siteId, query.embedder);
+            // Now order chronologically
+            return posts;
+        } else {
+            Cache cache = sakaiProxy.getCache(POST_CACHE);
+
+            List<Post> posts = (List<Post>) cache.get(query.wallId);
+            if (posts == null) {
+                if (log.isDebugEnabled()) log.debug("Cache miss or expired on id: " + query.wallId);
+                List<Post> unfilteredPosts = persistenceManager.getAllPost(query.wallId, true);
+                cache.put(query.wallId, unfilteredPosts);
+                return coursewallSecurityManager.filter(unfilteredPosts, query.siteId, query.embedder);
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Cache hit on id: " + query.wallId);
+                }
+                return coursewallSecurityManager.filter(posts, query.siteId, query.embedder);
+            }
         }
     }
 
