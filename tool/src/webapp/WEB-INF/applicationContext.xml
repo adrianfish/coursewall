@@ -4,10 +4,10 @@
 <beans>
 
 	<bean parent="org.sakaiproject.entitybroker.entityprovider.AbstractEntityProvider" 
-		class="org.sakaiproject.coursewall.tool.entityprovider.CoursewallEntityProvider">
-		<property name="coursewallManager"><ref bean="org.sakaiproject.coursewall.api.CoursewallManager"/></property>
-        <property name="coursewallSecurityManager"><ref bean="org.sakaiproject.coursewall.api.CoursewallSecurityManager"/></property>
-        <property name="sakaiProxy"><ref bean="org.sakaiproject.coursewall.api.SakaiProxy"/></property>
+		class="org.sakaiproject.wall.tool.entityprovider.WallEntityProvider">
+		<property name="wallManager"><ref bean="org.sakaiproject.wall.api.WallManager"/></property>
+        <property name="wallSecurityManager"><ref bean="org.sakaiproject.wall.api.WallSecurityManager"/></property>
+        <property name="sakaiProxy"><ref bean="org.sakaiproject.wall.api.SakaiProxy"/></property>
 	</bean>
 	
 </beans>

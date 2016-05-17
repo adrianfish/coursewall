@@ -3,21 +3,21 @@
     
     <modelVersion>4.0.0</modelVersion>
     
-    <name>COURSEWALL IMPL</name>
-    <artifactId>coursewall-impl</artifactId>
-    <groupId>org.sakaiproject.coursewall</groupId>
+    <name>WALL IMPL</name>
+    <artifactId>wall-impl</artifactId>
+    <groupId>org.sakaiproject.wall</groupId>
     <packaging>jar</packaging>
     
     <parent>
-        <artifactId>coursewall</artifactId>
-        <groupId>org.sakaiproject.coursewall</groupId>
+        <artifactId>wall</artifactId>
+        <groupId>org.sakaiproject.wall</groupId>
         <version>11-SNAPSHOT</version>
     </parent>
   
     <dependencies>
         <dependency>
-            <groupId>org.sakaiproject.coursewall</groupId>
-            <artifactId>coursewall-api</artifactId>
+            <groupId>org.sakaiproject.wall</groupId>
+            <artifactId>wall-api</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

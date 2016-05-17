@@ -1,4 +1,4 @@
-coursewall.sakai = {
+wall.sakai = {
 
     jqueryImport: /<script type="text\/javascript" src="\/profile2-tool\/javascript\/jquery-[\w\.]*\.js">\s*<\/script>/,
 	getProfileMarkup: function (userId) {
@@ -12,7 +12,6 @@ coursewall.sakai = {
 			cache: false,
 		   	success: function (p) {
 
-                // CLOG-27 and PRFL-566
                 if(p.match(this.jqueryImport)) {
                     p = p.replace(this.jqueryImport, '');
                 }

@@ -1,19 +1,19 @@
-<div class="cw-comment-photo" style="background-image:url(/direct/profile/{{creatorId}}/image/thumb)"></div>
-<div class="cw-comment-body">
-    <span id="cw-comment-author-name-{{id}}" class="cw-comment-author-name"><a class="profile" rel="/direct/profile/{{creatorId}}/formatted">{{creatorDisplayName}}</a></span>
-    <span id="cw-comment-content-{{id}}" class="cw-comment-content">{{{content}}}</span>
-    <div id="cw-comment-options-{{id}}" class="cw-comment-options">
+<div class="wall-comment-photo" style="background-image:url(/direct/profile/{{creatorId}}/image/thumb)"></div>
+<div class="wall-comment-body">
+    <span id="wall-comment-author-name-{{id}}" class="wall-comment-author-name"><a class="profile" rel="/direct/profile/{{creatorId}}/formatted">{{creatorDisplayName}}</a></span>
+    <span id="wall-comment-content-{{id}}" class="wall-comment-content">{{{content}}}</span>
+    <div id="wall-comment-options-{{id}}" class="wall-comment-options">
         {{#if canEdit}}
-        <a href="javascript:;" id="cw-comment-edit-link-{{id}}" class="cw-comment-edit-link" data-comment-id="{{id}}" data-creator-id="{{creatorId}}">{{translate 'edit'}}</a>
+        <a href="javascript:;" id="wall-comment-edit-link-{{id}}" class="wall-comment-edit-link" data-comment-id="{{id}}" data-creator-id="{{creatorId}}">{{translate 'edit'}}</a>
         {{/if}}
         {{!--
         {{#if canComment}}
-        <a href="javascript:;" class="cw-comment-reply-link" data-comment-id="{{id}}">{{translate 'reply'}}</a>
+        <a href="javascript:;" class="wall-comment-reply-link" data-comment-id="{{id}}">{{translate 'reply'}}</a>
         {{/if}}
         --}}
         {{#if canDelete}}
-        <a href="javascript:;" id="cw-comment-delete-link-{{id}}" class="cw-comment-delete-link" data-post-id="{{postId}}" data-comment-id="{{id}}">{{translate 'del'}}</a>
+        <a href="javascript:;" id="wall-comment-delete-link-{{id}}" class="wall-comment-delete-link" data-post-id="{{postId}}" data-comment-id="{{id}}">{{translate 'del'}}</a>
         {{/if}}
-        <span class="cw-date">{{formattedCreatedDate}}</span>
+        <span class="wall-date">{{formattedCreatedDate}}</span>
     </div>
 </div>

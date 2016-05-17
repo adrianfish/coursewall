@@ -3,13 +3,13 @@
     
     <modelVersion>4.0.0</modelVersion>
     
-    <name>COURSEWALL TOOL</name>
-    <artifactId>coursewall-tool</artifactId>
-    <groupId>org.sakaiproject.coursewall</groupId>
+    <name>WALL TOOL</name>
+    <artifactId>wall-tool</artifactId>
+    <groupId>org.sakaiproject.wall</groupId>
   
     <parent>
-        <artifactId>coursewall</artifactId>
-        <groupId>org.sakaiproject.coursewall</groupId>
+        <artifactId>wall</artifactId>
+        <groupId>org.sakaiproject.wall</groupId>
         <version>11-SNAPSHOT</version>
     </parent>
     
@@ -17,8 +17,8 @@
     
     <dependencies>
         <dependency>
-            <groupId>org.sakaiproject.coursewall</groupId>
-            <artifactId>coursewall-api</artifactId>
+            <groupId>org.sakaiproject.wall</groupId>
+            <artifactId>wall-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.sakaiproject.kernel</groupId>
@@ -93,7 +93,7 @@
                             <outputDirectory>${project.build.directory}/${project.build.finalName}/i18n</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${basedir}/src/i18n/org/sakaiproject/coursewall</directory>
+                                    <directory>${basedir}/src/i18n/org/sakaiproject/wall</directory>
                                     <includes>
                                         <include>**/*.properties</include>
                                         <include>**/*.json</include>

@@ -3,14 +3,14 @@
     
     <modelVersion>4.0.0</modelVersion>
   
-    <name>COURSEWALL PACK</name>
-    <groupId>org.sakaiproject.coursewall</groupId>
-    <artifactId>coursewall-pack</artifactId>
+    <name>WALL PACK</name>
+    <groupId>org.sakaiproject.wall</groupId>
+    <artifactId>wall-pack</artifactId>
     <description>Deployment of components</description>
   
     <parent>
-        <artifactId>coursewall</artifactId>
-        <groupId>org.sakaiproject.coursewall</groupId>
+        <artifactId>wall</artifactId>
+        <groupId>org.sakaiproject.wall</groupId>
         <version>11-SNAPSHOT</version>
     </parent>
     
@@ -22,8 +22,8 @@
     
     <dependencies>
         <dependency>
-            <groupId>org.sakaiproject.coursewall</groupId>
-            <artifactId>coursewall-impl</artifactId>
+            <groupId>org.sakaiproject.wall</groupId>
+            <artifactId>wall-impl</artifactId>
         </dependency>
     </dependencies>
 

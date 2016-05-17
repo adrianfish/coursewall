@@ -3,9 +3,9 @@
     
     <modelVersion>4.0.0</modelVersion>
   
-    <name>COURSEWALL</name>
-    <groupId>org.sakaiproject.coursewall</groupId>
-    <artifactId>coursewall</artifactId>
+    <name>WALL</name>
+    <groupId>org.sakaiproject.wall</groupId>
+    <artifactId>wall</artifactId>
     <version>11-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -36,28 +36,28 @@
     </modules>
 
     <scm>
-        <connection>scm:git:git://github.com/adrianfish/coursewall.git</connection>
-        <developerConnection>scm:git:git://github.com/adrianfish/coursewall.git</developerConnection>
-        <url>https://github.com/adrianfish/coursewall</url>
+        <connection>scm:git:git://github.com/adrianfish/wall.git</connection>
+        <developerConnection>scm:git:git://github.com/adrianfish/wall.git</developerConnection>
+        <url>https://github.com/adrianfish/wall</url>
     </scm>
     
     <issueManagement>
         <system>JIRA</system>
-        <url>http://jira.sakaiproject.org/browse/COURSEWALL</url>
+        <url>http://jira.sakaiproject.org/browse/WALL</url>
     </issueManagement>
 
     <dependencyManagement>
         <dependencies>
 
             <dependency>
-                <groupId>org.sakaiproject.coursewall</groupId>
-                <artifactId>coursewall-api</artifactId>
+                <groupId>org.sakaiproject.wall</groupId>
+                <artifactId>wall-api</artifactId>
                 <version>${project.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>org.sakaiproject.coursewall</groupId>
-                <artifactId>coursewall-impl</artifactId>
+                <groupId>org.sakaiproject.wall</groupId>
+                <artifactId>wall-impl</artifactId>
                 <version>${project.version}</version>
                 <scope>runtime</scope>
             </dependency>
