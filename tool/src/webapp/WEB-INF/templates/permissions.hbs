@@ -1,5 +1,5 @@
 <h2>{{translate 'permissions'}}</h2>
-<table class="cw-permissions-table">
+<table class="wall-permissions-table">
 	<thead>
 		<tr>
 			<th></th>
@@ -22,17 +22,17 @@
 <tr>
 	<td align="left">{{role}}</td>
 	<td></td>
-	<td align="center"><input type="checkbox" class="cw-permission-checkbox" {{#if coursewall_post_create}}checked="checked"{{/if}}" id="{{role}}:coursewall.post.create"/></td>
-	<td align="center"><input type="checkbox" class="cw-permission-checkbox" {{#if coursewall_post_read_any}}checked="checked"{{/if}}" id="{{role}}:coursewall.post.read.any"/></td>
-	<td align="center"><input type="checkbox" class="cw-permission-checkbox" {{#if coursewall_post_update_any}}checked="checked"{{/if}}" id="{{role}}:coursewall.post.update.any"/></td>
-	<td align="center"><input type="checkbox" class="cw-permission-checkbox" {{#if coursewall_post_update_own}}checked="checked"{{/if}}" id="{{role}}:coursewall.post.update.own"/></td>
-	<td align="center"><input type="checkbox" class="cw-permission-checkbox" {{#if coursewall_post_delete_any}}checked="checked"{{/if}}" id="{{role}}:coursewall.post.delete.any"/></td>
-	<td align="center"><input type="checkbox" class="cw-permission-checkbox" {{#if coursewall_post_delete_own}}checked="checked"{{/if}}" id="{{role}}:coursewall.post.delete.own"/></td>
+	<td align="center"><input type="checkbox" class="wall-permission-checkbox" {{#if wall_post_create}}checked="checked"{{/if}}" id="{{role}}:wall.post.create"/></td>
+	<td align="center"><input type="checkbox" class="wall-permission-checkbox" {{#if wall_post_read_any}}checked="checked"{{/if}}" id="{{role}}:wall.post.read.any"/></td>
+	<td align="center"><input type="checkbox" class="wall-permission-checkbox" {{#if wall_post_update_any}}checked="checked"{{/if}}" id="{{role}}:wall.post.update.any"/></td>
+	<td align="center"><input type="checkbox" class="wall-permission-checkbox" {{#if wall_post_update_own}}checked="checked"{{/if}}" id="{{role}}:wall.post.update.own"/></td>
+	<td align="center"><input type="checkbox" class="wall-permission-checkbox" {{#if wall_post_delete_any}}checked="checked"{{/if}}" id="{{role}}:wall.post.delete.any"/></td>
+	<td align="center"><input type="checkbox" class="wall-permission-checkbox" {{#if wall_post_delete_own}}checked="checked"{{/if}}" id="{{role}}:wall.post.delete.own"/></td>
 </tr>
 {{/each}}
 </tbody>
 </table>
-<table class="cw-permissions-table">	
+<table class="wall-permissions-table">	
 <thead>
 		<tr>
 			<th></th>
@@ -54,15 +54,15 @@
 <tr>
 	<td align="left">{{role}}</td>
 	<td></td>	
-	<td align="center"><input type="checkbox" class="cw-permission-checkbox" {{#if coursewall_comment_create}}checked="checked"{{/if}}" id="{{role}}:coursewall.comment.create"/></td>
-	<td align="center"><input type="checkbox" class="cw-permission-checkbox" {{#if coursewall_comment_read_any}}checked="checked"{{/if}}" id="{{role}}:coursewall.comment.read.any"/></td>
-	<td align="center"><input type="checkbox" class="cw-permission-checkbox" {{#if coursewall_comment_update_any}}checked="checked"{{/if}}" id="{{role}}:coursewall.comment.update.any"/></td>
-	<td align="center"><input type="checkbox" class="cw-permission-checkbox" {{#if coursewall_comment_update_own}}checked="checked"{{/if}}" id="{{role}}:coursewall.comment.update.own"/></td>
-	<td align="center"><input type="checkbox" class="cw-permission-checkbox" {{#if coursewall_comment_delete_any}}checked="checked"{{/if}}" id="{{role}}:coursewall.comment.delete.any"/></td>
-	<td align="center"><input type="checkbox" class="cw-permission-checkbox" {{#if coursewall_comment_delete_own}}checked="checked"{{/if}}" id="{{role}}:coursewall.comment.delete.own"/></td>
+	<td align="center"><input type="checkbox" class="wall-permission-checkbox" {{#if wall_comment_create}}checked="checked"{{/if}}" id="{{role}}:wall.comment.create"/></td>
+	<td align="center"><input type="checkbox" class="wall-permission-checkbox" {{#if wall_comment_read_any}}checked="checked"{{/if}}" id="{{role}}:wall.comment.read.any"/></td>
+	<td align="center"><input type="checkbox" class="wall-permission-checkbox" {{#if wall_comment_update_any}}checked="checked"{{/if}}" id="{{role}}:wall.comment.update.any"/></td>
+	<td align="center"><input type="checkbox" class="wall-permission-checkbox" {{#if wall_comment_update_own}}checked="checked"{{/if}}" id="{{role}}:wall.comment.update.own"/></td>
+	<td align="center"><input type="checkbox" class="wall-permission-checkbox" {{#if wall_comment_delete_any}}checked="checked"{{/if}}" id="{{role}}:wall.comment.delete.any"/></td>
+	<td align="center"><input type="checkbox" class="wall-permission-checkbox" {{#if wall_comment_delete_own}}checked="checked"{{/if}}" id="{{role}}:wall.comment.delete.own"/></td>
 </tr>
 {{/each}}
 </tbody>
 </table>
-<input id="coursewall_permissions_save_button" type="button" value="{{translate 'save'}}"/>
-<input type="button" value="{{translate 'cancel'}}" onclick="return coursewall.switchState('home');"/>
+<input id="wall_permissions_save_button" type="button" value="{{translate 'save'}}"/>
+<input type="button" value="{{translate 'cancel'}}" onclick="return wall.switchState('home');"/>

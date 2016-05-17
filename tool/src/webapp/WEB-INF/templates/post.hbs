@@ -1,59 +1,59 @@
-	<div id="cw-post-outer-container-{{id}}" class="cw-post-outer-container">
-		<div class="cw-post-inner-container">
+	<div id="wall-post-outer-container-{{id}}" class="wall-post-outer-container">
+		<div class="wall-post-inner-container">
 
-            <div class="cw-post-topbar">
-                <div class="cw-author">
-                    <div class="cw-photo" style="background-image:url(/direct/profile/{{creatorId}}/image/thumb)"></div>
-                    <div class="cw-author-details">
-                        <div class="cw-author-name"><a class="profile" rel="/direct/profile/{{creatorId}}/formatted">{{creatorDisplayName}}</a></div>
+            <div class="wall-post-topbar">
+                <div class="wall-author">
+                    <div class="wall-photo" style="background-image:url(/direct/profile/{{creatorId}}/image/thumb)"></div>
+                    <div class="wall-author-details">
+                        <div class="wall-author-name"><a class="profile" rel="/direct/profile/{{creatorId}}/formatted">{{creatorDisplayName}}</a></div>
                         <div>
-                            <span class="cw-date-label">{{translate 'created'}}</span>
-                            <span class="cw-date">{{formattedCreatedDate}}</span>
+                            <span class="wall-date-label">{{translate 'created'}}</span>
+                            <span class="wall-date">{{formattedCreatedDate}}</span>
                         </div>
                         {{#if isModified}}
                         <div>
-                            <span class="cw-date-label">{{translate 'modified'}}</span>
-                            <span class="cw-date">{{formattedModifiedDate}}</span>
+                            <span class="wall-date-label">{{translate 'modified'}}</span>
+                            <span class="wall-date">{{formattedModifiedDate}}</span>
                         </div>
                         {{/if}}
                     </div>
                 </div>
-			</div> <!-- /cw-post-topbar -->
+			</div> <!-- /wall-post-topbar -->
 
-            <div class="cw-post-body">
-			    <div id="cw-post-content-{{id}}" class="cw-post-content">{{{content}}}</div>
-                <div id="cw-post-options-{{id}}" class="cw-post-options">
+            <div class="wall-post-body">
+			    <div id="wall-post-content-{{id}}" class="wall-post-content">{{{content}}}</div>
+                <div id="wall-post-options-{{id}}" class="wall-post-options">
                     {{#if canEdit}}
-                    <a href="javascript:;" id="cw-post-edit-link-{{id}}" class="cw-post-edit-link" data-post-id="{{id}}">{{translate 'edit'}}</a>
+                    <a href="javascript:;" id="wall-post-edit-link-{{id}}" class="wall-post-edit-link" data-post-id="{{id}}">{{translate 'edit'}}</a>
                     {{/if}}
                     {{!--#if canComment}}
-                    <a href="javascript:;" id="cw-post-comment-link-{{id}}" class="cw-post-comment-link" data-post-id="{{id}}">{{translate 'comment'}}</a>
+                    <a href="javascript:;" id="wall-post-comment-link-{{id}}" class="wall-post-comment-link" data-post-id="{{id}}">{{translate 'comment'}}</a>
                     {{/if--}}
                     {{#if canDelete}}
-                    <a href="javascript:;" id="cw-post-delete-link-{{id}}" class="cw-post-delete-link" data-post-id="{{id}}">{{translate 'del'}}</a>
+                    <a href="javascript:;" id="wall-post-delete-link-{{id}}" class="wall-post-delete-link" data-post-id="{{id}}">{{translate 'del'}}</a>
                     {{/if}}
                 </div>
-                <div id="cw-post-edit-buttons-{{id}}" class="cw-post-edit-buttons">
-                    <button id="cw-inplace-post-editor-post-button-{{id}}">{{translate 'post'}}</button>
-                    <button onclick="coursewall.utils.cancelPostEdit('{{id}}');">{{translate 'cancel'}}</button>
+                <div id="wall-post-edit-buttons-{{id}}" class="wall-post-edit-buttons">
+                    <button id="wall-inplace-post-editor-post-button-{{id}}">{{translate 'post'}}</button>
+                    <button onclick="wall.utils.cancelPostEdit('{{id}}');">{{translate 'cancel'}}</button>
                 </div>
 		    </div>
 
-		</div> <!-- /cw-post-inner-container -->
-    </div> <!-- /cw-post-outer-container -->
+		</div> <!-- /wall-post-inner-container -->
+    </div> <!-- /wall-post-outer-container -->
 
-    <div id="cw-comments-{{id}}" class="cw-comments">
-        <div id="cw-comments-container-{{id}}">
-        <div class="cw-comment-expander"><a href="javascript:;" id="cw-show-comments-link-{{id}}">{{translate 'show_comments'}}</a></div>
-        <div class="cw-comment-expander"><a href="javascript:;" id="cw-hide-comments-link-{{id}}" style="display: none;">{{translate 'hide_comments'}}</a></div>
+    <div id="wall-comments-{{id}}" class="wall-comments">
+        <div id="wall-comments-container-{{id}}">
+        <div class="wall-comment-expander"><a href="javascript:;" id="wall-show-comments-link-{{id}}">{{translate 'show_comments'}}</a></div>
+        <div class="wall-comment-expander"><a href="javascript:;" id="wall-hide-comments-link-{{id}}" style="display: none;">{{translate 'hide_comments'}}</a></div>
         {{#each comments}}
             {{> wrapped_comment}}
         {{/each}}
         </div>
         {{#if canComment}}
-        <a href="javascript:;" id="cw-create-comment-link-{{id}}" class="cw-create-comment-link" data-post-id="{{id}}">{{translate 'comment'}}</a>
+        <a href="javascript:;" id="wall-create-comment-link-{{id}}" class="wall-create-comment-link" data-post-id="{{id}}">{{translate 'comment'}}</a>
         {{/if}}
-        <div id="cw-comment-creator-{{id}}" class="cw-comment-creator">
+        <div id="wall-comment-creator-{{id}}" class="wall-comment-creator">
         {{> inplace_comment_editor}}
         </div>
-    </div> <!-- cw-comments -->
+    </div> <!-- wall-comments -->

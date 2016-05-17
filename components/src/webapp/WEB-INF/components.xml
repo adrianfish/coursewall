@@ -4,17 +4,17 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 			    http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="org.sakaiproject.coursewall.api.PersistenceManager"
-        class="org.sakaiproject.coursewall.impl.PersistenceManagerImpl"
+    <bean id="org.sakaiproject.wall.api.PersistenceManager"
+        class="org.sakaiproject.wall.impl.PersistenceManagerImpl"
         init-method="init">
 
-        <property name="sakaiProxy"><ref bean="org.sakaiproject.coursewall.api.SakaiProxy"/></property>
+        <property name="sakaiProxy"><ref bean="org.sakaiproject.wall.api.SakaiProxy"/></property>
         <property name="serverConfigurationService"><ref bean="org.sakaiproject.component.api.ServerConfigurationService"/></property>
         <property name="sqlService"><ref bean="org.sakaiproject.db.api.SqlService"/></property>
     </bean>
 
-    <bean id="org.sakaiproject.coursewall.api.SakaiProxy"
-        class="org.sakaiproject.coursewall.impl.SakaiProxyImpl"
+    <bean id="org.sakaiproject.wall.api.SakaiProxy"
+        class="org.sakaiproject.wall.impl.SakaiProxyImpl"
         init-method="init">
 
         <property name="authzGroupService"><ref bean="org.sakaiproject.authz.api.AuthzGroupService"/></property>
@@ -30,20 +30,20 @@
         <property name="eventTrackingService"><ref bean="org.sakaiproject.event.api.EventTrackingService"/></property>
     </bean>
     
-    <bean id="org.sakaiproject.coursewall.api.CoursewallSecurityManager"
-        class="org.sakaiproject.coursewall.impl.CoursewallSecurityManagerImpl">
-        <property name="sakaiProxy"><ref bean="org.sakaiproject.coursewall.api.SakaiProxy"/></property>
+    <bean id="org.sakaiproject.wall.api.WallSecurityManager"
+        class="org.sakaiproject.wall.impl.WallSecurityManagerImpl">
+        <property name="sakaiProxy"><ref bean="org.sakaiproject.wall.api.SakaiProxy"/></property>
         <property name="securityService"><ref bean="org.sakaiproject.authz.api.SecurityService"/></property>
         <property name="siteService"><ref bean="org.sakaiproject.site.api.SiteService"/></property>
         <property name="toolManager"><ref bean="org.sakaiproject.tool.api.ToolManager"/></property>
     </bean>
     
-    <bean id="org.sakaiproject.coursewall.api.CoursewallManager"
-        class="org.sakaiproject.coursewall.impl.CoursewallManagerImpl"
+    <bean id="org.sakaiproject.wall.api.WallManager"
+        class="org.sakaiproject.wall.impl.WallManagerImpl"
         init-method="init">
-        <property name="sakaiProxy"><ref bean="org.sakaiproject.coursewall.api.SakaiProxy"/></property>
-        <property name="coursewallSecurityManager"><ref bean="org.sakaiproject.coursewall.api.CoursewallSecurityManager"/></property>
-        <property name="persistenceManager"><ref bean="org.sakaiproject.coursewall.api.PersistenceManager"/></property>
+        <property name="sakaiProxy"><ref bean="org.sakaiproject.wall.api.SakaiProxy"/></property>
+        <property name="wallSecurityManager"><ref bean="org.sakaiproject.wall.api.WallSecurityManager"/></property>
+        <property name="persistenceManager"><ref bean="org.sakaiproject.wall.api.PersistenceManager"/></property>
         <property name="profileConnectionsLogic"><ref bean="org.sakaiproject.profile2.logic.ProfileConnectionsLogic"/></property>
         <property name="profileWallLogic"><ref bean="org.sakaiproject.profile2.logic.ProfileWallLogic"/></property>
     </bean>
