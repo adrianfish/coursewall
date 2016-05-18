@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
-    <display-name>Wall</display-name>
+    <display-name>Commons</display-name>
 
 	<!--sakai-->
     <filter>
@@ -13,15 +13,15 @@
 
     <filter-mapping>
         <filter-name>sakai.request</filter-name>
-        <servlet-name>sakai.wall</servlet-name>
+        <servlet-name>sakai.commons</servlet-name>
         <dispatcher>REQUEST</dispatcher>
         <dispatcher>FORWARD</dispatcher>
         <dispatcher>INCLUDE</dispatcher>
     </filter-mapping>
     
     <servlet>
-        <servlet-name>sakai.wall</servlet-name>
-	    <servlet-class>org.sakaiproject.wall.tool.WallTool</servlet-class>
+        <servlet-name>sakai.commons</servlet-name>
+	    <servlet-class>org.sakaiproject.commons.tool.CommonsTool</servlet-class>
 		<load-on-startup>1</load-on-startup>        
      </servlet>
      
@@ -34,7 +34,7 @@
   	</listener>
 
 	<welcome-file-list>
-	  <welcome-file>wall.html</welcome-file>
+	  <welcome-file>commons.html</welcome-file>
 	</welcome-file-list>
 
 </web-app>
