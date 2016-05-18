@@ -17,6 +17,9 @@
 
 package org.sakaiproject.wall.api;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Adrian Fish (adrian.r.fish@gmail.com)
  */
@@ -26,4 +29,6 @@ public class QueryBean {
     public String siteId = "";
     public String embedder = "";
     public boolean isUserSite = false;
+    public List<String> fromIds = new ArrayList<String>();
+    public String callerId = "";
 }

@@ -34,6 +34,9 @@ public class PersistenceManagerImpl implements PersistenceManager {
     private static final String WALL_POSTS_SELECT
         = "SELECT cw.ID as WALL_ID,cw.SITE_ID,cw.EMBEDDER,cp.* FROM WALL_WALL as cw,WALL_WALL_POST as cwp,WALL_POST as cp "
             + "WHERE cw.ID = ? AND cwp.WALL_ID = cw.ID AND cp.ID = cwp.POST_ID ORDER BY CREATED_DATE DESC";
+    private static final String SOCIAL_WALL_POSTS_SELECT
+        = "SELECT cw.ID as WALL_ID,cw.SITE_ID,cw.EMBEDDER,cp.* FROM WALL_WALL as cw,WALL_WALL_POST as cwp,WALL_POST as cp "
+            + "WHERE cw.ID = ? AND cwp.WALL_ID = cw.ID AND cp.ID = cwp.POST_ID AND CREATOR_ID IN (";
     private static final String WALL_POST_INSERT = "INSERT INTO WALL_WALL_POST VALUES(?,?)";
     private static final String WALL_INSERT = "INSERT INTO WALL_WALL VALUES(?,?,?)";
     private static final String COMMENT_SELECT = "SELECT * FROM WALL_COMMENT WHERE ID = ?";
@@ -75,23 +78,47 @@ public class PersistenceManagerImpl implements PersistenceManager {
         return posts.size() > 0;
     }
 
-    public List<Post> getAllPost(String wallId) throws Exception {
-        return getAllPost(wallId, false);
+    public List<Post> getAllPost(final QueryBean query) throws Exception {
+        return getAllPost(query, false);
     }
 
-    public List<Post> getAllPost(String wallId, boolean populate) throws Exception {
+    public List<Post> getAllPost(final QueryBean query, boolean populate) throws Exception {
 
         if (log.isDebugEnabled()) {
-            log.debug("getAllPost(" + wallId + ")");
+            log.debug("getAllPost(" + query + ")");
         }
 
-        return sqlService.dbRead(WALL_POSTS_SELECT
-                , new Object[] {wallId}
-                , new SqlReader<Post>() {
-                    public Post readSqlResultRecord(ResultSet result) {
-                        return loadPostFromResult(result, populate);
-                    }
-                });
+        if (query.embedder.equals("SOCIAL")) {
+            int numFromIds = query.fromIds.size();
+            if (numFromIds > 0) {
+                String sql = SOCIAL_WALL_POSTS_SELECT;
+                for (int i = 0;i < numFromIds;i++) sql += "?,";
+                // Trim off the trailing comma
+                sql = sql.substring(0,sql.length() - 1);
+                sql += ") ORDER BY CREATED_DATE DESC"; 
+                List<String> params = new ArrayList<String>();
+                params.add(query.wallId);
+                params.addAll(query.fromIds);
+                return sqlService.dbRead(sql
+                        , params.toArray()
+                        , new SqlReader<Post>() {
+                            public Post readSqlResultRecord(ResultSet result) {
+                                return loadPostFromResult(result, populate);
+                            }
+                        });
+            } else {
+                log.warn("SOCIAL posts requested, but no connection ids supplies. Returning an empty list ...");
+                return new ArrayList<Post>();
+            }
+        } else {
+            return sqlService.dbRead(WALL_POSTS_SELECT
+                    , new Object[] {query.wallId}
+                    , new SqlReader<Post>() {
+                        public Post readSqlResultRecord(ResultSet result) {
+                            return loadPostFromResult(result, populate);
+                        }
+                    });
+        }
     }
 
     public Comment getComment(String commentId) {
@@ -169,8 +196,10 @@ public class PersistenceManagerImpl implements PersistenceManager {
 
                     if (wallIds.size() == 0) {
                         // Wall doesn't exist yet. Create it.
+                        String embedder = post.getEmbedder();
+                        String siteId = (embedder.equals("SOCIAL")) ? "SOCIAL" : post.getSiteId();
                         sqlService.dbWrite(WALL_INSERT
-                            , new Object [] { post.getWallId(), post.getSiteId(), post.getEmbedder() });
+                            , new Object [] { post.getWallId(), siteId, embedder });
                     }
 
                     post.setId(UUID.randomUUID().toString());

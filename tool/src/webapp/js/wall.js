@@ -169,29 +169,24 @@ wall.switchState = function (state, arg) {
             });
         }
 
-        if (wall.isUserSite) {
-            wall.currentUserPermissions = new WallPermissions(['wall.post.read.any','wall.post.create']);
-            wall.switchState(wall.states.POSTS, {});
-        } else {
-            var permissionsCallback = function (permissions) {
+        var permissionsCallback = function (permissions) {
 
-                    wall.currentUserPermissions = new WallPermissions(permissions);
+                wall.currentUserPermissions = new WallPermissions(permissions);
 
-                    if (wall.currentUserPermissions == null) {
-                        return;
-                    }
+                if (wall.currentUserPermissions == null) {
+                    return;
+                }
 
-                    $("#wall-permissions-link").toggle(wall.currentUserPermissions.modifyPermissions);
+                $("#wall-permissions-link").toggle(wall.currentUserPermissions.modifyPermissions);
 
-                    if (wall.currentUserPermissions.postReadAny || wall.currentUserPermissions.postCreate) {
-                        wall.switchState(wall.states.POSTS, {});
-                    } else {
-                        wall.switchState(wall.states.PERMISSIONS_NOT_SET, {});
-                    }
-                };
+                if (wall.currentUserPermissions.postReadAny || wall.currentUserPermissions.postCreate) {
+                    wall.switchState(wall.states.POSTS, {});
+                } else {
+                    wall.switchState(wall.states.PERMISSIONS_NOT_SET, {});
+                }
+            };
 
-            wall.utils.getCurrentUserPermissions(permissionsCallback);
-        }
+        wall.utils.getCurrentUserPermissions(permissionsCallback);
     };
 
     $.i18n.properties({
