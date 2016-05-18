@@ -29,6 +29,7 @@ import org.sakaiproject.profile2.logic.ProfileConnectionsLogic;
 import org.sakaiproject.profile2.logic.ProfileWallLogic;
 import org.sakaiproject.profile2.model.BasicConnection;
 import org.sakaiproject.profile2.model.WallItem;
+import org.sakaiproject.profile2.util.ProfileConstants;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -76,44 +77,43 @@ public class WallManagerImpl implements WallManager {
     }
 
     private List<Post> getPosts(String siteId) throws Exception {
-        return wallSecurityManager.filter(persistenceManager.getAllPost(siteId), siteId, "SITE");
+        QueryBean query = new QueryBean();
+        query.siteId = siteId;
+        return wallSecurityManager.filter(persistenceManager.getAllPost(query), siteId, "SITE");
     }
 
     public List<Post> getPosts(QueryBean query) throws Exception {
 
+        Cache cache = sakaiProxy.getCache(POST_CACHE);
+
         if (query.isUserSite) {
-            List<Post> posts = new ArrayList<Post>();
+            System.out.println("USER");
+            query.fromIds.add(query.callerId);
             List<BasicConnection> connections = profileConnectionsLogic.getBasicConnectionsForUser(sakaiProxy.getCurrentUserId());
             for (BasicConnection basicConnection : connections) {
-                List<WallItem> wallItems = profileWallLogic.getWallItemsForUser(basicConnection.getUuid());
-                for (WallItem wallItem : wallItems) {
-                    Post post = new Post(wallItem);
-                    post.setCreatorDisplayName(
-                        sakaiProxy.getDisplayNameForTheUser(post.getCreatorId()));
-                    posts.add(post);
-                }
+                query.fromIds.add(basicConnection.getUuid());
             }
-            // Now order chronologically
-            return posts;
-        } else {
-            Cache cache = sakaiProxy.getCache(POST_CACHE);
+        }
 
-            List<Post> posts = (List<Post>) cache.get(query.wallId);
-            if (posts == null) {
-                if (log.isDebugEnabled()) log.debug("Cache miss or expired on id: " + query.wallId);
-                List<Post> unfilteredPosts = persistenceManager.getAllPost(query.wallId, true);
-                cache.put(query.wallId, unfilteredPosts);
-                return wallSecurityManager.filter(unfilteredPosts, query.siteId, query.embedder);
-            } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("Cache hit on id: " + query.wallId);
-                }
-                return wallSecurityManager.filter(posts, query.siteId, query.embedder);
+        String key = (query.isUserSite) ? query.callerId : query.wallId;
+
+        List<Post> posts = (List<Post>) cache.get(key);
+        if (posts == null) {
+            if (log.isDebugEnabled()) log.debug("Cache miss or expired on id: " + key);
+            List<Post> unfilteredPosts = persistenceManager.getAllPost(query, true);
+            cache.put(key, unfilteredPosts);
+            return wallSecurityManager.filter(unfilteredPosts, query.siteId, query.embedder);
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("Cache hit on id: " + key);
             }
+            return wallSecurityManager.filter(posts, query.siteId, query.embedder);
         }
     }
 
     public Post savePost(Post post) {
+
+        boolean isUserSite = sakaiProxy.isUserSite(post.getSiteId());
 
         try {
             Post newOrUpdatedPost = persistenceManager.savePost(post);

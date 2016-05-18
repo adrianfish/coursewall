@@ -324,7 +324,7 @@ wall.utils = {
             return 0;
         }
 
-        content = wall.utils.toHtml(content);
+        //content = wall.utils.toHtml(content);
 
         var post = {
                 'id': postId,

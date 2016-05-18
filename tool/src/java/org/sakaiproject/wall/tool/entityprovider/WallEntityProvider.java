@@ -123,6 +123,7 @@ public class WallEntityProvider extends AbstractEntityProvider implements Reques
         query.siteId = siteId;
         query.embedder = embedder;
         query.isUserSite = isUserSite;
+        query.callerId = userId;
 
         try {
             posts = wallManager.getPosts(query);

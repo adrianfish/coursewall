@@ -11,9 +11,9 @@
 
             var wall = {
                 i18n: {},
-                wallId: '${siteId}',
+                wallId: '${wallId}',
                 siteId: '${siteId}',
-                embedder: 'SITE',
+                embedder: '${embedder}',
                 userId: '${userId}',
                 isUserSite: ${isUserSite}
             };

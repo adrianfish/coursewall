@@ -103,6 +103,9 @@ public class WallSecurityManagerImpl implements WallSecurityManager {
      */
     public List<Post> filter(List<Post> posts, String siteId, String embedder) {
 
+        System.out.println("embedder: " + embedder);
+        System.out.println("posts: " + posts.size());
+
         if (posts != null && posts.size() > 0) {
             if (embedder.equals("SITE")) {
                 boolean readAny = securityService.unlock(WallFunctions.WALL_POST_READ_ANY, "/site/" + siteId);
@@ -110,9 +113,11 @@ public class WallSecurityManagerImpl implements WallSecurityManager {
             } else if (embedder.equals("ASSIGNMENT")) {
                 boolean readAny = securityService.unlock(AssignmentService.SECURE_ADD_ASSIGNMENT_SUBMISSION, "/site/" + siteId);
                 return (readAny) ? posts : new ArrayList<Post>();
+            } else if (embedder.equals("SOCIAL")) {
+                return posts;
             } else {
                 return new ArrayList<Post>();
-            }
+            } 
         } else {
             return posts;
         }

@@ -91,7 +91,10 @@ public class WallTool extends HttpServlet {
         request.setAttribute("userId", userId);
         String siteId = sakaiProxy.getCurrentSiteId();
         request.setAttribute("siteId", siteId);
-        request.setAttribute("isUserSite", sakaiProxy.isUserSite(siteId));
+        boolean isUserSite = sakaiProxy.isUserSite(siteId);
+        request.setAttribute("isUserSite", isUserSite);
+        request.setAttribute("embedder", isUserSite ? "SOCIAL" : "SITE");
+        request.setAttribute("wallId", isUserSite ? "SOCIAL" : siteId);
 
         response.setContentType("text/html");
         request.getRequestDispatcher("/WEB-INF/bootstrap.jsp").include(request, response);

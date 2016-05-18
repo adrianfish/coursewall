@@ -21,7 +21,8 @@
        	description="The wall">
 
        	<category name="course" />
-       	<category name="project" />
+        <category name="project" />
+        <category name="myworkspace" />
 
    	</tool>
 

@@ -12,8 +12,8 @@ import org.sakaiproject.wall.api.QueryBean;
 public interface PersistenceManager {
 
     public boolean postExists(String postId);
-    public List<Post> getAllPost(String siteId) throws Exception;
-    public List<Post> getAllPost(String siteId, boolean populate) throws Exception;
+    public List<Post> getAllPost(QueryBean queryBean) throws Exception;
+    public List<Post> getAllPost(QueryBean queryBean, boolean populate) throws Exception;
     public Comment getComment(String commentId);
     public Comment saveComment(Comment comment);
     public boolean deleteComment(String commentId);
