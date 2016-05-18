@@ -3,9 +3,9 @@
     
     <modelVersion>4.0.0</modelVersion>
   
-    <name>WALL</name>
-    <groupId>org.sakaiproject.wall</groupId>
-    <artifactId>wall</artifactId>
+    <name>COMMONS</name>
+    <groupId>org.sakaiproject.commons</groupId>
+    <artifactId>commons</artifactId>
     <version>11-SNAPSHOT</version>
     <packaging>pom</packaging>
 
@@ -36,28 +36,28 @@
     </modules>
 
     <scm>
-        <connection>scm:git:git://github.com/adrianfish/wall.git</connection>
-        <developerConnection>scm:git:git://github.com/adrianfish/wall.git</developerConnection>
-        <url>https://github.com/adrianfish/wall</url>
+        <connection>scm:git:git://github.com/adrianfish/commons.git</connection>
+        <developerConnection>scm:git:git://github.com/adrianfish/commons.git</developerConnection>
+        <url>https://github.com/adrianfish/commons</url>
     </scm>
     
     <issueManagement>
         <system>JIRA</system>
-        <url>http://jira.sakaiproject.org/browse/WALL</url>
+        <url>http://jira.sakaiproject.org/browse/COMMONS</url>
     </issueManagement>
 
     <dependencyManagement>
         <dependencies>
 
             <dependency>
-                <groupId>org.sakaiproject.wall</groupId>
-                <artifactId>wall-api</artifactId>
+                <groupId>org.sakaiproject.commons</groupId>
+                <artifactId>commons-api</artifactId>
                 <version>${project.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>org.sakaiproject.wall</groupId>
-                <artifactId>wall-impl</artifactId>
+                <groupId>org.sakaiproject.commons</groupId>
+                <artifactId>commons-impl</artifactId>
                 <version>${project.version}</version>
                 <scope>runtime</scope>
             </dependency>

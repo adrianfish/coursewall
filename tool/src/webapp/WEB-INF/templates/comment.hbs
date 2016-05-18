@@ -1,19 +1,19 @@
-<div class="wall-comment-photo" style="background-image:url(/direct/profile/{{creatorId}}/image/thumb)"></div>
-<div class="wall-comment-body">
-    <span id="wall-comment-author-name-{{id}}" class="wall-comment-author-name"><a class="profile" rel="/direct/profile/{{creatorId}}/formatted">{{creatorDisplayName}}</a></span>
-    <span id="wall-comment-content-{{id}}" class="wall-comment-content">{{{content}}}</span>
-    <div id="wall-comment-options-{{id}}" class="wall-comment-options">
+<div class="commons-comment-photo" style="background-image:url(/direct/profile/{{creatorId}}/image/thumb)"></div>
+<div class="commons-comment-body">
+    <span id="commons-comment-author-name-{{id}}" class="commons-comment-author-name"><a class="profile" rel="/direct/profile/{{creatorId}}/formatted">{{creatorDisplayName}}</a></span>
+    <span id="commons-comment-content-{{id}}" class="commons-comment-content">{{{content}}}</span>
+    <div id="commons-comment-options-{{id}}" class="commons-comment-options">
         {{#if canEdit}}
-        <a href="javascript:;" id="wall-comment-edit-link-{{id}}" class="wall-comment-edit-link" data-comment-id="{{id}}" data-creator-id="{{creatorId}}">{{translate 'edit'}}</a>
+        <a href="javascript:;" id="commons-comment-edit-link-{{id}}" class="commons-comment-edit-link" data-comment-id="{{id}}" data-creator-id="{{creatorId}}">{{translate 'edit'}}</a>
         {{/if}}
         {{!--
         {{#if canComment}}
-        <a href="javascript:;" class="wall-comment-reply-link" data-comment-id="{{id}}">{{translate 'reply'}}</a>
+        <a href="javascript:;" class="commons-comment-reply-link" data-comment-id="{{id}}">{{translate 'reply'}}</a>
         {{/if}}
         --}}
         {{#if canDelete}}
-        <a href="javascript:;" id="wall-comment-delete-link-{{id}}" class="wall-comment-delete-link" data-post-id="{{postId}}" data-comment-id="{{id}}">{{translate 'del'}}</a>
+        <a href="javascript:;" id="commons-comment-delete-link-{{id}}" class="commons-comment-delete-link" data-post-id="{{postId}}" data-comment-id="{{id}}">{{translate 'del'}}</a>
         {{/if}}
-        <span class="wall-date">{{formattedCreatedDate}}</span>
+        <span class="commons-date">{{formattedCreatedDate}}</span>
     </div>
 </div>

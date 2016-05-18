@@ -1,59 +1,59 @@
-	<div id="wall-post-outer-container-{{id}}" class="wall-post-outer-container">
-		<div class="wall-post-inner-container">
+	<div id="commons-post-outer-container-{{id}}" class="commons-post-outer-container">
+		<div class="commons-post-inner-container">
 
-            <div class="wall-post-topbar">
-                <div class="wall-author">
-                    <div class="wall-photo" style="background-image:url(/direct/profile/{{creatorId}}/image/thumb)"></div>
-                    <div class="wall-author-details">
-                        <div class="wall-author-name"><a class="profile" rel="/direct/profile/{{creatorId}}/formatted">{{creatorDisplayName}}</a></div>
+            <div class="commons-post-topbar">
+                <div class="commons-author">
+                    <div class="commons-photo" style="background-image:url(/direct/profile/{{creatorId}}/image/thumb)"></div>
+                    <div class="commons-author-details">
+                        <div class="commons-author-name"><a class="profile" rel="/direct/profile/{{creatorId}}/formatted">{{creatorDisplayName}}</a></div>
                         <div>
-                            <span class="wall-date-label">{{translate 'created'}}</span>
-                            <span class="wall-date">{{formattedCreatedDate}}</span>
+                            <span class="commons-date-label">{{translate 'created'}}</span>
+                            <span class="commons-date">{{formattedCreatedDate}}</span>
                         </div>
                         {{#if isModified}}
                         <div>
-                            <span class="wall-date-label">{{translate 'modified'}}</span>
-                            <span class="wall-date">{{formattedModifiedDate}}</span>
+                            <span class="commons-date-label">{{translate 'modified'}}</span>
+                            <span class="commons-date">{{formattedModifiedDate}}</span>
                         </div>
                         {{/if}}
                     </div>
                 </div>
-			</div> <!-- /wall-post-topbar -->
+			</div> <!-- /commons-post-topbar -->
 
-            <div class="wall-post-body">
-			    <div id="wall-post-content-{{id}}" class="wall-post-content">{{{content}}}</div>
-                <div id="wall-post-options-{{id}}" class="wall-post-options">
+            <div class="commons-post-body">
+			    <div id="commons-post-content-{{id}}" class="commons-post-content">{{{content}}}</div>
+                <div id="commons-post-options-{{id}}" class="commons-post-options">
                     {{#if canEdit}}
-                    <a href="javascript:;" id="wall-post-edit-link-{{id}}" class="wall-post-edit-link" data-post-id="{{id}}">{{translate 'edit'}}</a>
+                    <a href="javascript:;" id="commons-post-edit-link-{{id}}" class="commons-post-edit-link" data-post-id="{{id}}">{{translate 'edit'}}</a>
                     {{/if}}
                     {{!--#if canComment}}
-                    <a href="javascript:;" id="wall-post-comment-link-{{id}}" class="wall-post-comment-link" data-post-id="{{id}}">{{translate 'comment'}}</a>
+                    <a href="javascript:;" id="commons-post-comment-link-{{id}}" class="commons-post-comment-link" data-post-id="{{id}}">{{translate 'comment'}}</a>
                     {{/if--}}
                     {{#if canDelete}}
-                    <a href="javascript:;" id="wall-post-delete-link-{{id}}" class="wall-post-delete-link" data-post-id="{{id}}">{{translate 'del'}}</a>
+                    <a href="javascript:;" id="commons-post-delete-link-{{id}}" class="commons-post-delete-link" data-post-id="{{id}}">{{translate 'del'}}</a>
                     {{/if}}
                 </div>
-                <div id="wall-post-edit-buttons-{{id}}" class="wall-post-edit-buttons">
-                    <button id="wall-inplace-post-editor-post-button-{{id}}">{{translate 'post'}}</button>
-                    <button onclick="wall.utils.cancelPostEdit('{{id}}');">{{translate 'cancel'}}</button>
+                <div id="commons-post-edit-buttons-{{id}}" class="commons-post-edit-buttons">
+                    <button id="commons-inplace-post-editor-post-button-{{id}}">{{translate 'post'}}</button>
+                    <button onclick="commons.utils.cancelPostEdit('{{id}}');">{{translate 'cancel'}}</button>
                 </div>
 		    </div>
 
-		</div> <!-- /wall-post-inner-container -->
-    </div> <!-- /wall-post-outer-container -->
+		</div> <!-- /commons-post-inner-container -->
+    </div> <!-- /commons-post-outer-container -->
 
-    <div id="wall-comments-{{id}}" class="wall-comments">
-        <div id="wall-comments-container-{{id}}">
-        <div class="wall-comment-expander"><a href="javascript:;" id="wall-show-comments-link-{{id}}">{{translate 'show_comments'}}</a></div>
-        <div class="wall-comment-expander"><a href="javascript:;" id="wall-hide-comments-link-{{id}}" style="display: none;">{{translate 'hide_comments'}}</a></div>
+    <div id="commons-comments-{{id}}" class="commons-comments">
+        <div id="commons-comments-container-{{id}}">
+        <div class="commons-comment-expander"><a href="javascript:;" id="commons-show-comments-link-{{id}}">{{translate 'show_comments'}}</a></div>
+        <div class="commons-comment-expander"><a href="javascript:;" id="commons-hide-comments-link-{{id}}" style="display: none;">{{translate 'hide_comments'}}</a></div>
         {{#each comments}}
             {{> wrapped_comment}}
         {{/each}}
         </div>
         {{#if canComment}}
-        <a href="javascript:;" id="wall-create-comment-link-{{id}}" class="wall-create-comment-link" data-post-id="{{id}}">{{translate 'comment'}}</a>
+        <a href="javascript:;" id="commons-create-comment-link-{{id}}" class="commons-create-comment-link" data-post-id="{{id}}">{{translate 'comment'}}</a>
         {{/if}}
-        <div id="wall-comment-creator-{{id}}" class="wall-comment-creator">
+        <div id="commons-comment-creator-{{id}}" class="commons-comment-creator">
         {{> inplace_comment_editor}}
         </div>
-    </div> <!-- wall-comments -->
+    </div> <!-- commons-comments -->

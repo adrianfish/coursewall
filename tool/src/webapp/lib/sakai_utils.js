@@ -1,4 +1,4 @@
-wall.sakai = {
+commons.sakai = {
 
     jqueryImport: /<script type="text\/javascript" src="\/profile2-tool\/javascript\/jquery-[\w\.]*\.js">\s*<\/script>/,
 	getProfileMarkup: function (userId) {

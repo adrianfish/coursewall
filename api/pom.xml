@@ -3,13 +3,13 @@
     
     <modelVersion>4.0.0</modelVersion>
     
-    <name>WALL API</name>
-    <artifactId>wall-api</artifactId>
-    <groupId>org.sakaiproject.wall</groupId>
+    <name>COMMONS API</name>
+    <artifactId>commons-api</artifactId>
+    <groupId>org.sakaiproject.commons</groupId>
     
     <parent>
-        <artifactId>wall</artifactId>
-        <groupId>org.sakaiproject.wall</groupId>
+        <artifactId>commons</artifactId>
+        <groupId>org.sakaiproject.commons</groupId>
         <version>11-SNAPSHOT</version>
     </parent>
     

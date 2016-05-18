@@ -3,13 +3,13 @@
     
     <modelVersion>4.0.0</modelVersion>
     
-    <name>WALL TOOL</name>
-    <artifactId>wall-tool</artifactId>
-    <groupId>org.sakaiproject.wall</groupId>
+    <name>COMMONS TOOL</name>
+    <artifactId>commons-tool</artifactId>
+    <groupId>org.sakaiproject.commons</groupId>
   
     <parent>
-        <artifactId>wall</artifactId>
-        <groupId>org.sakaiproject.wall</groupId>
+        <artifactId>commons</artifactId>
+        <groupId>org.sakaiproject.commons</groupId>
         <version>11-SNAPSHOT</version>
     </parent>
     
@@ -17,8 +17,8 @@
     
     <dependencies>
         <dependency>
-            <groupId>org.sakaiproject.wall</groupId>
-            <artifactId>wall-api</artifactId>
+            <groupId>org.sakaiproject.commons</groupId>
+            <artifactId>commons-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.sakaiproject.kernel</groupId>
@@ -93,7 +93,7 @@
                             <outputDirectory>${project.build.directory}/${project.build.finalName}/i18n</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${basedir}/src/i18n/org/sakaiproject/wall</directory>
+                                    <directory>${basedir}/src/i18n/org/sakaiproject/commons</directory>
                                     <includes>
                                         <include>**/*.properties</include>
                                         <include>**/*.json</include>
