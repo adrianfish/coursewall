@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -377,37 +378,59 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
 
         try {
             URL url = new URL(urlString);
-            URLConnection conn = url.openConnection();
-            conn.setRequestProperty("User-Agent", USER_AGENT);
-            conn.connect();
-            String contentEncoding = conn.getContentEncoding();
-            String contentType = conn.getContentType();
+            URLConnection c = url.openConnection();
 
-            if (contentType != null 
-                    && (contentType.startsWith("text/html")
-                            || contentType.startsWith("application/xhtml+xml")
-                            || contentType.startsWith("application/xml"))) {
-                String mimeType = contentType.split(";")[0].trim();
-                if (log.isDebugEnabled()) {
-                    log.debug("mimeType: " + mimeType);
-                    log.debug("encoding: " + contentEncoding);
+            if (c instanceof HttpURLConnection) {
+                HttpURLConnection conn = (HttpURLConnection) c;
+                conn.setRequestProperty("User-Agent", USER_AGENT);
+                conn.connect();
+                String contentEncoding = conn.getContentEncoding();
+                String contentType = conn.getContentType();
+                int responseCode = conn.getResponseCode();
+
+                if (responseCode == HttpURLConnection.HTTP_MOVED_PERM
+                        || responseCode == HttpURLConnection.HTTP_MOVED_TEMP
+                        || responseCode == HttpURLConnection.HTTP_SEE_OTHER) {
+                    String newUri = conn.getHeaderField("Location");
+                    if (log.isDebugEnabled()) log.debug("Moved. New URI: " + newUri);
+                    url = new URL(newUri);
+                    c = url.openConnection();
+                    conn = (HttpURLConnection) c;
+                    conn.setRequestProperty("User-Agent", USER_AGENT);
+                    conn.connect();
+                    contentEncoding = conn.getContentEncoding();
+                    contentType = conn.getContentType();
                 }
 
-                BufferedReader reader
-                    = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                BufferedWriter writer
-                    = new BufferedWriter(new OutputStreamWriter(outputStream));
+                if (contentType != null 
+                        && (contentType.startsWith("text/html")
+                                || contentType.startsWith("application/xhtml+xml")
+                                || contentType.startsWith("application/xml"))) {
+                    String mimeType = contentType.split(";")[0].trim();
+                    if (log.isDebugEnabled()) {
+                        log.debug("mimeType: " + mimeType);
+                        log.debug("encoding: " + contentEncoding);
+                    }
 
-                String line = null;
-                while ((line = reader.readLine()) != null) {
-                    writer.write(line);
+                    BufferedReader reader
+                        = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    BufferedWriter writer
+                        = new BufferedWriter(new OutputStreamWriter(outputStream));
+
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        //System.out.println(line);
+                        writer.write(line);
+                    }
+
+                    return new ActionReturn(contentEncoding, mimeType, outputStream);
+                } else {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Invalid content type " + contentType + ". Throwing bad request ...");
+                    }
+                    throw new EntityException("Url content type not supported", "", HttpServletResponse.SC_BAD_REQUEST);
                 }
-
-                return new ActionReturn(contentEncoding, mimeType, outputStream);
             } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("Invalid content type " + contentType + ". Throwing bad request ...");
-                }
                 throw new EntityException("Url content type not supported", "", HttpServletResponse.SC_BAD_REQUEST);
             }
         } catch (MalformedURLException mue) {
