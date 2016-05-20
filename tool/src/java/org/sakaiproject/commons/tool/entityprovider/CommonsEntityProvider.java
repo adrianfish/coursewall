@@ -387,10 +387,12 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
                 String contentEncoding = conn.getContentEncoding();
                 String contentType = conn.getContentType();
                 int responseCode = conn.getResponseCode();
+                if (log.isDebugEnabled()) log.debug("Response code: " + responseCode);
 
-                if (responseCode == HttpURLConnection.HTTP_MOVED_PERM
+                int redirectCounter = 1;
+                while ((responseCode == HttpURLConnection.HTTP_MOVED_PERM
                         || responseCode == HttpURLConnection.HTTP_MOVED_TEMP
-                        || responseCode == HttpURLConnection.HTTP_SEE_OTHER) {
+                        || responseCode == HttpURLConnection.HTTP_SEE_OTHER) && redirectCounter < 10) {
                     String newUri = conn.getHeaderField("Location");
                     if (log.isDebugEnabled()) log.debug("Moved. New URI: " + newUri);
                     url = new URL(newUri);
@@ -400,6 +402,10 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
                     conn.connect();
                     contentEncoding = conn.getContentEncoding();
                     contentType = conn.getContentType();
+                    responseCode = conn.getResponseCode();
+                    if (log.isDebugEnabled()) log.debug("Redirect counter: " + redirectCounter);
+                    if (log.isDebugEnabled()) log.debug("Response code: " + responseCode);
+                    redirectCounter += 1;
                 }
 
                 if (contentType != null 
@@ -419,7 +425,6 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
 
                     String line = null;
                     while ((line = reader.readLine()) != null) {
-                        //System.out.println(line);
                         writer.write(line);
                     }
 

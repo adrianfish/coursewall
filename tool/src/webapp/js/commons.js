@@ -63,7 +63,12 @@ commons.switchState = function (state, arg) {
                 var cd = e.originalEvent.clipboardData;
                 if (!cd) cd = window.clipboardData;
                 var pasted = cd.getData('text');
-                if (pasted.match(/^https?:\/\//)) {
+                var url = document.createElement('a');
+                url.href = pasted;
+                if (url.hostname) {
+                    if (!pasted.startsWith(url.protocol)) {
+                        pasted = url.protocol + '//' + pasted;
+                    }
                     var sel = window.getSelection();
                     var caretPos = -1;
                     if (sel.rangeCount) {
@@ -85,8 +90,8 @@ commons.switchState = function (state, arg) {
                             self.innerHTML = self.innerHTML + fragment;
                         }
                     });
+                    e.preventDefault();
                 }
-                e.preventDefault();
             });
 
             $('#commons-editor-post-button').click(function (e) {
