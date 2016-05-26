@@ -219,6 +219,9 @@
     padding: 5px;
     width: 482px;
 }
+    .commons-og-image {
+        width: 300px;
+    }
     .commons-og-title {
         font-weight: bold;
     }
