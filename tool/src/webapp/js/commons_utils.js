@@ -530,10 +530,10 @@ commons.utils = {
             .done(function (data) {
 
                 if (data.status === 'END') {
-                    $(window).off('scroll.commons');
+                    commons.scrollable.off('scroll.commons');
                     loadImage.hide();
                 } else {
-                    $(window).off('scroll.commons').on('scroll.commons', commons.utils.getScrollFunction(commons.utils.renderPageOfPosts));
+                    commons.scrollable.off('scroll.commons').on('scroll.commons', commons.utils.getScrollFunction(commons.utils.renderPageOfPosts));
                 }
 
                 commons.postsTotal = data.postsTotal;
@@ -559,6 +559,14 @@ commons.utils = {
                     posts.forEach(function (p) { commons.utils.renderPost(p, 'commons-post-' + p.id); });
 
                     loadImage.hide();
+                    try {
+                        if (window.frameElement) {
+                            setMainFrameHeight(window.frameElement.id);
+                        }
+                    } catch (err) {
+                        // This is likely under an LTI provision scenario.
+                        // XSS protection will block this call.
+                    }
                 });
                 commons.page += 1;
             }).fail(function (xmlHttpRequest, textStatus, errorThrown) {
@@ -569,14 +577,14 @@ commons.utils = {
 
         var scroller = function () {
             
-            var win = $(window);
-            var wintop = win.scrollTop();
-            var winheight = win.height();
-            var docheight = $(document).height()
+            //var win = $(window);
+            var wintop = commons.scrollable.scrollTop();
+            var winheight = commons.scrollable.height();
+            var docheight = commons.doc.height()
 
             if  ((wintop/(docheight-winheight)) > 0.95 || $('body').data('scroll-commons') === true) {
                 $('body').data('scroll-commons', false);
-                win.off('scroll.commons');
+                commons.scrollable.off('scroll.commons');
                 callback();
             }
         };

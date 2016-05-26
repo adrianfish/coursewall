@@ -115,9 +115,9 @@ commons.switchState = function (state, arg) {
                 $('#commons-editor-post-button').prop('disabled', true);
             });
             
-            if (window.parent === window) {
+            //if (window.parent === window) {
                 commons.utils.renderPageOfPosts();
-            } else {
+            /*} else {
                 commons.utils.renderPageOfPosts(true);
                 try {
                     if (window.frameElement) {
@@ -127,7 +127,7 @@ commons.switchState = function (state, arg) {
                     // This is likely under an LTI provision scenario.
                     // XSS protection will block this call.
                 }
-            }
+            }*/
         });
 	} else if (commons.states.PERMISSIONS === state) {
 	    $('#commons-toolbar > li > span').removeClass('current');
@@ -207,6 +207,9 @@ commons.switchState = function (state, arg) {
     if (CKEDITOR) {
         CKEDITOR.disableAutoInline = true;
     }
+
+    commons.scrollable = $(window.frameElement ? window.frameElement.ownerDocument.defaultView : window);
+    commons.doc = $(window.frameElement ? window.frameElement.ownerDocument : document);
 
 }) (jQuery);
 
