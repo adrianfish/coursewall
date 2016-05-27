@@ -174,17 +174,22 @@ commons.utils = {
         var commentId = this.dataset.commentId;
         var postId = this.dataset.postId;
         var numComments = $('#commons-comments-' + postId + ' .commons-comment').length;
-        if (numComments <= 2) {
+        if (numComments <= 4) {
             $('#commons-hide-comments-link-' + postId).hide();
             $('#commons-show-comments-link-' + postId).hide();
         }
         var commentToDelete = $('#commons-comment-' + commentId);
 
-        if (commentToDelete.hasClass('commons-comment-latest')) {
-            commentToDelete.prev().removeClass('commons-comment-not-latest').addClass('commons-comment-latest').show();
-        }
         commons.utils.deleteComment(commentId, function () {
+
                 commentToDelete.remove();
+                var comments = $('#commons-comments-' + postId + ' .commons-comment');
+                numComments = comments.length;
+                if (numComments > 3) {
+                    comments.slice(numComments - 4, numComments - 1)
+                        .removeClass('comments-comment-not-recent')
+                        .addClass('commons-comment-recent');
+                }
             });
     },
     cancelCommentEdit: function (commentId) {
@@ -300,11 +305,11 @@ commons.utils = {
 
         post.comments.forEach(function (c, index) {
 
-            if (index < (post.comments.length - 1)) {
-                c.orderClass = 'commons-comment-not-latest';
+            if (index < (post.comments.length - 3)) {
+                c.orderClass = 'commons-comment-not-recent';
             } else {
-                c.orderClass = 'commons-comment-latest';
-                c.isLatest = true;
+                c.orderClass = 'commons-comment-recent';
+                c.isRecent = true;
             }
             c.formattedCreatedDate = commons.utils.formatDate(c.createdDate);
             c.formattedModifiedDate = commons.utils.formatDate(c.modifiedDate);
@@ -461,13 +466,13 @@ commons.utils = {
             var hideCommentsLink = $('#commons-hide-comments-link-' + post.id);
             showCommentsLink.click(function (e) {
 
-                $('#commons-comments-' + post.id + ' .commons-comment-not-latest').show();
+                $('#commons-comments-' + post.id + ' .commons-comment-not-recent').show();
                 showCommentsLink.hide();
                 hideCommentsLink.show();
             });
             hideCommentsLink.click(function (e) {
 
-                $('#commons-comments-' + post.id + ' .commons-comment-not-latest').hide();
+                $('#commons-comments-' + post.id + ' .commons-comment-not-recent').hide();
                 hideCommentsLink.hide();
                 showCommentsLink.show();
             });
@@ -485,20 +490,25 @@ commons.utils = {
 
                         var numComments = $('#commons-comments-' + post.id + ' .commons-comment').length;
 
-                        if (numComments > 0) {
-                            var latestComment = $('#commons-comments-' + post.id + ' .commons-comment-latest');
-                            latestComment.removeClass('commons-comment-latest')
-                                            .addClass('commons-comment-not-latest');
-                            if (numComments == 1 || showCommentsLink.is(':visible')) {
-                                latestComment.hide();
+                        if (numComments >= 3) {
+                            var recentComments = $('#commons-comments-' + post.id + ' .commons-comment-recent');
+                            recentComments.removeClass('commons-comment-recent');
+                            var earliestRecentComment = $(recentComments[0]);
+                            earliestRecentComment.addClass('commons-comment-not-recent');
+                            if (numComments == 3 || showCommentsLink.is(':visible')) {
+                                earliestRecentComment.hide();
+                            }
+                            recentComments[1].className += ' commons-comment-recent';
+                            recentComments[2].className += ' commons-comment-recent';
+                            if (numComments == 3 || showCommentsLink.is(':visible')) {
                                 showCommentsLink.show();
                             }
                         }
 
                         commons.utils.addPermissionsToComment(savedComment);
                         savedComment.formattedCreatedDate = commons.utils.formatDate(savedComment.createdDate);
-                        savedComment.orderClass = 'commons-comment-latest';
-                        savedComment.isLatest = true;
+                        savedComment.orderClass = 'commons-comment-recent';
+                        savedComment.isRecent = true;
                         var wrappedComment = Handlebars.templates['wrapped_comment'] (savedComment);
                         $('#commons-comments-container-' + post.id).append(wrappedComment);
 
@@ -506,7 +516,7 @@ commons.utils = {
                     });
             });
 
-            if (post.comments.length <= 1) {
+            if (post.comments.length <= 3) {
                 showCommentsLink.hide();
             }
 
