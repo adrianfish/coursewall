@@ -66,28 +66,26 @@ commons.switchState = function (state, arg) {
                 var url = document.createElement('a');
                 url.href = pasted;
                 if (url.hostname) {
-                    if (!pasted.startsWith(url.protocol)) {
+                    // We need to add the protocol for the server side code. It needs a valid URL.
+                    if (pasted.slice(0, url.protocol.length) !== url.protocol) {
                         pasted = url.protocol + '//' + pasted;
                     }
-                    var sel = window.getSelection();
-                    var caretPos = -1;
-                    if (sel.rangeCount) {
-                        var range = sel.getRangeAt(0);
-                        if (range.commonAncestorContainer.parentNode == this) {
-                            caretPos = range.endOffset;
-                        }
-                    }
+
                     var wrapped = '<a href=\"' + pasted + '" target="_blank">' + pasted + "</a>";
-                    if (caretPos == -1) {
-                        this.innerHTML = this.innerHTML + wrapped;
-                    } else {
-                        this.innerHTML = this.innerHTML.substring(0,caretPos) + wrapped + this.innerHTML.substring(caretPos);
+
+                    if (!document.execCommand('insertHtml', false, wrapped)) {
+                        var sel = window.getSelection();
+                        var range = sel.getRangeAt(0);
+                        url.innerHTML = pasted;
+                        url.target = '_blank';
+                        range.insertNode(url);
                     }
-                    var self = this;
+
+                    var self = $(this);
                     commons.utils.getOGPMarkup(pasted, function (fragment) {
 
                         if (fragment) {
-                            self.innerHTML = self.innerHTML + fragment;
+                            self.append(fragment);
                         }
                     });
                     e.preventDefault();
