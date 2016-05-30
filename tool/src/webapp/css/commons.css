@@ -228,6 +228,10 @@
     .commons-og-description {
         font-size: smaller;
     }
+    .commons-og-sitename {
+        margin-top: 5px;
+        font-size: smaller;
+    }
 
 .commons-qtip {
     border: 2px solid #d36f00 !important;

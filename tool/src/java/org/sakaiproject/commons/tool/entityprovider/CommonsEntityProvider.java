@@ -383,6 +383,7 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
             if (c instanceof HttpURLConnection) {
                 HttpURLConnection conn = (HttpURLConnection) c;
                 conn.setRequestProperty("User-Agent", USER_AGENT);
+                conn.setInstanceFollowRedirects(false);
                 conn.connect();
                 String contentEncoding = conn.getContentEncoding();
                 String contentType = conn.getContentType();
@@ -394,11 +395,14 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
                         || responseCode == HttpURLConnection.HTTP_MOVED_TEMP
                         || responseCode == HttpURLConnection.HTTP_SEE_OTHER) && redirectCounter < 10) {
                     String newUri = conn.getHeaderField("Location");
-                    if (log.isDebugEnabled()) log.debug("Moved. New URI: " + newUri);
+                    if (log.isDebugEnabled()) log.debug(responseCode + ". New URI: " + newUri);
+                    String cookies = conn.getHeaderField("Set-Cookie");
                     url = new URL(newUri);
                     c = url.openConnection();
                     conn = (HttpURLConnection) c;
+                    conn.setInstanceFollowRedirects(false);
                     conn.setRequestProperty("User-Agent", USER_AGENT);
+                    conn.setRequestProperty("Cookie", cookies);
                     conn.connect();
                     contentEncoding = conn.getContentEncoding();
                     contentType = conn.getContentType();
