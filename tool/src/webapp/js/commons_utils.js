@@ -264,20 +264,25 @@ commons.utils = {
 
         return false;
     },
-    attachProfilePopup: function () {
+    attachProfilePopup: function (id, userId) {
 
-        $('a.profile').cluetip({
-            width: '620px',
-            cluetipClass: 'commons',
-            sticky: true,
-            dropShadow: false,
-            arrows: true,
-            mouseOutClose: true,
-            closeText: '<img src="/library/image/silk/cross.png" alt="close" />',
-            closePosition: 'top',
-            showTitle: false,
-            hoverIntent: true
-        });
+        $('#commons-author-name-' + id).qtip({
+            position: { viewport: $(window), adjust: { method: 'flipinvert none'} },
+            show: { event: 'click', delay: 0 },
+            style: { classes: 'commons-qtip qtip-rounded' },
+            hide: { event: 'click unfocus' },
+            content: {
+                text: function (event, api) {
+
+                    return $.ajax( { url: "/direct/profile/" + userId + "/formatted" })
+                        .then(function (html) {
+                                return html;
+                            }, function (xhr, status, error) {
+                                api.set('content.text', status + ': ' + error);
+                            });
+                }
+            }
+	   	});
     },
     formatDate: function (millis) {
 
@@ -443,6 +448,8 @@ commons.utils = {
         var self = this;
 
         $(document).ready(function () {
+
+            self.attachProfilePopup(post.id, post.creatorId);
 
             $('#commons-post-edit-link-' + post.id).click(self.editPostHandler);
             $('#commons-post-delete-link-' + post.id).click(self.deletePostHandler);

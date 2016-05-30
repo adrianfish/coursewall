@@ -228,3 +228,14 @@
     .commons-og-description {
         font-size: smaller;
     }
+
+.commons-qtip {
+    border: 2px solid #d36f00 !important;
+    width: 620px !important;
+    max-width: 620px !important;
+    background-color: white !important;
+}
+
+.qtip-content {
+    max-width: 620px !important;
+}
