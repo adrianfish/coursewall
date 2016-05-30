@@ -56,7 +56,7 @@ commons.utils = {
             var siteName = a.hostname.toUpperCase();
             matches = markup.match(self.AUTHOR_REGEX);
             if (matches && matches.length == 2) {
-                 siteName += ' | BY ' + matches[1].toUpperCase();
+                 siteName += ' | ' + commons.i18n.by + ' ' + matches[1].toUpperCase();
             }
 
             if (!title && !image) {
