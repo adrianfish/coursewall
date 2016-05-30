@@ -7,6 +7,7 @@ commons.utils = {
     OGP_TITLE_REGEX: /og:title" content="([^"]*)"/,
     OGP_DESCRIPTION_REGEX: /og:description" content="([^"&#]*)"/,
     OGP_SITE_NAME_REGEX: /og:site_name" content="([^"]*)"/,
+    AUTHOR_REGEX: /author" content="([^"]*)"/,
 
     fromHtml: function (html) {
         return html.replace(/<br>/g, '\n');
@@ -32,7 +33,7 @@ commons.utils = {
 
 
             var image = '';
-            var matches = markup.match(self.TWITTER_IMAGE_REGEX);
+            matches = markup.match(self.TWITTER_IMAGE_REGEX);
             if (matches && matches.length == 2) {
                 image = matches[1];
             } else {
@@ -43,17 +44,19 @@ commons.utils = {
             }
 
             var description = '';
-            var matches = markup.match(self.OGP_DESCRIPTION_REGEX);
+            matches = markup.match(self.OGP_DESCRIPTION_REGEX);
             if (matches && matches.length == 2) {
                 description = matches[1];
                 div.innerHTML = description;
                 description = $(div).html();
             }
 
-            var siteName = '';
-            var matches = markup.match(self.OGP_SITE_NAME_REGEX);
+            var a = document.createElement('a');
+            a.href = url;
+            var siteName = a.hostname.toUpperCase();
+            matches = markup.match(self.AUTHOR_REGEX);
             if (matches && matches.length == 2) {
-                siteName = matches[1];
+                 siteName += ' | BY ' + matches[1].toUpperCase();
             }
 
             if (!title && !image) {
