@@ -11,13 +11,7 @@ import java.util.Stack;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import org.sakaiproject.commons.api.CommonsFunctions;
-import org.sakaiproject.commons.api.CommonsManager;
-import org.sakaiproject.commons.api.CommonsSecurityManager;
-import org.sakaiproject.commons.api.PersistenceManager;
-import org.sakaiproject.commons.api.QueryBean;
-import org.sakaiproject.commons.api.SakaiProxy;
-import org.sakaiproject.commons.api.XmlDefs;
+import org.sakaiproject.commons.api.*;
 import org.sakaiproject.commons.api.datamodel.Comment;
 import org.sakaiproject.commons.api.datamodel.Post;
 import org.sakaiproject.entity.api.Entity;
@@ -74,29 +68,27 @@ public class CommonsManagerImpl implements CommonsManager {
     }
 
     private List<Post> getPosts(String siteId) throws Exception {
+
         QueryBean query = new QueryBean();
         query.siteId = siteId;
-        return commonsSecurityManager.filter(persistenceManager.getAllPost(query), siteId, "SITE");
+        return commonsSecurityManager.filter(persistenceManager.getAllPost(query), siteId, CommonsConstants.SITE);
     }
 
     public List<Post> getPosts(QueryBean query) throws Exception {
 
         Cache cache = sakaiProxy.getCache(POST_CACHE);
 
-        if (query.isUserSite) {
-            System.out.println("USER");
-            query.fromIds.add(query.callerId);
-            List<BasicConnection> connections = profileConnectionsLogic.getBasicConnectionsForUser(sakaiProxy.getCurrentUserId());
-            for (BasicConnection basicConnection : connections) {
-                query.fromIds.add(basicConnection.getUuid());
-            }
-        }
-
+        // Social commons caches are keyed on the owner's user id
         String key = (query.isUserSite) ? query.callerId : query.commonsId;
 
         List<Post> posts = (List<Post>) cache.get(key);
         if (posts == null) {
             if (log.isDebugEnabled()) log.debug("Cache miss or expired on id: " + key);
+            if (query.isUserSite) {
+                log.debug("Getting posts for a user site ...");
+                query.fromIds.add(query.callerId);
+                query.fromIds.addAll(getConnectionUserIds(sakaiProxy.getCurrentUserId()));
+            }
             List<Post> unfilteredPosts = persistenceManager.getAllPost(query, true);
             cache.put(key, unfilteredPosts);
             return commonsSecurityManager.filter(unfilteredPosts, query.siteId, query.embedder);
@@ -110,12 +102,17 @@ public class CommonsManagerImpl implements CommonsManager {
 
     public Post savePost(Post post) {
 
-        boolean isUserSite = sakaiProxy.isUserSite(post.getSiteId());
-
         try {
             Post newOrUpdatedPost = persistenceManager.savePost(post);
             if (newOrUpdatedPost != null) {
-                removeContextIdFromCache(post.getCommonsId());
+                String commonsId = post.getCommonsId();
+                List<String> contextIds = new ArrayList();
+                if (persistenceManager.getCommons(commonsId).isSocial()) {
+                    contextIds = getConnectionUserIds(sakaiProxy.getCurrentUserId());
+                } else {
+                    contextIds.add(post.getCommonsId());
+                }
+                removeContextIdsFromCache(contextIds);
                 return newOrUpdatedPost;
             } else {
                 log.error("Failed to save post");
@@ -133,8 +130,17 @@ public class CommonsManagerImpl implements CommonsManager {
             Post post = persistenceManager.getPost(postId, false);
             if (commonsSecurityManager.canCurrentUserDeletePost(post)) {
                 if (persistenceManager.deletePost(post)) {
+                    List<String> contextIds = new ArrayList();
+                    String commonsId = post.getCommonsId();
+                    if (persistenceManager.getCommons(commonsId).isSocial()) {
+                        String userId = post.getCreatorId();
+                        // This is a social post. We need to invalidate the social caches of all this user's connections
+                        contextIds = getConnectionUserIds(userId);
+                    } else {
+                        contextIds.add(post.getCommonsId());
+                    }
                     // Invalidate all caches for this site
-                    removeContextIdFromCache(post.getCommonsId());
+                    removeContextIdsFromCache(contextIds);
                     return true;
                 }
             }
@@ -150,7 +156,14 @@ public class CommonsManagerImpl implements CommonsManager {
         try {
             Comment savedComment = persistenceManager.saveComment(comment);
             if (savedComment != null) {
-                removeContextIdFromCache(commonsId);
+                List<String> contextIds = new ArrayList();
+                if (persistenceManager.getCommons(commonsId).isSocial()) {
+                    Post post = persistenceManager.getPost(comment.getPostId(), false);
+                    contextIds = getConnectionUserIds(post.getCreatorId());
+                } else {
+                    contextIds.add(commonsId);
+                }
+                removeContextIdsFromCache(contextIds);
                 return savedComment;
             }
         } catch (Exception e) {
@@ -160,11 +173,18 @@ public class CommonsManagerImpl implements CommonsManager {
         return null;
     }
 
-    public boolean deleteComment(String commonsId, String commentId) {
+    public boolean deleteComment(String commonsId, String postId, String commentId) {
 
         try {
             if (persistenceManager.deleteComment(commentId)) {
-                removeContextIdFromCache(commonsId);
+                List<String> contextIds = new ArrayList();
+                if (persistenceManager.getCommons(commonsId).isSocial()) {
+                    Post post = persistenceManager.getPost(postId, false);
+                    contextIds = getConnectionUserIds(post.getCreatorId());
+                } else {
+                    contextIds.add(commonsId);
+                }
+                removeContextIdsFromCache(contextIds);
                 return true;
             }
         } catch (Exception e) {
@@ -398,7 +418,21 @@ public class CommonsManagerImpl implements CommonsManager {
         return false;
     }
 
-    private void removeContextIdFromCache(String contextId) {
-        sakaiProxy.getCache(POST_CACHE).remove(contextId);
+    private void removeContextIdsFromCache(List<String> contextIds) {
+
+        Cache cache = sakaiProxy.getCache(POST_CACHE);
+        contextIds.forEach(contextId -> cache.remove(contextId));
+    }
+
+    private List<String> getConnectionUserIds(String userId) {
+
+        List<BasicConnection> conns
+            = profileConnectionsLogic.getBasicConnectionsForUser(userId);
+        List<String> userIds = new ArrayList();
+        for (BasicConnection basicConnection : conns) {
+            userIds.add(basicConnection.getUuid());
+        }
+        userIds.add(userId);
+        return userIds;
     }
 }

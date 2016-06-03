@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.sakaiproject.commons.api.CommonsConstants;
 import org.sakaiproject.commons.api.CommonsManager;
 import org.sakaiproject.commons.api.SakaiProxy;
 import org.sakaiproject.component.api.ComponentManager;
@@ -93,8 +94,8 @@ public class CommonsTool extends HttpServlet {
         request.setAttribute("siteId", siteId);
         boolean isUserSite = sakaiProxy.isUserSite(siteId);
         request.setAttribute("isUserSite", isUserSite);
-        request.setAttribute("embedder", isUserSite ? "SOCIAL" : "SITE");
-        request.setAttribute("commonsId", isUserSite ? "SOCIAL" : siteId);
+        request.setAttribute("embedder", isUserSite ? CommonsConstants.SOCIAL : CommonsConstants.SITE);
+        request.setAttribute("commonsId", isUserSite ? CommonsConstants.SOCIAL : siteId);
 
         response.setContentType("text/html");
         request.getRequestDispatcher("/WEB-INF/bootstrap.jsp").include(request, response);

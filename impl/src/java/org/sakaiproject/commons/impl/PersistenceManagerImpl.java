@@ -16,7 +16,9 @@ import org.sakaiproject.db.api.SqlReader;
 import org.sakaiproject.db.api.SqlService;
 import org.sakaiproject.component.api.ServerConfigurationService;
 import org.sakaiproject.commons.api.datamodel.Comment;
+import org.sakaiproject.commons.api.datamodel.Commons;
 import org.sakaiproject.commons.api.datamodel.Post;
+import org.sakaiproject.commons.api.CommonsConstants;
 import org.sakaiproject.commons.api.PersistenceManager;
 import org.sakaiproject.commons.api.QueryBean;
 import org.sakaiproject.commons.api.SakaiProxy;
@@ -88,7 +90,7 @@ public class PersistenceManagerImpl implements PersistenceManager {
             log.debug("getAllPost(" + query + ")");
         }
 
-        if (query.embedder.equals("SOCIAL")) {
+        if (query.embedder.equals(CommonsConstants.SOCIAL)) {
             int numFromIds = query.fromIds.size();
             if (numFromIds > 0) {
                 String sql = SOCIAL_COMMONS_POSTS_SELECT;
@@ -182,22 +184,10 @@ public class PersistenceManagerImpl implements PersistenceManager {
                 public void run() {
 
                     // Test if the commons exists.
-                    List<String> commonsIds = sqlService.dbRead(COMMONS_SELECT
-                        , new Object[] {post.getCommonsId()}
-                        , new SqlReader<String>() {
-                            public String readSqlResultRecord(ResultSet result) {
-                                try {
-                                    return result.getString("ID");
-                                } catch (SQLException sqle) {
-                                    return null;
-                                }
-                            }
-                        });
-
-                    if (commonsIds.size() == 0) {
+                    if (getCommons(post.getCommonsId()) == null) {
                         // Commons doesn't exist yet. Create it.
                         String embedder = post.getEmbedder();
-                        String siteId = (embedder.equals("SOCIAL")) ? "SOCIAL" : post.getSiteId();
+                        String siteId = (embedder.equals(CommonsConstants.SOCIAL)) ? CommonsConstants.SOCIAL : post.getSiteId();
                         sqlService.dbWrite(COMMONS_INSERT
                             , new Object [] { post.getCommonsId(), siteId, embedder });
                     }
@@ -248,6 +238,28 @@ public class PersistenceManagerImpl implements PersistenceManager {
             });
 
         return posts.get(0);
+    }
+
+    public Commons getCommons(String commonsId) {
+
+        List<Commons> commons = sqlService.dbRead(COMMONS_SELECT
+            , new Object[] {commonsId}
+            , new SqlReader<Commons>() {
+                public Commons readSqlResultRecord(ResultSet result) {
+                    try {
+                        return new Commons(result);
+                    } catch (SQLException sqle) {
+                        return null;
+                    }
+                }
+            });
+
+        if (commons.size() > 0) {
+            return commons.get(0);
+        } else {
+            log.warn("No commons for id '" + commonsId + "'. Returning null ...");
+            return null;
+        }
     }
 
     private Post loadPostFromResult(ResultSet result, boolean loadComments) {

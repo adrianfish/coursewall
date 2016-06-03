@@ -251,14 +251,15 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
         }
 
         String commonsId = (String) params.get("commonsId");
+        String postId = (String) params.get("postId");
         String commentId = (String) params.get("commentId");
 
-        if (StringUtils.isBlank(commonsId) || StringUtils.isBlank(commentId)) {
-            throw new EntityException("You must supply a commonsId and a commentId"
+        if (StringUtils.isBlank(commonsId) || StringUtils.isBlank(postId) || StringUtils.isBlank(commonsId)) {
+            throw new EntityException("You must supply a commonsId, a postId and a commonsId"
                                                 , "", HttpServletResponse.SC_BAD_REQUEST);
         }
 
-        if (commonsManager.deleteComment(commonsId, commentId)) {
+        if (commonsManager.deleteComment(commonsId, postId, commentId)) {
             return new ActionReturn("SUCCESS");
         } else {
             return new ActionReturn("FAIL");
