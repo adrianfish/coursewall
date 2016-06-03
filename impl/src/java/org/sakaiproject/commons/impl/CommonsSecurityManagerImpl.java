@@ -28,6 +28,7 @@ import org.sakaiproject.assignment.api.AssignmentService;
 import org.sakaiproject.authz.api.Role;
 import org.sakaiproject.authz.api.SecurityService;
 import org.sakaiproject.commons.api.datamodel.Post;
+import org.sakaiproject.commons.api.CommonsConstants;
 import org.sakaiproject.commons.api.CommonsFunctions;
 import org.sakaiproject.commons.api.CommonsSecurityManager;
 import org.sakaiproject.commons.api.SakaiProxy;
@@ -107,13 +108,13 @@ public class CommonsSecurityManagerImpl implements CommonsSecurityManager {
         System.out.println("posts: " + posts.size());
 
         if (posts != null && posts.size() > 0) {
-            if (embedder.equals("SITE")) {
+            if (embedder.equals(CommonsConstants.SITE)) {
                 boolean readAny = securityService.unlock(CommonsFunctions.COMMONS_POST_READ_ANY, "/site/" + siteId);
                 return (readAny) ? posts : new ArrayList<Post>();
-            } else if (embedder.equals("ASSIGNMENT")) {
+            } else if (embedder.equals(CommonsConstants.ASSIGNMENT)) {
                 boolean readAny = securityService.unlock(AssignmentService.SECURE_ADD_ASSIGNMENT_SUBMISSION, "/site/" + siteId);
                 return (readAny) ? posts : new ArrayList<Post>();
-            } else if (embedder.equals("SOCIAL")) {
+            } else if (embedder.equals(CommonsConstants.SOCIAL)) {
                 return posts;
             } else {
                 return new ArrayList<Post>();

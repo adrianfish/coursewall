@@ -183,7 +183,7 @@ commons.utils = {
         }
         var commentToDelete = $('#commons-comment-' + commentId);
 
-        commons.utils.deleteComment(commentId, function () {
+        commons.utils.deleteComment(postId, commentId, function () {
 
                 commentToDelete.remove();
                 var comments = $('#commons-comments-' + postId + ' .commons-comment');
@@ -384,12 +384,13 @@ commons.utils = {
 
         return false;
     },
-    deleteComment: function (commentId, callback) {
+    deleteComment: function (postId, commentId, callback) {
+
+        var url = '/direct/commons/deleteComment?commonsId=' + commons.commonsId + '&postId='
+                        + postId + '&commentId=' + commentId;
         
-        $.ajax( {
-            url: '/direct/commons/deleteComment?commonsId=' + commons.commonsId + '&commentId=' + commentId,
-            timeout: commons.AJAX_TIMEOUT
-        }).done(function (text, status) {
+        $.ajax( { url: url, timeout: commons.AJAX_TIMEOUT })
+        .done(function (text, status) {
             callback();
         }).fail(function (xmlHttpRequest, textStatus, error) {
             alert("Failed to delete comment. Status: " + textStatus + ". Error: " + error);

@@ -3,6 +3,7 @@ package org.sakaiproject.commons.api;
 import java.util.List;
 
 import org.sakaiproject.commons.api.datamodel.Comment;
+import org.sakaiproject.commons.api.datamodel.Commons;
 import org.sakaiproject.commons.api.datamodel.Post;
 import org.sakaiproject.commons.api.QueryBean;
 
@@ -20,4 +21,5 @@ public interface PersistenceManager {
     public Post savePost(Post post);
     public boolean deletePost(Post post);
     public Post getPost(String postId, boolean loadComments);
+    public Commons getCommons(String commonsId);
 }
