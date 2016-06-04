@@ -29,5 +29,5 @@ public interface CommonsManager extends EntityProducer {
 
     public Comment saveComment(String commonsId, Comment comment);
 
-    public boolean deleteComment(String commonsId, String postId, String commentId);
+    public boolean deleteComment(String siteId, String commonsId, String embedder, String commentId, String commentCreatorId, String postCreatorId);
 }

@@ -250,16 +250,20 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
                                                 , "", HttpServletResponse.SC_FORBIDDEN);
         }
 
+        String siteId = (String) params.get("siteId");
         String commonsId = (String) params.get("commonsId");
-        String postId = (String) params.get("postId");
+        String embedder = (String) params.get("embedder");
         String commentId = (String) params.get("commentId");
+        String commentCreatorId = (String) params.get("commentCreatorId");
+        String postCreatorId = (String) params.get("postCreatorId");
 
-        if (StringUtils.isBlank(commonsId) || StringUtils.isBlank(postId) || StringUtils.isBlank(commonsId)) {
+        if (StringUtils.isBlank(siteId) || StringUtils.isBlank(commonsId) || StringUtils.isBlank(embedder) || StringUtils.isBlank(commentId)
+                || StringUtils.isBlank(commentCreatorId) || StringUtils.isBlank(postCreatorId)) {
             throw new EntityException("You must supply a commonsId, a postId and a commonsId"
                                                 , "", HttpServletResponse.SC_BAD_REQUEST);
         }
 
-        if (commonsManager.deleteComment(commonsId, postId, commentId)) {
+        if (commonsManager.deleteComment(siteId, commonsId, embedder, commentId, commentCreatorId, postCreatorId)) {
             return new ActionReturn("SUCCESS");
         } else {
             return new ActionReturn("FAIL");
@@ -312,7 +316,7 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
 
         String userId = developerHelperService.getCurrentUserId();
         
-        if (userId == null) {
+        if (StringUtils.isBlank(userId)) {
             throw new EntityException("You must be logged in to retrieve perms", "", HttpServletResponse.SC_UNAUTHORIZED);
         }
 

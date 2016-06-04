@@ -47,20 +47,19 @@ public class CommonsManagerImpl implements CommonsManager {
 
         log.info("Registering Commons functions ...");
 
-        sakaiProxy.registerFunction(CommonsFunctions.COMMONS_POST_CREATE);
-        sakaiProxy.registerFunction(CommonsFunctions.COMMONS_POST_READ_ANY);
-        sakaiProxy.registerFunction(CommonsFunctions.COMMONS_POST_UPDATE_ANY);
-        sakaiProxy.registerFunction(CommonsFunctions.COMMONS_POST_UPDATE_OWN);
-        sakaiProxy.registerFunction(CommonsFunctions.COMMONS_POST_DELETE_ANY);
-        sakaiProxy.registerFunction(CommonsFunctions.COMMONS_POST_DELETE_OWN);
-        sakaiProxy.registerFunction(CommonsFunctions.COMMONS_COMMENT_CREATE);
-        sakaiProxy.registerFunction(CommonsFunctions.COMMONS_COMMENT_READ_ANY);
-        sakaiProxy.registerFunction(CommonsFunctions.COMMONS_COMMENT_READ_OWN);
-        sakaiProxy.registerFunction(CommonsFunctions.COMMONS_COMMENT_UPDATE_ANY);
-        sakaiProxy.registerFunction(CommonsFunctions.COMMONS_COMMENT_UPDATE_OWN);
-        sakaiProxy.registerFunction(CommonsFunctions.COMMONS_COMMENT_DELETE_ANY);
-        sakaiProxy.registerFunction(CommonsFunctions.COMMONS_COMMENT_DELETE_OWN);
-        sakaiProxy.registerFunction(CommonsFunctions.COMMONS_MODIFY_PERMISSIONS);
+        sakaiProxy.registerFunction(CommonsFunctions.POST_CREATE);
+        sakaiProxy.registerFunction(CommonsFunctions.POST_READ_ANY);
+        sakaiProxy.registerFunction(CommonsFunctions.POST_UPDATE_ANY);
+        sakaiProxy.registerFunction(CommonsFunctions.POST_UPDATE_OWN);
+        sakaiProxy.registerFunction(CommonsFunctions.POST_DELETE_ANY);
+        sakaiProxy.registerFunction(CommonsFunctions.POST_DELETE_OWN);
+        sakaiProxy.registerFunction(CommonsFunctions.COMMENT_CREATE);
+        sakaiProxy.registerFunction(CommonsFunctions.COMMENT_READ_ANY);
+        sakaiProxy.registerFunction(CommonsFunctions.COMMENT_UPDATE_ANY);
+        sakaiProxy.registerFunction(CommonsFunctions.COMMENT_UPDATE_OWN);
+        sakaiProxy.registerFunction(CommonsFunctions.COMMENT_DELETE_ANY);
+        sakaiProxy.registerFunction(CommonsFunctions.COMMENT_DELETE_OWN);
+        sakaiProxy.registerFunction(CommonsFunctions.MODIFY_PERMISSIONS);
 
         log.info("Registered Commons functions ...");
 
@@ -173,14 +172,15 @@ public class CommonsManagerImpl implements CommonsManager {
         return null;
     }
 
-    public boolean deleteComment(String commonsId, String postId, String commentId) {
+    public boolean deleteComment(String siteId, String commonsId, String embedder, String commentId, String commentCreatorId, String postCreatorId) {
 
         try {
-            if (persistenceManager.deleteComment(commentId)) {
+            if (commonsSecurityManager.canCurrentUserDeleteComment(siteId, embedder, commentCreatorId, postCreatorId)
+                    && persistenceManager.deleteComment(commentId)) {
                 List<String> contextIds = new ArrayList();
-                if (persistenceManager.getCommons(commonsId).isSocial()) {
-                    Post post = persistenceManager.getPost(postId, false);
-                    contextIds = getConnectionUserIds(post.getCreatorId());
+                if (embedder.equals(CommonsConstants.SOCIAL)) {
+                    //Post post = persistenceManager.getPost(postId, false);
+                    contextIds = getConnectionUserIds(postCreatorId);
                 } else {
                     contextIds.add(commonsId);
                 }

@@ -25,6 +25,7 @@ import java.util.TreeSet;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import org.sakaiproject.assignment.api.AssignmentService;
 import org.sakaiproject.authz.api.AuthzGroup;
 import org.sakaiproject.authz.api.AuthzGroupService;
 import org.sakaiproject.authz.api.AuthzPermissionException;
@@ -33,6 +34,7 @@ import org.sakaiproject.authz.api.GroupNotDefinedException;
 import org.sakaiproject.authz.api.Role;
 import org.sakaiproject.authz.api.SecurityAdvisor;
 import org.sakaiproject.authz.api.SecurityService;
+import org.sakaiproject.commons.api.CommonsConstants;
 import org.sakaiproject.commons.api.CommonsFunctions;
 import org.sakaiproject.commons.api.CommonsManager;
 import org.sakaiproject.commons.api.SakaiProxy;
@@ -271,6 +273,62 @@ public class SakaiProxyImpl implements SakaiProxy {
 
             Role siteRole = site.getUserRole(userId);
 
+            if (siteService.getUserSiteId(userId).equals(siteId)) {
+                // This is a my workspace. Make sure the basic set are allowed so that
+                // the security manager can make the right decisions.
+                if (!siteRole.isAllowed(CommonsFunctions.POST_CREATE)
+                        || !siteRole.isAllowed(CommonsFunctions.POST_READ_ANY)
+                        || !siteRole.isAllowed(CommonsFunctions.POST_UPDATE_OWN)
+                        || !siteRole.isAllowed(CommonsFunctions.POST_DELETE_OWN)
+                        || !siteRole.isAllowed(CommonsFunctions.COMMENT_CREATE)
+                        || !siteRole.isAllowed(CommonsFunctions.COMMENT_READ_ANY)
+                        || !siteRole.isAllowed(CommonsFunctions.COMMENT_UPDATE_OWN)
+                        || !siteRole.isAllowed(CommonsFunctions.COMMENT_DELETE_OWN)) {
+
+                    siteRole.allowFunction(CommonsFunctions.POST_CREATE);
+                    siteRole.allowFunction(CommonsFunctions.POST_READ_ANY);
+                    siteRole.allowFunction(CommonsFunctions.POST_UPDATE_OWN);
+                    siteRole.allowFunction(CommonsFunctions.POST_DELETE_OWN);
+                    siteRole.allowFunction(CommonsFunctions.COMMENT_CREATE);
+                    siteRole.allowFunction(CommonsFunctions.COMMENT_READ_ANY);
+                    siteRole.allowFunction(CommonsFunctions.COMMENT_UPDATE_OWN);
+                    siteRole.allowFunction(CommonsFunctions.COMMENT_DELETE_OWN);
+
+                    try {
+                        authzGroupService.save(site);
+                    } catch (Exception e) {
+                        // This should never happen.
+                        log.error("Exception while saving user workspace role " + siteRole.getId() + " in site " + siteId);
+                    }
+                }
+            } else if (embedder.equals(CommonsConstants.ASSIGNMENT)) {
+                if (siteRole.isAllowed(AssignmentService.SECURE_ADD_ASSIGNMENT_SUBMISSION)) {
+                    filteredFunctions.add(CommonsFunctions.POST_CREATE);
+                    filteredFunctions.add(CommonsFunctions.POST_READ_ANY);
+                    filteredFunctions.add(CommonsFunctions.POST_UPDATE_OWN);
+                    filteredFunctions.add(CommonsFunctions.POST_DELETE_OWN);
+                    filteredFunctions.add(CommonsFunctions.COMMENT_CREATE);
+                    filteredFunctions.add(CommonsFunctions.COMMENT_READ_ANY);
+                    filteredFunctions.add(CommonsFunctions.COMMENT_UPDATE_OWN);
+                    filteredFunctions.add(CommonsFunctions.COMMENT_DELETE_OWN);
+                }
+
+                if (siteRole.isAllowed(AssignmentService.SECURE_ADD_ASSIGNMENT)) {
+                    filteredFunctions.add(CommonsFunctions.POST_CREATE);
+                    filteredFunctions.add(CommonsFunctions.POST_READ_ANY);
+                    filteredFunctions.add(CommonsFunctions.POST_DELETE_ANY);
+                    filteredFunctions.add(CommonsFunctions.POST_UPDATE_OWN);
+                    filteredFunctions.add(CommonsFunctions.POST_DELETE_OWN);
+                    filteredFunctions.add(CommonsFunctions.COMMENT_CREATE);
+                    filteredFunctions.add(CommonsFunctions.COMMENT_READ_ANY);
+                    filteredFunctions.add(CommonsFunctions.COMMENT_UPDATE_OWN);
+                    filteredFunctions.add(CommonsFunctions.COMMENT_DELETE_OWN);
+                    filteredFunctions.add(CommonsFunctions.COMMENT_DELETE_ANY);
+                }
+
+                return filteredFunctions;
+            }
+
             Set<String> functions = siteRole.getAllowedFunctions();
 
             if (siteHelperRealm != null) {
@@ -287,7 +345,7 @@ public class SakaiProxyImpl implements SakaiProxy {
             }
 
             if (functions.contains("site.upd")) {
-                filteredFunctions.add(CommonsFunctions.COMMONS_MODIFY_PERMISSIONS);
+                filteredFunctions.add(CommonsFunctions.MODIFY_PERMISSIONS);
             }
         }
 
@@ -354,8 +412,8 @@ public class SakaiProxyImpl implements SakaiProxy {
                 AuthzGroup siteHelperAuthzGroup = authzGroupService.getAuthzGroup("!site.helper");
                 Role siteHelperRole = siteHelperAuthzGroup.getRole(siteRole.getId());
 
-                if (!siteRole.isAllowed(CommonsFunctions.COMMONS_MODIFY_PERMISSIONS) && !siteRole.isAllowed("site.upd")) {
-                    if (siteHelperRole == null || !siteHelperRole.isAllowed(CommonsFunctions.COMMONS_MODIFY_PERMISSIONS)) {
+                if (!siteRole.isAllowed(CommonsFunctions.MODIFY_PERMISSIONS) && !siteRole.isAllowed("site.upd")) {
+                    if (siteHelperRole == null || !siteHelperRole.isAllowed(CommonsFunctions.MODIFY_PERMISSIONS)) {
                         log.warn(userId + " attempted to update COMMONS permissions for site " + site.getTitle());
                         return false;
                     }
