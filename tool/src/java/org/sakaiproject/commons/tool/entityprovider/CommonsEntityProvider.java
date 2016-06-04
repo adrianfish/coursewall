@@ -108,12 +108,6 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
                 "Bad request: To get the posts in a commons you need a url like '/direct/commons/posts/COMMONSID.json?siteId=siteId&embedder=SITE'"
                                             , "", HttpServletResponse.SC_BAD_REQUEST);
         }
-        
-        /*
-        if (commonsSecurityManager.getSiteIfCurrentUserCanAccessTool(siteId) == null) {
-            throw new EntityException("Access denied.", "", HttpServletResponse.SC_UNAUTHORIZED);
-        }
-        */
 
         List<Post> posts = new ArrayList<Post>();
 
@@ -135,10 +129,14 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
             int page = Integer.parseInt((String) params.get("page"));
 
             if (page == -1) {
+                // This is a hack to support the multi tool pages. Infinite scroll does not work well
+                // in a frame.
                 data.status = "END";
+                if (posts.size() > 200) {
+                    posts = posts.subList(0, 200);
+                }
                 data.posts = posts;
             } else {
-
                 int pageSize = 20;
                 int start  = page * pageSize;
 
