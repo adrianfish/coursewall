@@ -52,12 +52,12 @@ public class CommonsSecurityManagerImpl implements CommonsSecurityManager {
 
         log.debug("canCurrentUserCommentOnPost()");
 
-        if (sakaiProxy.isAllowedFunction(CommonsFunctions.COMMONS_COMMENT_CREATE, post.getSiteId())) {
+        // An author can always comment on their own posts
+        if (post.getCreatorId().equals(sakaiProxy.getCurrentUserId())) {
             return true;
         }
 
-        // An author can always comment on their own posts
-        if (post.getCreatorId().equals(sakaiProxy.getCurrentUserId())) {
+        if (sakaiProxy.isAllowedFunction(CommonsFunctions.COMMENT_CREATE, post.getSiteId())) {
             return true;
         }
 
@@ -66,7 +66,7 @@ public class CommonsSecurityManagerImpl implements CommonsSecurityManager {
 
     public boolean canCurrentUserDeletePost(Post post) throws SecurityException {
 
-        if (sakaiProxy.isAllowedFunction(CommonsFunctions.COMMONS_POST_DELETE_ANY, post.getSiteId())) {
+        if (sakaiProxy.isAllowedFunction(CommonsFunctions.POST_DELETE_ANY, post.getSiteId())) {
             return true;
         }
 
@@ -74,7 +74,7 @@ public class CommonsSecurityManagerImpl implements CommonsSecurityManager {
 
         // If the current user is the author and has commons.post.delete.own
         if (currentUser != null && currentUser.equals(post.getCreatorId())
-                && sakaiProxy.isAllowedFunction(CommonsFunctions.COMMONS_POST_DELETE_OWN, post.getSiteId())) {
+                && sakaiProxy.isAllowedFunction(CommonsFunctions.POST_DELETE_OWN, post.getSiteId())) {
             return true;
         }
 
@@ -84,14 +84,35 @@ public class CommonsSecurityManagerImpl implements CommonsSecurityManager {
     public boolean canCurrentUserEditPost(Post post) {
 
         // This acts as an override
-        if (sakaiProxy.isAllowedFunction(CommonsFunctions.COMMONS_POST_UPDATE_ANY, post.getSiteId())) {
+        if (sakaiProxy.isAllowedFunction(CommonsFunctions.POST_UPDATE_ANY, post.getSiteId())) {
             return true;
         }
 
         String currentUser = sakaiProxy.getCurrentUserId();
 
         // If the current user is authenticated and the post author, yes.
-        if (currentUser != null && currentUser.equals(post.getCreatorId()) && sakaiProxy.isAllowedFunction(CommonsFunctions.COMMONS_POST_UPDATE_OWN, post.getSiteId())) {
+        if (currentUser != null && currentUser.equals(post.getCreatorId()) && sakaiProxy.isAllowedFunction(CommonsFunctions.POST_UPDATE_OWN, post.getSiteId())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean canCurrentUserDeleteComment(String siteId, String embedder, String commentCreatorId, String postCreatorId) throws SecurityException {
+
+        String currentUserId = sakaiProxy.getCurrentUserId();
+
+        if (sakaiProxy.isAllowedFunction(CommonsFunctions.COMMENT_DELETE_ANY, siteId)) {
+            return true;
+        }
+
+        if (sakaiProxy.isAllowedFunction(CommonsFunctions.COMMENT_DELETE_OWN, siteId)
+                && commentCreatorId.equals(currentUserId)) {
+            return true;
+        }
+
+        if (embedder.equals(CommonsConstants.SOCIAL) && postCreatorId.equals(currentUserId)) {
+            // You can always delete comments on your social posts
             return true;
         }
 
@@ -104,12 +125,9 @@ public class CommonsSecurityManagerImpl implements CommonsSecurityManager {
      */
     public List<Post> filter(List<Post> posts, String siteId, String embedder) {
 
-        System.out.println("embedder: " + embedder);
-        System.out.println("posts: " + posts.size());
-
         if (posts != null && posts.size() > 0) {
             if (embedder.equals(CommonsConstants.SITE)) {
-                boolean readAny = securityService.unlock(CommonsFunctions.COMMONS_POST_READ_ANY, "/site/" + siteId);
+                boolean readAny = securityService.unlock(CommonsFunctions.POST_READ_ANY, "/site/" + siteId);
                 return (readAny) ? posts : new ArrayList<Post>();
             } else if (embedder.equals(CommonsConstants.ASSIGNMENT)) {
                 boolean readAny = securityService.unlock(AssignmentService.SECURE_ADD_ASSIGNMENT_SUBMISSION, "/site/" + siteId);
@@ -129,7 +147,7 @@ public class CommonsSecurityManagerImpl implements CommonsSecurityManager {
         Site site = sakaiProxy.getSiteOrNull(post.getSiteId());
 
         if (site != null) {
-            return securityService.unlock(CommonsFunctions.COMMONS_POST_READ_ANY, "/site/" + post.getSiteId());
+            return securityService.unlock(CommonsFunctions.POST_READ_ANY, "/site/" + post.getSiteId());
         } else {
             return false;
         }

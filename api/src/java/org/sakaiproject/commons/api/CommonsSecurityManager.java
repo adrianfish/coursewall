@@ -33,4 +33,5 @@ public interface CommonsSecurityManager {
     public List<Post> filter(List<Post> posts, String siteId, String embedder);
     public boolean canCurrentUserReadPost(Post post);
     public Site getSiteIfCurrentUserCanAccessTool(String siteId);
+    public boolean canCurrentUserDeleteComment(String siteId, String embedder, String commentCreatorId, String postCreatorId) throws SecurityException;
 }

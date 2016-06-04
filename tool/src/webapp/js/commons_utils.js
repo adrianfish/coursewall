@@ -144,7 +144,6 @@ commons.utils = {
 
             var textarea = $('#commons-comment-textarea-' + comment.id);
             var tmp = commons.utils.fromHtml(comment.content);
-            console.log(tmp);
             textarea.val(commons.utils.fromHtml(comment.content));
             textarea.each(function () { autosize(this); }).focus();
 
@@ -337,8 +336,6 @@ commons.utils = {
             return 0;
         }
 
-        //content = commons.utils.toHtml(content);
-
         var post = {
                 'id': postId,
                 'content': content,
@@ -386,9 +383,12 @@ commons.utils = {
     },
     deleteComment: function (postId, commentId, callback) {
 
-        var url = '/direct/commons/deleteComment?commonsId=' + commons.commonsId + '&postId='
-                        + postId + '&commentId=' + commentId;
-        
+        var commentCreatorId = document.getElementById('commons-comment-' + commentId).dataset.creatorId;
+        var postCreatorId = document.getElementById('commons-post-' + postId).dataset.creatorId;
+
+        var url = '/direct/commons/deleteComment?siteId=' + commons.siteId + '&commonsId=' + commons.commonsId + '&embedder=' + commons.embedder
+                        + '&commentId=' + commentId + '&commentCreatorId=' + commentCreatorId + '&postCreatorId=' + postCreatorId
+
         $.ajax( { url: url, timeout: commons.AJAX_TIMEOUT })
         .done(function (text, status) {
             callback();
@@ -430,10 +430,13 @@ commons.utils = {
     },
     addPermissionsToComment: function (c) {
 
+        var postCreatorId = document.getElementById('commons-post-' + c.postId).dataset.creatorId;
+
         c.canComment = commons.currentUserPermissions.commentCreate;
         c.modified = c.modifiedDate > c.createdDate;
         c.canDelete = commons.currentUserPermissions.commentDeleteAny
-                        || (commons.currentUserPermissions.commentDeleteOwn && c.creatorId === commons.userId);
+                        || (commons.currentUserPermissions.commentDeleteOwn && c.creatorId === commons.userId)
+                        || (commons.embedder === 'SOCIAL' && postCreatorId === commons.userId);
         c.canEdit = commons.currentUserPermissions.commentUpdateAny
                         || (commons.currentUserPermissions.commentUpdateOwn && c.creatorId === commons.userId);
     },
