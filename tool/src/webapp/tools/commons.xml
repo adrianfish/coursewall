@@ -24,6 +24,8 @@
         <category name="project" />
         <category name="myworkspace" />
 
+        <configuration name="renderInline" value="true" />
+
    	</tool>
 
 </registration>
