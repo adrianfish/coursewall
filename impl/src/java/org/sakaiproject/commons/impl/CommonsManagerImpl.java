@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Set;
 import java.util.Stack;
 
@@ -18,6 +20,7 @@ import org.sakaiproject.entity.api.Entity;
 import org.sakaiproject.entity.api.HttpAccess;
 import org.sakaiproject.entity.api.Reference;
 import org.sakaiproject.entity.api.ResourceProperties;
+import org.sakaiproject.event.api.Event;
 import org.sakaiproject.memory.api.Cache;
 import org.sakaiproject.profile2.logic.ProfileConnectionsLogic;
 import org.sakaiproject.profile2.model.BasicConnection;
@@ -32,7 +35,7 @@ import org.w3c.dom.NodeList;
  * @author Adrian Fish (adrian.r.fish@gmail.com)
  */
 @Setter @Slf4j
-public class CommonsManagerImpl implements CommonsManager {
+public class CommonsManagerImpl implements CommonsManager, Observer {
 
     private PersistenceManager persistenceManager;
     private CommonsSecurityManager commonsSecurityManager;
@@ -64,6 +67,7 @@ public class CommonsManagerImpl implements CommonsManager {
         log.info("Registered Commons functions ...");
 
         sakaiProxy.registerEntityProducer(this);
+        sakaiProxy.addObserver(this);
     }
 
     private List<Post> getPosts(String siteId) throws Exception {
@@ -426,13 +430,30 @@ public class CommonsManagerImpl implements CommonsManager {
 
     private List<String> getConnectionUserIds(String userId) {
 
+        List<String> userIds = new ArrayList();
         List<BasicConnection> conns
             = profileConnectionsLogic.getBasicConnectionsForUser(userId);
-        List<String> userIds = new ArrayList();
-        for (BasicConnection basicConnection : conns) {
-            userIds.add(basicConnection.getUuid());
-        }
+        conns.forEach(conn -> userIds.add(conn.getUuid()));
         userIds.add(userId);
         return userIds;
+    }
+
+    public void update(Observable o, final Object arg) {
+
+        if (arg instanceof Event) {
+            Event e = (Event) arg;
+            String event = e.getEvent();
+            if (ProfileConstants.EVENT_FRIEND_CONFIRM.equals(event)
+                || ProfileConstants.EVENT_FRIEND_REMOVE.equals(event)) {
+                String ref = e.getResource();
+                String[] pathParts = ref.split("/");
+                String from = e.getUserId();
+                String to = pathParts[2];
+                List<String> contextIds = new ArrayList();
+                contextIds.add(from);
+                contextIds.add(to);
+                removeContextIdsFromCache(contextIds);
+            }
+        }
     }
 }
