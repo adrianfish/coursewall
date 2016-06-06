@@ -17,6 +17,7 @@
 package org.sakaiproject.commons.api;
 
 import java.util.Map;
+import java.util.Observer;
 import java.util.Set;
 
 import org.sakaiproject.authz.api.Role;
@@ -84,4 +85,6 @@ public interface SakaiProxy {
     public Cache getCache(String cache);
 
     public boolean isUserSite(String siteId);
+
+    public void addObserver(Observer observer);
 }

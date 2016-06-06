@@ -19,6 +19,7 @@ package org.sakaiproject.commons.impl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observer;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -474,5 +475,9 @@ public class SakaiProxyImpl implements SakaiProxy {
 
     public boolean isUserSite(String siteId) {
         return siteService.isUserSite(siteId);
+    }
+
+    public void addObserver(Observer observer) {
+        eventTrackingService.addObserver(observer);
     }
 }

@@ -24,7 +24,7 @@
         <category name="project" />
         <category name="myworkspace" />
 
-        <configuration name="renderInline" value="true" />
+        <!--configuration name="renderInline" value="true" /-->
 
    	</tool>
 
