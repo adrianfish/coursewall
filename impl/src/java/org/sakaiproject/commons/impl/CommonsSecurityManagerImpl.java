@@ -20,10 +20,6 @@ package org.sakaiproject.commons.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-
 import org.sakaiproject.assignment.api.AssignmentService;
 import org.sakaiproject.authz.api.Role;
 import org.sakaiproject.authz.api.SecurityService;
@@ -36,6 +32,9 @@ import org.sakaiproject.site.api.Site;
 import org.sakaiproject.site.api.SiteService;
 import org.sakaiproject.site.api.ToolConfiguration;
 import org.sakaiproject.tool.api.ToolManager;
+
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Adrian Fish (adrian.r.fish@gmail.com)
@@ -128,14 +127,14 @@ public class CommonsSecurityManagerImpl implements CommonsSecurityManager {
         if (posts != null && posts.size() > 0) {
             if (embedder.equals(CommonsConstants.SITE)) {
                 boolean readAny = securityService.unlock(CommonsFunctions.POST_READ_ANY, "/site/" + siteId);
-                return (readAny) ? posts : new ArrayList<Post>();
+                return (readAny) ? posts : new ArrayList();
             } else if (embedder.equals(CommonsConstants.ASSIGNMENT)) {
                 boolean readAny = securityService.unlock(AssignmentService.SECURE_ADD_ASSIGNMENT_SUBMISSION, "/site/" + siteId);
-                return (readAny) ? posts : new ArrayList<Post>();
+                return (readAny) ? posts : new ArrayList();
             } else if (embedder.equals(CommonsConstants.SOCIAL)) {
                 return posts;
             } else {
-                return new ArrayList<Post>();
+                return new ArrayList();
             } 
         } else {
             return posts;

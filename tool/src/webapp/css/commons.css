@@ -87,11 +87,13 @@
 	float: left;
     padding-left: 10px;
 }
-    .commons-author-name {
-        font-weight: bold;
-        color: #2a94c0;
-        font-size: 14px;
-    }
+.commons-post-author-name {
+    font-weight: bold;
+}
+.commons-comment-author-name {
+    font-weight: bold;
+    font-size: smaller;
+}
 
 .commons-comments {
     margin-left: 20px;
@@ -100,7 +102,10 @@
     border-radius: 0 0 3px 3px;
     background-color: #EFEFEF;
 }
-    .commons-create-comment-link { padding-left: 10px; }
+    .commons-create-comment-link {
+        padding-left: 10px;
+        font-weight: bold;
+    }
     .commons-comment-creator {
         display: none;
         padding: 10px 10px 0px 10px;
@@ -125,11 +130,9 @@
             padding-left: 10px;
             padding-right: 10px;
         }
-            .commons-comment-author-name {
-                font-weight: bold;
-            }
             .commons-comment-content {
                 white-space: normal;
+                font-size: smaller;
             }
             .commons-comment-options {
                 font-size: smaller;

@@ -9,8 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.sakaiproject.commons.api.CommonsConstants;
 import org.sakaiproject.commons.api.CommonsManager;
 import org.sakaiproject.commons.api.SakaiProxy;
@@ -19,14 +17,16 @@ import org.sakaiproject.tool.api.Session;
 import org.sakaiproject.util.RequestFilter;
 import org.sakaiproject.util.ResourceLoader;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author Adrian Fish (adrian.r.fish@gmail.com)
  */
 @Slf4j
 public class CommonsTool extends HttpServlet {
 
-    private SakaiProxy sakaiProxy;
     private CommonsManager commonsManager;
+    private SakaiProxy sakaiProxy;
     
     public void init(ServletConfig config) throws ServletException {
 
