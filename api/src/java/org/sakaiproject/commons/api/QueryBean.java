@@ -29,6 +29,6 @@ public class QueryBean {
     public String siteId = "";
     public String embedder = "";
     public boolean isUserSite = false;
-    public List<String> fromIds = new ArrayList<String>();
+    public List<String> fromIds = new ArrayList();
     public String callerId = "";
 }

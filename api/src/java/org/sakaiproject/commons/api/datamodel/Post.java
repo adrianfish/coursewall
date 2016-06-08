@@ -25,7 +25,7 @@ public class Post implements Entity {
     private static final String CDATA_SUFFIX = "]]>";
     private static final String CDATA_PREFIX = "<![CDATA[";
 
-    private List<Comment> comments = new ArrayList<Comment>();
+    private List<Comment> comments = new ArrayList();
     private String content = "";
     private long createdDate = -1L;
     private String creatorDisplayName = null;

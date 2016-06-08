@@ -1,26 +1,13 @@
 package org.sakaiproject.commons.tool.entityprovider;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
-
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -36,12 +23,7 @@ import org.sakaiproject.commons.api.SakaiProxy;
 import org.sakaiproject.entitybroker.EntityReference;
 import org.sakaiproject.entitybroker.EntityView;
 import org.sakaiproject.entitybroker.entityprovider.annotations.EntityCustomAction;
-import org.sakaiproject.entitybroker.entityprovider.capabilities.ActionsExecutable;
-import org.sakaiproject.entitybroker.entityprovider.capabilities.AutoRegisterEntityProvider;
-import org.sakaiproject.entitybroker.entityprovider.capabilities.Describeable;
-import org.sakaiproject.entitybroker.entityprovider.capabilities.Outputable;
-import org.sakaiproject.entitybroker.entityprovider.capabilities.ReferenceParseable;
-import org.sakaiproject.entitybroker.entityprovider.capabilities.RequestAware;
+import org.sakaiproject.entitybroker.entityprovider.capabilities.*;
 import org.sakaiproject.entitybroker.entityprovider.extension.ActionReturn;
 import org.sakaiproject.entitybroker.entityprovider.extension.Formats;
 import org.sakaiproject.entitybroker.entityprovider.extension.RequestGetter;
@@ -51,10 +33,13 @@ import org.sakaiproject.site.api.Site;
 import org.sakaiproject.site.api.ToolConfiguration;
 import org.sakaiproject.tool.api.Session;
 
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author Adrian Fish (adrian.r.fish@gmail.com)
  */
-@Slf4j
+@Setter @Slf4j
 public class CommonsEntityProvider extends AbstractEntityProvider implements RequestAware, AutoRegisterEntityProvider, Outputable, Describeable, ActionsExecutable, ReferenceParseable {
     
     public final static String ENTITY_PREFIX = "commons";
@@ -62,17 +47,10 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
     private final static String USER_AGENT
         = "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2";
 
-    @Setter
     private CommonsManager commonsManager;
-    
-    @Setter
     private CommonsSecurityManager commonsSecurityManager;
-
-    @Setter
-    private SakaiProxy sakaiProxy;
-
-    @Setter
     private RequestGetter requestGetter;
+    private SakaiProxy sakaiProxy;
 
     public Object getSampleEntity() {
         return new Post();
@@ -109,7 +87,7 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
                                             , "", HttpServletResponse.SC_BAD_REQUEST);
         }
 
-        List<Post> posts = new ArrayList<Post>();
+        List<Post> posts = new ArrayList();
 
         boolean isUserSite = sakaiProxy.isUserSite(siteId);
 

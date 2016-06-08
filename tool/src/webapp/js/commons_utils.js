@@ -534,6 +534,10 @@ commons.utils = {
                 showCommentsLink.hide();
             }
 
+            post.comments.forEach(function (comment) {
+                self.attachProfilePopup(comment.id, comment.creatorId);
+            });
+
             var comments = $('#commons-comments-' + post.id);
             comments.find('.commons-comment-edit-link').click(commons.utils.editCommentHandler);
             comments.find('.commons-comment-delete-link').click(commons.utils.deleteCommentHandler);

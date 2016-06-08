@@ -1,17 +1,6 @@
 package org.sakaiproject.commons.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Set;
-import java.util.Stack;
-
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import java.util.*;
 
 import org.sakaiproject.commons.api.*;
 import org.sakaiproject.commons.api.datamodel.Comment;
@@ -31,22 +20,21 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author Adrian Fish (adrian.r.fish@gmail.com)
  */
 @Setter @Slf4j
 public class CommonsManagerImpl implements CommonsManager, Observer {
 
-    private PersistenceManager persistenceManager;
     private CommonsSecurityManager commonsSecurityManager;
-    private SakaiProxy sakaiProxy;
+    private PersistenceManager persistenceManager;
     private ProfileConnectionsLogic profileConnectionsLogic;
+    private SakaiProxy sakaiProxy;
 
     public void init() {
-        
-        if (log.isDebugEnabled()) {
-            log.debug("init()");
-        }
 
         log.info("Registering Commons functions ...");
 
@@ -64,7 +52,7 @@ public class CommonsManagerImpl implements CommonsManager, Observer {
         sakaiProxy.registerFunction(CommonsFunctions.COMMENT_DELETE_OWN);
         sakaiProxy.registerFunction(CommonsFunctions.MODIFY_PERMISSIONS);
 
-        log.info("Registered Commons functions ...");
+        log.info("Registered Commons functions.");
 
         sakaiProxy.registerEntityProducer(this);
         sakaiProxy.addObserver(this);

@@ -16,25 +16,11 @@
  *************************************************************************************/
 package org.sakaiproject.commons.impl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Observer;
-import java.util.Set;
-import java.util.TreeSet;
-
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.sakaiproject.assignment.api.AssignmentService;
-import org.sakaiproject.authz.api.AuthzGroup;
-import org.sakaiproject.authz.api.AuthzGroupService;
-import org.sakaiproject.authz.api.AuthzPermissionException;
-import org.sakaiproject.authz.api.FunctionManager;
-import org.sakaiproject.authz.api.GroupNotDefinedException;
-import org.sakaiproject.authz.api.Role;
-import org.sakaiproject.authz.api.SecurityAdvisor;
-import org.sakaiproject.authz.api.SecurityService;
+import org.sakaiproject.authz.api.*;
 import org.sakaiproject.commons.api.CommonsConstants;
 import org.sakaiproject.commons.api.CommonsFunctions;
 import org.sakaiproject.commons.api.CommonsManager;
@@ -52,15 +38,14 @@ import org.sakaiproject.memory.api.SimpleConfiguration;
 import org.sakaiproject.site.api.Site;
 import org.sakaiproject.site.api.SiteService;
 import org.sakaiproject.site.api.ToolConfiguration;
-import org.sakaiproject.tool.api.Session;
-import org.sakaiproject.tool.api.SessionManager;
-import org.sakaiproject.tool.api.Tool;
-import org.sakaiproject.tool.api.ToolManager;
-import org.sakaiproject.tool.api.ToolSession;
+import org.sakaiproject.tool.api.*;
 import org.sakaiproject.user.api.User;
 import org.sakaiproject.user.api.UserDirectoryService;
 import org.sakaiproject.user.api.UserNotDefinedException;
 import org.sakaiproject.util.FormattedText;
+
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Adrian Fish (adrian.r.fish@gmail.com)
@@ -256,7 +241,7 @@ public class SakaiProxyImpl implements SakaiProxy {
             throw new SecurityException("This action (userPerms) is not accessible to anon and there is no current user.");
         }
 
-        Set<String> filteredFunctions = new TreeSet<String>();
+        Set<String> filteredFunctions = new TreeSet();
 
         if (securityService.isSuperUser(userId)) {
             // Special case for the super admin
@@ -340,10 +325,7 @@ public class SakaiProxyImpl implements SakaiProxy {
                 }
             }
 
-            for (String function : functions) {
-                if (function.startsWith("commons"))
-                    filteredFunctions.add(function);
-            }
+            filteredFunctions.addAll(functions.stream().filter(f -> f.startsWith("commons")).collect(Collectors.toSet()));
 
             if (functions.contains("site.upd")) {
                 filteredFunctions.add(CommonsFunctions.MODIFY_PERMISSIONS);
@@ -355,7 +337,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 
     public Map<String, Set<String>> getSitePermissions(String siteId) {
 
-        Map<String, Set<String>> perms = new HashMap<String, Set<String>>();
+        Map<String, Set<String>> perms = new HashMap();
 
         String userId = getCurrentUserId();
 
@@ -366,16 +348,9 @@ public class SakaiProxyImpl implements SakaiProxy {
         try {
             Site site = siteService.getSite(siteId);
 
-            Set<Role> roles = site.getRoles();
-            for (Role role : roles) {
+            for (Role role : site.getRoles()) {
                 Set<String> functions = role.getAllowedFunctions();
-                Set<String> filteredFunctions = new TreeSet<String>();
-                for (String function : functions) {
-                    if (function.startsWith("commons"))
-                        filteredFunctions.add(function);
-                }
-
-                perms.put(role.getId(), filteredFunctions);
+                perms.put(role.getId(), functions.stream().filter(f -> f.startsWith("commons")).collect(Collectors.toSet()));
             }
         } catch (Exception e) {
             log.error("Failed to get current site permissions.", e);
