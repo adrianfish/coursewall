@@ -50,6 +50,7 @@
 .commons-post-outer-container {
     border: solid #E0E0E0 1px;
     border-radius: 3px 3px 0px 3px;
+    background-color: #EFEFEF;
 }
     .commons-post-inner-container{
         margin: 5px;
@@ -100,7 +101,6 @@
     border: solid #E0E0E0;
     border-width: 0 1px 1px 1px;
     border-radius: 0 0 3px 3px;
-    background-color: #EFEFEF;
 }
     .commons-create-comment-link {
         padding-left: 10px;
@@ -114,6 +114,7 @@
         padding: 10px;
         overflow: auto;
         white-space: nowrap;
+        border-bottom: solid 1px #E0E0E0;
     }
         .commons-comment-photo {
             min-width: 26px;
