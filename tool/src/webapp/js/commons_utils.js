@@ -271,12 +271,13 @@ commons.utils = {
         $('#commons-author-name-' + id).qtip({
             position: { viewport: $(window), adjust: { method: 'flipinvert none'} },
             show: { event: 'click', delay: 0 },
-            style: { classes: 'commons-qtip qtip-rounded' },
+            style: { classes: 'commons-qtip qtip-shadow' },
             hide: { event: 'click unfocus' },
             content: {
                 text: function (event, api) {
 
-                    return $.ajax( { url: "/direct/profile/" + userId + "/formatted" })
+                    // Need https://jira.sakaiproject.org/browse/SAK-31355 for this to work
+                    return $.ajax( { url: "/direct/portal/" + userId + "/formatted", cache: false })
                         .then(function (html) {
                                 return html;
                             }, function (xhr, status, error) {

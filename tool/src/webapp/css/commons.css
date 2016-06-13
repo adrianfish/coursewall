@@ -238,12 +238,6 @@
     }
 
 .commons-qtip {
-    border: 2px solid #d36f00 !important;
-    width: 620px !important;
-    max-width: 620px !important;
-    background-color: white !important;
-}
-
-.qtip-content {
-    max-width: 620px !important;
+    border: 1px #E0E0E0 solid !important;
+    background-color: #F8F8F8 !important;
 }
