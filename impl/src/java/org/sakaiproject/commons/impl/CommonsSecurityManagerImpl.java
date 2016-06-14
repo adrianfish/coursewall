@@ -65,15 +65,17 @@ public class CommonsSecurityManagerImpl implements CommonsSecurityManager {
 
     public boolean canCurrentUserDeletePost(Post post) throws SecurityException {
 
-        if (sakaiProxy.isAllowedFunction(CommonsFunctions.POST_DELETE_ANY, post.getSiteId())) {
+        String siteId = post.getSiteId();
+
+        if (sakaiProxy.isAllowedFunction(CommonsFunctions.POST_DELETE_ANY, siteId)) {
             return true;
         }
 
         String currentUser = sakaiProxy.getCurrentUserId();
 
-        // If the current user is the author and has commons.post.delete.own
         if (currentUser != null && currentUser.equals(post.getCreatorId())
-                && sakaiProxy.isAllowedFunction(CommonsFunctions.POST_DELETE_OWN, post.getSiteId())) {
+                && (siteId.equals(CommonsConstants.SOCIAL)
+                        || sakaiProxy.isAllowedFunction(CommonsFunctions.POST_DELETE_OWN, siteId))) {
             return true;
         }
 

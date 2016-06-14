@@ -134,6 +134,8 @@ public class CommonsManagerImpl implements CommonsManager, Observer {
                     removeContextIdsFromCache(contextIds);
                     return true;
                 }
+            } else {
+                log.warn("Can't delete post '" + postId + "'");
             }
         } catch (Exception e) {
             e.printStackTrace();
