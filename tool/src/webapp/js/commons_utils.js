@@ -404,7 +404,7 @@ commons.utils = {
         if (!confirm(commons.i18n.delete_post_message)) {
             return false;
         }
-        
+
         $.ajax({
             url: '/direct/commons/deletePost?postId=' + postId,
             timeout: commons.AJAX_TIMEOUT
