@@ -294,10 +294,17 @@ commons.utils = {
         } else {
             var d = new Date(millis);
             var hours = d.getHours();
-            if (hours < 10) hours = '0' + hours;
+            var afternoon = false;
+            if (hours > 12) {
+                hours -= 12;
+                afternoon = true;
+            }
+
             var minutes = d.getMinutes();
             if (minutes < 10) minutes = '0' + minutes;
-            return d.getDate() + " " + commons.i18n.months[d.getMonth()] + " " + d.getFullYear() + " @ " + hours + ":" + minutes;
+            var formattedDate = commons.i18n.months[d.getMonth()] + " " + d.getDay() + " " + "at" + " " + hours + ':' + minutes + ' ';
+            formattedDate += (afternoon) ? 'pm' : 'am';
+            return formattedDate;
         }
     },
     addFormattedDatesToPosts: function (posts) {
@@ -469,7 +476,6 @@ commons.utils = {
 
                 creator.show();
                 textarea.focus();
-                commentLink.hide();
             });
             $('#commons-inplace-comment-editor-cancel-button-' + post.id).click(function (e) {
 
