@@ -1,46 +1,35 @@
-	<div id="commons-post-outer-container-{{id}}" class="commons-post-outer-container">
-		<div class="commons-post-inner-container">
+<div id="commons-post-outer-container-{{id}}" class="commons-post-outer-container">
 
-            <div class="commons-post-topbar">
-                <div class="commons-author">
-                    <div class="commons-photo" style="background-image:url(/direct/profile/{{creatorId}}/image/thumb)"></div>
-                    <div class="commons-author-details">
-                        <div><a id="commons-author-name-{{id}}" class="commons-post-author-name" href="javascript:;">{{creatorDisplayName}}</a></div>
-                        <div>
-                            <span class="commons-date-label">{{translate 'created'}}</span>
-                            <span class="commons-date">{{formattedCreatedDate}}</span>
-                        </div>
-                        {{#if isModified}}
-                        <div>
-                            <span class="commons-date-label">{{translate 'modified'}}</span>
-                            <span class="commons-date">{{formattedModifiedDate}}</span>
-                        </div>
-                        {{/if}}
-                    </div>
-                </div>
-			</div> <!-- /commons-post-topbar -->
+    <div class="commons-post-inner-container">
 
+        <div class="commons-photo" style="background-image:url(/direct/profile/{{creatorId}}/image/thumb)"></div>
+        <div class="commons-post-text-container">
             <div class="commons-post-body">
-			    <div id="commons-post-content-{{id}}" class="commons-post-content">{{{content}}}</div>
+                <div id="commons-post-content-{{id}}" class="commons-post-content"><a id="commons-author-name-{{id}}" class="commons-post-author-name" href="javascript:;">{{creatorDisplayName}}</a><span>{{{content}}}<span></div>
                 <div id="commons-post-options-{{id}}" class="commons-post-options">
+                    {{#if canComment}}
+                    <a href="javascript:;" id="commons-create-comment-link-{{id}}" class="commons-create-comment-link" data-post-id="{{id}}">{{translate 'comment'}}</a>
+                    {{/if}}
                     {{#if canEdit}}
                     <a href="javascript:;" id="commons-post-edit-link-{{id}}" class="commons-post-edit-link" data-post-id="{{id}}">{{translate 'edit'}}</a>
                     {{/if}}
-                    {{!--#if canComment}}
-                    <a href="javascript:;" id="commons-post-comment-link-{{id}}" class="commons-post-comment-link" data-post-id="{{id}}">{{translate 'comment'}}</a>
-                    {{/if--}}
                     {{#if canDelete}}
                     <a href="javascript:;" id="commons-post-delete-link-{{id}}" class="commons-post-delete-link" data-post-id="{{id}}">{{translate 'del'}}</a>
+                    {{/if}}
+                    {{#if isModified}}
+                    <span class="commons-date">{{formattedModifiedDate}}</span>
+                    {{else}}
+                    <span class="commons-date">{{formattedCreatedDate}}</span>
                     {{/if}}
                 </div>
                 <div id="commons-post-edit-buttons-{{id}}" class="commons-post-edit-buttons">
                     <button id="commons-inplace-post-editor-post-button-{{id}}">{{translate 'post'}}</button>
                     <button onclick="commons.utils.cancelPostEdit('{{id}}');">{{translate 'cancel'}}</button>
                 </div>
-		    </div>
+            </div>
+        </div> <!-- commons-post-text-container -->
 
-		</div> <!-- /commons-post-inner-container -->
-    </div> <!-- /commons-post-outer-container -->
+    </div> <!-- /commons-post-inner-container -->
 
     <div id="commons-comments-{{id}}" class="commons-comments">
         <div id="commons-comments-container-{{id}}">
@@ -50,10 +39,9 @@
             {{> wrapped_comment}}
         {{/each}}
         </div>
-        {{#if canComment}}
-        <a href="javascript:;" id="commons-create-comment-link-{{id}}" class="commons-create-comment-link" data-post-id="{{id}}">{{translate 'comment'}}</a>
-        {{/if}}
         <div id="commons-comment-creator-{{id}}" class="commons-comment-creator">
         {{> inplace_comment_editor}}
         </div>
     </div> <!-- commons-comments -->
+
+</div> <!-- /commons-post-outer-container -->
