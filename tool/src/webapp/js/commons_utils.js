@@ -70,10 +70,12 @@ commons.utils = {
             }
         });
     },
-    addHandlersToComment: function (commentId) {
+    addHandlersToComment: function (comment) {
 
-        $('#commons-comment-edit-link-' + commentId).click(commons.utils.editCommentHandler);
-        $('#commons-comment-delete-link-' + commentId).click(commons.utils.deleteCommentHandler);
+        $('#commons-comment-edit-link-' + comment.id).click(commons.utils.editCommentHandler);
+        $('#commons-comment-delete-link-' + comment.id).click(commons.utils.deleteCommentHandler);
+
+        commons.utils.attachProfilePopup(comment.id, comment.creatorId);
     },
     editPostHandler: function (e) {
 
@@ -162,7 +164,7 @@ commons.utils = {
                         $('#commons-comments-' + postId).show();
                         commons.utils.addPermissionsToComment(savedComment);
                         commons.utils.renderTemplate('comment', savedComment, 'commons-comment-' + savedComment.id);
-                        commons.utils.addHandlersToComment(commentId);
+                        commons.utils.addHandlersToComment(savedComment);
                     });
             });
         });
@@ -266,9 +268,9 @@ commons.utils = {
 
         return false;
     },
-    attachProfilePopup: function (id, userId) {
+    attachProfilePopup: function (contentId, userId) {
 
-        $('#commons-author-name-' + id).qtip({
+        $('#commons-author-name-' + contentId).qtip({
             position: { viewport: $(window), adjust: { method: 'flipinvert none'} },
             show: { event: 'click', delay: 0 },
             style: { classes: 'commons-qtip qtip-shadow' },
@@ -294,10 +296,17 @@ commons.utils = {
         } else {
             var d = new Date(millis);
             var hours = d.getHours();
-            if (hours < 10) hours = '0' + hours;
+            var afternoon = false;
+            if (hours > 12) {
+                hours -= 12;
+                afternoon = true;
+            }
+
             var minutes = d.getMinutes();
             if (minutes < 10) minutes = '0' + minutes;
-            return d.getDate() + " " + commons.i18n.months[d.getMonth()] + " " + d.getFullYear() + " @ " + hours + ":" + minutes;
+            var formattedDate = commons.i18n.months[d.getMonth()] + " " + d.getDay() + " " + "at" + " " + hours + ':' + minutes + ' ';
+            formattedDate += (afternoon) ? 'pm' : 'am';
+            return formattedDate;
         }
     },
     addFormattedDatesToPosts: function (posts) {
@@ -469,12 +478,9 @@ commons.utils = {
 
                 creator.show();
                 textarea.focus();
-                commentLink.hide();
             });
             $('#commons-inplace-comment-editor-cancel-button-' + post.id).click(function (e) {
-
                 creator.hide();
-                commentLink.show();
             });
 
             var showCommentsLink = $('#commons-show-comments-link-' + post.id);
@@ -501,7 +507,6 @@ commons.utils = {
                         var commentId = savedComment.id;
                     
                         creator.hide();
-                        commentLink.show();
 
                         var numComments = $('#commons-comments-' + post.id + ' .commons-comment').length;
 
@@ -527,7 +532,7 @@ commons.utils = {
                         var wrappedComment = Handlebars.templates['wrapped_comment'] (savedComment);
                         $('#commons-comments-container-' + post.id).append(wrappedComment);
 
-                        self.addHandlersToComment(commentId);
+                        self.addHandlersToComment(savedComment);
                     });
             });
 
@@ -535,13 +540,7 @@ commons.utils = {
                 showCommentsLink.hide();
             }
 
-            post.comments.forEach(function (comment) {
-                self.attachProfilePopup(comment.id, comment.creatorId);
-            });
-
-            var comments = $('#commons-comments-' + post.id);
-            comments.find('.commons-comment-edit-link').click(commons.utils.editCommentHandler);
-            comments.find('.commons-comment-delete-link').click(commons.utils.deleteCommentHandler);
+            post.comments.forEach(function (c) { self.addHandlersToComment(c); });
         });
     },
     renderPageOfPosts: function (all) {
