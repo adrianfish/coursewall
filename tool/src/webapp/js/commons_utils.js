@@ -304,8 +304,8 @@ commons.utils = {
 
             var minutes = d.getMinutes();
             if (minutes < 10) minutes = '0' + minutes;
-            var formattedDate = commons.i18n.months[d.getMonth()] + " " + d.getDay() + " " + "at" + " " + hours + ':' + minutes + ' ';
-            formattedDate += (afternoon) ? 'pm' : 'am';
+            var formattedDate = commons.i18n.months[d.getMonth()] + " " + d.getDay() + " " + commons.i18n.at + " " + hours + ':' + minutes + ' ';
+            formattedDate += (afternoon) ? commons.i18n.pm : commons.i18n.am;
             return formattedDate;
         }
     },
