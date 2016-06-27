@@ -153,8 +153,6 @@ commons.switchState = function (state, arg) {
 		return;
 	}
 
-    console.log(sakai.locale.userLocale);
-
     moment.locale(sakai.locale.userLocale);
 
     var languagesLoaded = function () {
