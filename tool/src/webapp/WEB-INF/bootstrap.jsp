@@ -27,6 +27,7 @@
         <script type="text/javascript" src="/library/webjars/jquery/1.11.3/jquery.min.js"></script>
         <script type="text/javascript" src="/library/webjars/jquery-ui/1.11.3/jquery-ui.min.js"></script>
         <script type="text/javascript" src="/library/webjars/jquery-i18n-properties/1.2.2/jquery.i18n.properties.min.js"></script>
+        <script type="text/javascript" src="/library/webjars/momentjs/2.11.1/min/moment-with-locales.min.js"></script>
         <script type="text/javascript" src="/library/js/jquery/qtip/jquery.qtip-latest.min.js"></script>
         <script type="text/javascript" src="/commons-tool/lib/handlebars.runtime-v4.0.5.js"></script>
         <script type="text/javascript" src="/commons-tool/templates/templates.js"></script>

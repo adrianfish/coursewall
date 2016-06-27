@@ -153,16 +153,13 @@ commons.switchState = function (state, arg) {
 		return;
 	}
 
+    console.log(sakai.locale.userLocale);
+
+    moment.locale(sakai.locale.userLocale);
+
     var languagesLoaded = function () {
 
         commons.i18n = $.i18n.map;
-
-        commons.i18n.months = commons.i18n.months.split(',');
-
-        commons.monthMappings = {};
-        commons.i18n.months.forEach(function (m, i) {
-            commons.monthMappings[m] = i + 1;
-        });
 
         if (commons.embedder === 'SITE') {
             commons.utils.renderTemplate('toolbar', {} ,'commons-toolbar');

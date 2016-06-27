@@ -294,19 +294,8 @@ commons.utils = {
         if (millis <= 0) {
             return commons.i18n.none;
         } else {
-            var d = new Date(millis);
-            var hours = d.getHours();
-            var afternoon = false;
-            if (hours > 12) {
-                hours -= 12;
-                afternoon = true;
-            }
-
-            var minutes = d.getMinutes();
-            if (minutes < 10) minutes = '0' + minutes;
-            var formattedDate = commons.i18n.months[d.getMonth()] + " " + d.getDay() + " " + commons.i18n.at + " " + hours + ':' + minutes + ' ';
-            formattedDate += (afternoon) ? commons.i18n.pm : commons.i18n.am;
-            return formattedDate;
+            var m = moment(millis);
+            return m.format('L LT');
         }
     },
     addFormattedDatesToPosts: function (posts) {
