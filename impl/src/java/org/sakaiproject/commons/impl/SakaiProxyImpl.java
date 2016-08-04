@@ -198,14 +198,6 @@ public class SakaiProxyImpl implements SakaiProxy {
         return false;
     }
 
-    private void enableSecurityAdvisor(SecurityAdvisor securityAdvisor) {
-        securityService.pushAdvisor(securityAdvisor);
-    }
-
-    private void disableSecurityAdvisor(SecurityAdvisor securityAdvisor) {
-        securityService.popAdvisor(securityAdvisor);
-    }
-
     public void postEvent(String event, String reference, String siteId) {
         eventTrackingService.post(eventTrackingService.newEvent(event, reference, true));
     }
@@ -247,17 +239,14 @@ public class SakaiProxyImpl implements SakaiProxy {
             // Special case for the super admin
             filteredFunctions.addAll(functionManager.getRegisteredFunctions("commons"));
         } else {
-            Site site = null;
-            AuthzGroup siteHelperRealm = null;
-
+            AuthzGroup siteRealm = null;
             try {
-                site = siteService.getSite(siteId);
-                siteHelperRealm = authzGroupService.getAuthzGroup("!site.helper");
+                siteRealm = authzGroupService.getAuthzGroup("/site/" + siteId);
             } catch (Exception e) {
                 // This should probably be logged but not rethrown.
             }
 
-            Role siteRole = site.getUserRole(userId);
+            Role siteRole = siteRealm.getUserRole(userId);
 
             if (siteService.getUserSiteId(userId).equals(siteId)) {
                 // This is a my workspace. Make sure the basic set are allowed so that
@@ -281,10 +270,10 @@ public class SakaiProxyImpl implements SakaiProxy {
                     siteRole.allowFunction(CommonsFunctions.COMMENT_DELETE_OWN);
 
                     try {
-                        authzGroupService.save(site);
+                        authzGroupService.save(siteRealm);
                     } catch (Exception e) {
                         // This should never happen.
-                        log.error("Exception while saving user workspace role " + siteRole.getId() + " in site " + siteId);
+                        log.error("Exception while saving user workspace role " + siteRole.getId() + " in site " + siteId, e);
                     }
                 }
             } else if (embedder.equals(CommonsConstants.ASSIGNMENT)) {
@@ -317,6 +306,12 @@ public class SakaiProxyImpl implements SakaiProxy {
 
             Set<String> functions = siteRole.getAllowedFunctions();
 
+            AuthzGroup siteHelperRealm = null;
+            try {
+                siteHelperRealm = authzGroupService.getAuthzGroup("!site.helper");
+            } catch (Exception e) {
+                // This should probably be logged but not rethrown.
+            }
             if (siteHelperRealm != null) {
                 Role siteHelperRole = siteHelperRealm.getRole(siteRole.getId());
                 if (siteHelperRole != null) {
