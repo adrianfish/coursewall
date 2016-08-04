@@ -243,7 +243,7 @@ public class SakaiProxyImpl implements SakaiProxy {
             try {
                 siteRealm = authzGroupService.getAuthzGroup("/site/" + siteId);
             } catch (Exception e) {
-                // This should probably be logged but not rethrown.
+                log.error("Error calling authzGroupService.getAuthzGroup(\"/site/" + siteId + "\")", e);
             }
 
             Role siteRole = siteRealm.getUserRole(userId);
@@ -310,7 +310,7 @@ public class SakaiProxyImpl implements SakaiProxy {
             try {
                 siteHelperRealm = authzGroupService.getAuthzGroup("!site.helper");
             } catch (Exception e) {
-                // This should probably be logged but not rethrown.
+                log.error("Error calling authzGroupService.getAuthzGroup(\"!site.helper\")", e);
             }
             if (siteHelperRealm != null) {
                 Role siteHelperRole = siteHelperRealm.getRole(siteRole.getId());
@@ -427,7 +427,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 
             return true;
         } catch (GroupNotDefinedException gnde) {
-            log.error("No realm defined for site (" + siteId + ").");
+            log.error("No realm defined for site (" + siteId + ").", e);
         }
 
         return false;
