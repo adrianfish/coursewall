@@ -54,7 +54,7 @@ commons.switchState = function (state, arg) {
             var editor = $('#commons-post-creator-editor');
             editor.click(function (e) {
 
-                if (this.innerHTML == 'Type something ...') {
+                if (this.innerHTML == commons.i18n.post_editor_initial_text) {
                     this.innerHTML = '';
                     $('#commons-editor-post-button').prop('disabled', false);
                 }
@@ -96,7 +96,7 @@ commons.switchState = function (state, arg) {
 
                 commons.utils.savePost('', editor.html(), function (post) {
 
-                        editor.html('');
+                        editor.html(commons.i18n.post_editor_initial_text);
 
                         var newPlaceholderId = 'commons-post-' + post.id;
 
