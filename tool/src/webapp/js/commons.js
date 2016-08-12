@@ -6,6 +6,7 @@ commons.currentState = null;
 commons.page = 0;
 commons.postsTotal = 0;
 commons.postsRendered = 0;
+commons.urlRegex = /^(ftp|http|https):\/\/[^ "]+$/;
 
 commons.LOCAL_STORAGE_KEY = 'commons';
 commons.AJAX_TIMEOUT = 5000;
@@ -63,9 +64,9 @@ commons.switchState = function (state, arg) {
                 var cd = e.originalEvent.clipboardData;
                 if (!cd) cd = window.clipboardData;
                 var pasted = cd.getData('text');
-                var url = document.createElement('a');
-                url.href = pasted;
-                if (url.hostname) {
+                if (commons.urlRegex.test(pasted)) {
+                    var url = document.createElement('a');
+                    url.href = pasted;
                     // We need to add the protocol for the server side code. It needs a valid URL.
                     if (pasted.slice(0, url.protocol.length) !== url.protocol) {
                         pasted = url.protocol + '//' + pasted;
