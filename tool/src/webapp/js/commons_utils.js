@@ -74,7 +74,6 @@ commons.utils = {
 
         $('#commons-comment-edit-link-' + comment.id).click(commons.utils.editCommentHandler);
         $('#commons-comment-delete-link-' + comment.id).click(commons.utils.deleteCommentHandler);
-
         commons.utils.attachProfilePopup(comment.id, comment.creatorId);
     },
     editPostHandler: function (e) {
