@@ -20,6 +20,7 @@ Handlebars.registerHelper('translate', function (key) {
 
 commons.states = {
         POSTS: 'posts',
+        POST: 'post',
         PERMISSIONS: 'permissions',
         PERMISSIONS_NOT_SET: 'permissions_not_set'
     };
@@ -128,6 +129,21 @@ commons.switchState = function (state, arg) {
                 }
             }
         });
+    } else if (commons.states.POST === state) {
+        var url = "/direct/commons/post.json?postId=" + arg.postId;
+        $.ajax( { url : url, dataType: "json", cache: false, timeout: commons.AJAX_TIMEOUT })
+            .done(function (data) {
+                commons.utils.addFormattedDateToPost(data);
+                commons.utils.renderTemplate('single_post', data, 'commons-content');
+                commons.utils.renderPost(data, 'commons-post-' + data.id);
+                $(document).ready(function () {
+
+                    $('#commons-view-commons-link').click(function (e) {
+                        commons.switchState(commons.states.POSTS, {});
+                    });
+                });
+            }).fail(function (xmlHttpRequest, textStatus, errorThrown) {
+            });
 	} else if (commons.states.PERMISSIONS === state) {
 	    $('#commons-toolbar > li > span').removeClass('current');
 	    $('#commons-permissions-link > span').addClass('current');
@@ -179,7 +195,12 @@ commons.switchState = function (state, arg) {
                 $("#commons-permissions-link").toggle(commons.currentUserPermissions.modifyPermissions);
 
                 if (commons.currentUserPermissions.postReadAny || commons.currentUserPermissions.postCreate) {
-                    commons.switchState(commons.states.POSTS, {});
+                    if (commons.postId !== '') {
+                        console.log('post supplied');
+                        commons.switchState(commons.states.POST, {postId: commons.postId});
+                    } else {
+                        commons.switchState(commons.states.POSTS, {});
+                    }
                 } else {
                     commons.switchState(commons.states.PERMISSIONS_NOT_SET, {});
                 }

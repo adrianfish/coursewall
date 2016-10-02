@@ -16,6 +16,7 @@ import org.sakaiproject.authz.api.PermissionsHelper;
 import org.sakaiproject.commons.api.datamodel.Comment;
 import org.sakaiproject.commons.api.datamodel.Post;
 import org.sakaiproject.commons.api.datamodel.PostsData;
+import org.sakaiproject.commons.api.CommonsEvents;
 import org.sakaiproject.commons.api.CommonsManager;
 import org.sakaiproject.commons.api.CommonsSecurityManager;
 import org.sakaiproject.commons.api.QueryBean;
@@ -70,12 +71,8 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
 
     @EntityCustomAction(action = "posts", viewKey = EntityView.VIEW_LIST)
     public ActionReturn getPosts(EntityView view, Map<String, Object> params) {
-        
-        String userId = developerHelperService.getCurrentUserId();
-        
-        if(userId == null) {
-            throw new EntityException("You must be logged in to retrieve a post", "", HttpServletResponse.SC_UNAUTHORIZED);
-        }
+
+        String userId = getCheckedUser();
         
         String commonsId = view.getPathSegment(2);
         String siteId = (String) params.get("siteId");
@@ -143,17 +140,32 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
         }
     }
 
+    @EntityCustomAction(action = "post", viewKey = EntityView.VIEW_LIST)
+    public ActionReturn getPost(EntityView view, Map<String, Object> params) {
+
+        String userId = getCheckedUser();
+
+        String postId = (String) params.get("postId");
+
+        if (StringUtils.isBlank(postId)) {
+            throw new EntityException("You must supply a postId" , "", HttpServletResponse.SC_BAD_REQUEST);
+        }
+
+        Post post = commonsManager.getPost(postId, true);
+
+        if (post != null) {
+            return new ActionReturn(post);
+        } else {
+            throw new EntityException("No post with id '" + postId + "'" , "", HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
     @EntityCustomAction(action = "savePost", viewKey = EntityView.VIEW_NEW)
     public ActionReturn handleSavePost(Map<String, Object> params) {
 
         log.debug("handleSavePost");
 
-        String userId = developerHelperService.getCurrentUserId();
-
-        if (userId == null) {
-            throw new EntityException("You need to be logged in to store a post"
-                                                , "", HttpServletResponse.SC_FORBIDDEN);
-        }
+        String userId = getCheckedUser();
 
         String content = (String) params.get("content");
         String siteId = (String) params.get("siteId");
@@ -165,8 +177,6 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
             throw new EntityException("You must supply a siteId, commonsId, embedder and some content"
                                                 , "", HttpServletResponse.SC_BAD_REQUEST);
         }
-
-        //content = escape(content);
 
         String id = (String) params.get("id");
 
@@ -183,7 +193,7 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
         Post createdOrUpdatedPost = commonsManager.savePost(post);
         if (createdOrUpdatedPost != null) {
             if (isNew) {
-                sakaiProxy.postEvent(CommonsManager.COMMONS_POST_CREATED,
+                sakaiProxy.postEvent(CommonsEvents.POST_CREATED,
                                         createdOrUpdatedPost.getReference(),
                                         createdOrUpdatedPost.getSiteId());
             }
@@ -198,10 +208,7 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
 
         log.debug("handleDeletePost");
 
-        if (developerHelperService.getCurrentUserId() == null) {
-            throw new EntityException("You need to be logged in to delete comments"
-                                                , "", HttpServletResponse.SC_FORBIDDEN);
-        }
+        getCheckedUser();
 
         String postId = (String) params.get("postId");
         if (StringUtils.isBlank(postId)) {
@@ -221,10 +228,7 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
 
         log.debug("handleDeleteComment");
 
-        if (developerHelperService.getCurrentUserId() == null) {
-            throw new EntityException("You need to be logged in to delete comments"
-                                                , "", HttpServletResponse.SC_FORBIDDEN);
-        }
+        getCheckedUser();
 
         String siteId = (String) params.get("siteId");
         String commonsId = (String) params.get("commonsId");
@@ -251,7 +255,7 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
 
         log.debug("handleSaveComment");
 
-        String userId = developerHelperService.getCurrentUserId();
+        String userId = getCheckedUser();
 
         String postId = (String) params.get("postId");
         String content = (String) params.get("content");
@@ -279,7 +283,7 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
         if (savedComment != null) {
             if (isNew) {
                 String reference = CommonsManager.REFERENCE_ROOT + "/" + commonsId + "/posts/" + postId + "/comments/" + comment.getId();
-                sakaiProxy.postEvent(CommonsManager.COMMONS_COMMENT_CREATED, reference, siteId);
+                sakaiProxy.postEvent(CommonsEvents.COMMENT_CREATED, reference, siteId);
             }
             return new ActionReturn(savedComment);
         } else {
@@ -290,11 +294,7 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
     @EntityCustomAction(action = "userPerms", viewKey = EntityView.VIEW_LIST)
     public Set<String> handleUserPermsGet(EntityView view, Map<String, Object> params) {
 
-        String userId = developerHelperService.getCurrentUserId();
-        
-        if (StringUtils.isBlank(userId)) {
-            throw new EntityException("You must be logged in to retrieve perms", "", HttpServletResponse.SC_UNAUTHORIZED);
-        }
+        String userId = getCheckedUser();
 
         String siteId = (String) params.get("siteId");
         String embedder = (String) params.get("embedder");
@@ -309,11 +309,7 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
     @EntityCustomAction(action = "perms", viewKey = EntityView.VIEW_LIST)
     public Map<String, Set<String>> handlePermsGet(EntityView view, Map<String, Object> params) {
 
-        String userId = developerHelperService.getCurrentUserId();
-        
-        if (userId == null) {
-            throw new EntityException("You must be logged in to retrieve perms", "", HttpServletResponse.SC_UNAUTHORIZED);
-        }
+        String userId = getCheckedUser();
 
         String siteId = (String) params.get("siteId");
 
@@ -327,11 +323,7 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
     @EntityCustomAction(action = "savePermissions", viewKey = EntityView.VIEW_NEW)
     public String handleSavePermissions(EntityView view, Map<String, Object> params) {
 
-        String userId = developerHelperService.getCurrentUserId();
-        
-        if (userId == null) {
-            throw new EntityException("You must be logged in to save permissions", "", HttpServletResponse.SC_UNAUTHORIZED);
-        }
+        String userId = getCheckedUser();
 
         String siteId = (String) params.get("siteId");
 
@@ -345,12 +337,8 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
     @EntityCustomAction(action = "getUrlMarkup", viewKey = EntityView.VIEW_LIST)
     public ActionReturn getUrlMarkup(OutputStream outputStream, EntityView view, Map<String, Object> params) {
 
-        String userId = developerHelperService.getCurrentUserId();
+        String userId = getCheckedUser();
         
-        if (userId == null) {
-            throw new EntityException("You must be logged in to get html", "", HttpServletResponse.SC_UNAUTHORIZED);
-        }
-
         String urlString = (String) params.get("url");
 
         if (StringUtils.isBlank(urlString)) {
@@ -428,6 +416,15 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
         } catch (IOException ioe) {
             throw new EntityException("Failed to download url contents", "", HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private String getCheckedUser() throws EntityException {
+
+        String userId = developerHelperService.getCurrentUserId();
+        if (userId == null) {
+            throw new EntityException("You must be logged in", "", HttpServletResponse.SC_UNAUTHORIZED);
+        }
+        return userId;
     }
 
     private String escape(String unescaped) {

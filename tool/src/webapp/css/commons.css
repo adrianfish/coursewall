@@ -195,3 +195,14 @@
     border: 1px #E0E0E0 solid !important;
     background-color: #F8F8F8 !important;
 }
+
+#commons-single-post-title {
+    font-size: bigger;
+    padding-top: 10px;
+    font-weight: bold;
+}
+
+#commons-view-commons-link {
+    padding-left: 3px;
+    padding-right: 3px;
+}
