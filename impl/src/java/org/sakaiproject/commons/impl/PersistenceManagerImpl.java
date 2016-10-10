@@ -173,11 +173,11 @@ public class PersistenceManagerImpl implements PersistenceManager {
         log.debug("savePost()");
 
         if (postExists(post.getId())) {
-
             sqlService.dbWrite(POST_UPDATE
                 , new Object[] { post.getContent()
                                     , new Timestamp(new Date().getTime())
                                     , post.getId() });
+
         } else {
             Runnable transaction = new Runnable() {
 
@@ -237,7 +237,11 @@ public class PersistenceManagerImpl implements PersistenceManager {
                 }
             });
 
-        return posts.get(0);
+        if (posts.size() < 1) {
+            return null;
+        } else {
+            return posts.get(0);
+        }
     }
 
     public Commons getCommons(String commonsId) {
