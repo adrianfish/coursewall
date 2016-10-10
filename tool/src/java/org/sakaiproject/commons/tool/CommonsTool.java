@@ -97,6 +97,16 @@ public class CommonsTool extends HttpServlet {
         request.setAttribute("embedder", isUserSite ? CommonsConstants.SOCIAL : CommonsConstants.SITE);
         request.setAttribute("commonsId", isUserSite ? CommonsConstants.SOCIAL : siteId);
 
+        String pathInfo = request.getPathInfo();
+
+        if (pathInfo != null ) {
+            String[] pathParts = pathInfo.split("/");
+
+            if (pathParts.length == 3 && pathParts[1].equals("posts")) {
+                request.setAttribute("postId", pathParts[2]);
+            }
+        }
+
         response.setContentType("text/html");
         request.getRequestDispatcher("/WEB-INF/bootstrap.jsp").include(request, response);
     }
