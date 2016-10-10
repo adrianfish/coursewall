@@ -15,7 +15,8 @@
                 siteId: '${siteId}',
                 embedder: '${embedder}',
                 userId: '${userId}',
-                isUserSite: ${isUserSite}
+                isUserSite: ${isUserSite},
+                postId: '${postId}'
             };
         
         </script>

@@ -65,6 +65,10 @@ public class CommonsManagerImpl implements CommonsManager, Observer {
         return commonsSecurityManager.filter(persistenceManager.getAllPost(query), siteId, CommonsConstants.SITE);
     }
 
+    public Post getPost(String postId, boolean loadComments) {
+        return persistenceManager.getPost(postId, loadComments);
+    }
+
     public List<Post> getPosts(QueryBean query) throws Exception {
 
         Cache cache = sakaiProxy.getCache(POST_CACHE);
@@ -380,12 +384,12 @@ public class CommonsManagerImpl implements CommonsManager, Observer {
 
         String siteId = parts[2];
         String subType = parts[3];
-        String entityId = parts[4];
+        /*String entityId = parts[4];
 
         if ("posts".equals(subType)) {
             reference.set("commons", "posts", entityId, null, siteId);
             return true;
-        }
+        }*/
 
         return false;
     }
