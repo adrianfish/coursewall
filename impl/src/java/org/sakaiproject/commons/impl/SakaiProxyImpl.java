@@ -427,7 +427,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 
             return true;
         } catch (GroupNotDefinedException gnde) {
-            log.error("No realm defined for site (" + siteId + ").", e);
+            log.error("No realm defined for site (" + siteId + ").", gnde);
         }
 
         return false;
