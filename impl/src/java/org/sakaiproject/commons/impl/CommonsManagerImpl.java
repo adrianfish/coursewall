@@ -78,7 +78,7 @@ public class CommonsManagerImpl implements CommonsManager, Observer {
 
         List<Post> posts = (List<Post>) cache.get(key);
         if (posts == null) {
-            if (log.isDebugEnabled()) log.debug("Cache miss or expired on id: " + key);
+            log.debug("Cache miss or expired on id: {}", key);
             if (query.isUserSite) {
                 log.debug("Getting posts for a user site ...");
                 query.fromIds.add(query.callerId);
@@ -88,9 +88,7 @@ public class CommonsManagerImpl implements CommonsManager, Observer {
             cache.put(key, unfilteredPosts);
             return commonsSecurityManager.filter(unfilteredPosts, query.siteId, query.embedder);
         } else {
-            if (log.isDebugEnabled()) {
-                log.debug("Cache hit on id: " + key);
-            }
+            log.debug("Cache hit on id: {}", key);
             return commonsSecurityManager.filter(posts, query.siteId, query.embedder);
         }
     }
@@ -198,9 +196,7 @@ public class CommonsManagerImpl implements CommonsManager, Observer {
 
     public String archive(String siteId, Document doc, Stack stack, String archivePath, List attachments) {
 
-        if (log.isDebugEnabled()) {
-            log.debug("archive(siteId:" + siteId + ",archivePath:" + archivePath + ")");
-        }
+        log.debug("archive(siteId:{}, archivePath:{})", siteId, archivePath);
 
         StringBuilder results = new StringBuilder();
 
@@ -246,9 +242,7 @@ public class CommonsManagerImpl implements CommonsManager, Observer {
      */
     public String merge(String siteId, Element root, String archivePath, String fromSiteId, Map attachmentNames, Map userIdTrans, Set userListAllowImport) {
 
-        if (log.isDebugEnabled()) {
-            log.debug("merge(siteId:" + siteId + ",root tagName:" + root.getTagName() + ",archivePath:" + archivePath + ",fromSiteId:" + fromSiteId);
-        }
+        log.debug("merge(siteId:{},root tagName:{},archivePath:{},fromSiteId:{})", siteId, root.getTagName(), archivePath, fromSiteId);
 
         StringBuilder results = new StringBuilder();
 
@@ -290,9 +284,7 @@ public class CommonsManagerImpl implements CommonsManager, Observer {
      */
     public Entity getEntity(Reference ref) {
 
-        if (log.isDebugEnabled()) {
-            log.debug("getEntity(Ref ID:" + ref.getId() + ")");
-        }
+        log.debug("getEntity(Ref ID:{})", ref.getId());
 
         Entity rv = null;
 
@@ -317,9 +309,7 @@ public class CommonsManagerImpl implements CommonsManager, Observer {
      */
     public Collection getEntityAuthzGroups(Reference ref, String userId) {
 
-        if (log.isDebugEnabled()) {
-            log.debug("getEntityAuthzGroups(Ref ID:" + ref.getId() + "," + userId + ")");
-        }
+        log.debug("getEntityAuthzGroups(Ref ID:{},{})", ref.getId(), userId);
 
         List ids = new ArrayList();
         ids.add("/site/" + ref.getContext());

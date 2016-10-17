@@ -65,9 +65,7 @@ public class PersistenceManagerImpl implements PersistenceManager {
 
     public boolean postExists(String postId) {
 
-        if (log.isDebugEnabled()) {
-            log.debug("postExists(" + postId + ")");
-        }
+        log.debug("postExists({})", postId);
 
         List<Post> posts = sqlService.dbRead(POST_SELECT
                 , new Object[] {postId}
@@ -86,9 +84,7 @@ public class PersistenceManagerImpl implements PersistenceManager {
 
     public List<Post> getAllPost(final QueryBean query, boolean populate) throws Exception {
 
-        if (log.isDebugEnabled()) {
-            log.debug("getAllPost(" + query + ")");
-        }
+        log.debug("getAllPost({})", query);
 
         if (query.embedder.equals(CommonsConstants.SOCIAL)) {
             int numFromIds = query.fromIds.size();
@@ -211,9 +207,7 @@ public class PersistenceManagerImpl implements PersistenceManager {
 
     public boolean deletePost(Post post) {
 
-        if (log.isDebugEnabled()) {
-            log.debug("deletePost(" + post.getId() + ")");
-        }
+        log.debug("deletePost({})", post.getId());
 
         Runnable transaction = new Runnable() {
 

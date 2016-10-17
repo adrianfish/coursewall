@@ -120,9 +120,7 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
                 } else {
                     int end = start + pageSize;
 
-                    if (log.isDebugEnabled()) {
-                        log.debug("end: " + end);
-                    }
+                    log.debug("end: {}", end);
 
                     if (end >= data.postsTotal) {
                         end = data.postsTotal;
@@ -357,14 +355,14 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
                 String contentEncoding = conn.getContentEncoding();
                 String contentType = conn.getContentType();
                 int responseCode = conn.getResponseCode();
-                if (log.isDebugEnabled()) log.debug("Response code: " + responseCode);
+                log.debug("Response code: {}", responseCode);
 
                 int redirectCounter = 1;
                 while ((responseCode == HttpURLConnection.HTTP_MOVED_PERM
                         || responseCode == HttpURLConnection.HTTP_MOVED_TEMP
                         || responseCode == HttpURLConnection.HTTP_SEE_OTHER) && redirectCounter < 10) {
                     String newUri = conn.getHeaderField("Location");
-                    if (log.isDebugEnabled()) log.debug(responseCode + ". New URI: " + newUri);
+                    log.debug("{}. New URI: {}", responseCode, newUri);
                     String cookies = conn.getHeaderField("Set-Cookie");
                     url = new URL(newUri);
                     c = url.openConnection();
@@ -376,8 +374,8 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
                     contentEncoding = conn.getContentEncoding();
                     contentType = conn.getContentType();
                     responseCode = conn.getResponseCode();
-                    if (log.isDebugEnabled()) log.debug("Redirect counter: " + redirectCounter);
-                    if (log.isDebugEnabled()) log.debug("Response code: " + responseCode);
+                    log.debug("Redirect counter: {}", redirectCounter);
+                    log.debug("Response code: {}", responseCode);
                     redirectCounter += 1;
                 }
 
@@ -386,10 +384,8 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
                                 || contentType.startsWith("application/xhtml+xml")
                                 || contentType.startsWith("application/xml"))) {
                     String mimeType = contentType.split(";")[0].trim();
-                    if (log.isDebugEnabled()) {
-                        log.debug("mimeType: " + mimeType);
-                        log.debug("encoding: " + contentEncoding);
-                    }
+                    log.debug("mimeType: {}", mimeType);
+                    log.debug("encoding: {}", contentEncoding);
 
                     BufferedReader reader
                         = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -403,9 +399,7 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
 
                     return new ActionReturn(contentEncoding, mimeType, outputStream);
                 } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Invalid content type " + contentType + ". Throwing bad request ...");
-                    }
+                    log.debug("Invalid content type {}. Throwing bad request ...", contentType);
                     throw new EntityException("Url content type not supported", "", HttpServletResponse.SC_BAD_REQUEST);
                 }
             } else {
