@@ -43,6 +43,7 @@ import org.sakaiproject.user.api.User;
 import org.sakaiproject.user.api.UserDirectoryService;
 import org.sakaiproject.user.api.UserNotDefinedException;
 import org.sakaiproject.util.FormattedText;
+import org.sakaiproject.event.api.NotificationService;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -199,7 +200,7 @@ public class SakaiProxyImpl implements SakaiProxy {
     }
 
     public void postEvent(String event, String reference, String siteId) {
-        eventTrackingService.post(eventTrackingService.newEvent(event, reference, true));
+        eventTrackingService.post(eventTrackingService.newEvent(event, reference, siteId, true, NotificationService.NOTI_OPTIONAL));
     }
 
     public Set<String> getSiteUsers(String siteId) {
