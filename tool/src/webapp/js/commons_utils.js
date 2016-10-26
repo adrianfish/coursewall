@@ -384,8 +384,9 @@ commons.utils = {
         var commentCreatorId = document.getElementById('commons-comment-' + commentId).dataset.creatorId;
         var postCreatorId = document.getElementById('commons-post-' + postId).dataset.creatorId;
 
-        var url = '/direct/commons/deleteComment?siteId=' + commons.siteId + '&commonsId=' + commons.commonsId + '&embedder=' + commons.embedder
-                        + '&commentId=' + commentId + '&commentCreatorId=' + commentCreatorId + '&postCreatorId=' + postCreatorId
+        var url = '/direct/commons/deleteComment?siteId=' + commons.siteId + '&commonsId=' + commons.commonsId
+                        + '&postId=' + postId + '&embedder=' + commons.embedder + '&commentId=' + commentId 
+                        + '&commentCreatorId=' + commentCreatorId + '&postCreatorId=' + postCreatorId;
 
         $.ajax( { url: url, timeout: commons.AJAX_TIMEOUT })
         .done(function (text, status) {
@@ -403,7 +404,7 @@ commons.utils = {
         }
 
         $.ajax({
-            url: '/direct/commons/deletePost?postId=' + postId,
+            url: '/direct/commons/deletePost?postId=' + postId + '&siteId=' + commons.siteId + '&commonsId=' + commons.commonsId,
             timeout: commons.AJAX_TIMEOUT
         }).done(function (text, status) {
             callback();
