@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 
 import org.sakaiproject.commons.api.datamodel.Comment;
 import org.sakaiproject.commons.api.CommonsManager;
+import org.sakaiproject.commons.api.PostReferenceFactory;
 import org.sakaiproject.commons.api.XmlDefs;
 import org.sakaiproject.entity.api.Entity;
 import org.sakaiproject.entity.api.ResourceProperties;
@@ -85,7 +86,7 @@ public class Post implements Entity {
      * @return
      */
     public String getReference() {
-        return CommonsManager.REFERENCE_ROOT + Entity.SEPARATOR + commonsId + Entity.SEPARATOR + "posts" + Entity.SEPARATOR + id;
+        return PostReferenceFactory.getReference(commonsId, id);
     }
 
     /**

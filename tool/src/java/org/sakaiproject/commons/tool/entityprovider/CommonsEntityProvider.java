@@ -19,6 +19,7 @@ import org.sakaiproject.commons.api.datamodel.PostsData;
 import org.sakaiproject.commons.api.CommonsEvents;
 import org.sakaiproject.commons.api.CommonsManager;
 import org.sakaiproject.commons.api.CommonsSecurityManager;
+import org.sakaiproject.commons.api.PostReferenceFactory;
 import org.sakaiproject.commons.api.QueryBean;
 import org.sakaiproject.commons.api.SakaiProxy;
 import org.sakaiproject.entitybroker.EntityReference;
@@ -209,12 +210,18 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
         getCheckedUser();
 
         String postId = (String) params.get("postId");
-        if (StringUtils.isBlank(postId)) {
-            throw new EntityException("You must supply a postId"
+        String commonsId = (String) params.get("commonsId");
+        String siteId = (String) params.get("siteId");
+        if (StringUtils.isBlank(postId) || StringUtils.isBlank(commonsId) || StringUtils.isBlank(siteId)) {
+            throw new EntityException("You must supply a postId, a commonsId and a siteId."
                                                 , "", HttpServletResponse.SC_BAD_REQUEST);
         }
 
         if (commonsManager.deletePost(postId)) {
+            String reference = PostReferenceFactory.getReference(commonsId, postId);
+            sakaiProxy.postEvent(CommonsEvents.POST_DELETED,
+                                    reference,
+                                    siteId);
             return new ActionReturn("SUCCESS");
         } else {
             return new ActionReturn("FAIL");
@@ -230,18 +237,22 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
 
         String siteId = (String) params.get("siteId");
         String commonsId = (String) params.get("commonsId");
+        String postId = (String) params.get("postId");
         String embedder = (String) params.get("embedder");
         String commentId = (String) params.get("commentId");
         String commentCreatorId = (String) params.get("commentCreatorId");
         String postCreatorId = (String) params.get("postCreatorId");
 
-        if (StringUtils.isBlank(siteId) || StringUtils.isBlank(commonsId) || StringUtils.isBlank(embedder) || StringUtils.isBlank(commentId)
+        if (StringUtils.isBlank(siteId) || StringUtils.isBlank(commonsId) || StringUtils.isBlank(postId)
+                || StringUtils.isBlank(embedder) || StringUtils.isBlank(commentId)
                 || StringUtils.isBlank(commentCreatorId) || StringUtils.isBlank(postCreatorId)) {
-            throw new EntityException("You must supply a commonsId, a postId and a commonsId"
+            throw new EntityException("You must supply siteId, commonsId, postId, embedder, commentId, commentCreatorId and postCreatorId"
                                                 , "", HttpServletResponse.SC_BAD_REQUEST);
         }
 
         if (commonsManager.deleteComment(siteId, commonsId, embedder, commentId, commentCreatorId, postCreatorId)) {
+            String reference = CommonsManager.REFERENCE_ROOT + "/" + commonsId + "/posts/" + postId + "/comments/" + commentId;
+            sakaiProxy.postEvent(CommonsEvents.COMMENT_DELETED, reference, siteId);
             return new ActionReturn("SUCCESS");
         } else {
             return new ActionReturn("FAIL");
