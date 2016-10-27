@@ -31,7 +31,6 @@ commons.utils = {
                 title = $(div).html();
             }
 
-
             var image = '';
             matches = markup.match(self.TWITTER_IMAGE_REGEX);
             if (matches && matches.length == 2) {
