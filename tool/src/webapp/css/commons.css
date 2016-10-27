@@ -11,8 +11,33 @@
         #commons-editor-toolbar button {
             border-radius: 0px;
             font-weight: bold;
+            margin-right: 5px;
         }
-        #commons-editor-post-button {
+
+#commons-link-dialog {
+    display: none;
+}
+    #commons-link-dialog-container {
+        padding: 10px;
+    }
+        #commons-link-dialog-table {
+            display: table;
+        }
+            .commons-link-dialog-row {
+                display: table-row;
+                padding-bottom: 5px;
+            }
+                .commons-link-dialog-row div {
+                    display: table-cell;
+                    white-space: nowrap;
+                    padding-right: 10px;
+                }
+                .commons-link-dialog-row input {
+                    display: table-cell;
+                }
+        #commons-link-dialog button {
+            border-radius: 0px;
+            font-weight: bold;
             margin-right: 5px;
         }
 

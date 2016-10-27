@@ -25,6 +25,10 @@ commons.states = {
         PERMISSIONS_NOT_SET: 'permissions_not_set'
     };
 
+commons.getSelection = function () {
+    return (window.getSelection) ? window.getSelection() : document.selection;
+};
+
 commons.switchState = function (state, arg) {
 
 	commons.currentState = state;
@@ -54,51 +58,76 @@ commons.switchState = function (state, arg) {
             $('.commons-post-editor').toggle(commons.currentUserPermissions.postCreate);
 
             var editor = $('#commons-post-creator-editor');
+
+            var wrapAndInsert = function (url, loadThumbnail, text) {
+
+                    if (commons.urlRegex.test(url)) {
+                        var a = document.createElement('a');
+                        a.href = url;
+                        // We need to add the protocol for the server side code. It needs a valid URL.
+                        if (url.slice(0, a.protocol.length) !== a.protocol) {
+                            url = a.protocol + '//' + url;
+                        }
+
+                        text = text || url;
+
+                        var wrapped = '<a href=\"' + url + '" target="_blank">' + text + "</a>";
+
+                        if (!document.execCommand('insertHtml', false, wrapped)) {
+                            var sel = commons.getSelection();
+                            var range = sel.getRangeAt(0);
+                            a.innerHTML = text;
+                            a.target = '_blank';
+                            range.deleteContents();
+                            range.insertNode(a);
+                        }
+
+                        if (loadThumbnail) {
+                            commons.utils.getOGPMarkup(url, function (fragment) {
+
+                                if (fragment) {
+                                    editor.append(fragment);
+                                }
+                            });
+                        }
+                    }
+                };
+
+            var editorPostButton = $('#commons-editor-post-button');
+            var editorCancelButton = $('#commons-editor-cancel-button');
+            var editorLinkButton = $('#commons-editor-link-button');
+
             editor.click(function (e) {
 
                 if (this.innerHTML == commons.i18n.post_editor_initial_text) {
                     this.innerHTML = '';
                     $('#commons-editor-post-button').prop('disabled', false);
+                    editorLinkButton.prop('disabled', false);
+                    editorCancelButton.prop('disabled', false);
+                    editorPostButton.prop('disabled', false);
                 }
             }).on('paste', function (e) {
 
                 var cd = e.originalEvent.clipboardData;
                 if (!cd) cd = window.clipboardData;
                 var pasted = cd.getData('text');
-                if (commons.urlRegex.test(pasted)) {
-                    var url = document.createElement('a');
-                    url.href = pasted;
-                    // We need to add the protocol for the server side code. It needs a valid URL.
-                    if (pasted.slice(0, url.protocol.length) !== url.protocol) {
-                        pasted = url.protocol + '//' + pasted;
-                    }
+                wrapAndInsert(pasted, true);
+                e.preventDefault();
+            }).blur(function (e) {
 
-                    var wrapped = '<a href=\"' + pasted + '" target="_blank">' + pasted + "</a>";
-
-                    if (!document.execCommand('insertHtml', false, wrapped)) {
-                        var sel = window.getSelection();
-                        var range = sel.getRangeAt(0);
-                        url.innerHTML = pasted;
-                        url.target = '_blank';
-                        range.insertNode(url);
-                    }
-
-                    var self = $(this);
-                    commons.utils.getOGPMarkup(pasted, function (fragment) {
-
-                        if (fragment) {
-                            self.append(fragment);
-                        }
-                    });
-                    e.preventDefault();
-                }
+                var sel = commons.getSelection();
+                commons.selectedText = (document.selection) ? sel.createRange().htmlText : sel.toString();
+                commons.currentRange = sel.getRangeAt(0);
             });
 
-            $('#commons-editor-post-button').click(function (e) {
+            editorPostButton.click(function (e) {
 
                 commons.utils.savePost('', editor.html(), function (post) {
 
                         editor.html(commons.i18n.post_editor_initial_text);
+                        editorPostButton.prop('disabled', true);
+                        editorCancelButton.prop('disabled', true);
+                        editorLinkButton.prop('disabled', true);
 
                         var newPlaceholderId = 'commons-post-' + post.id;
 
@@ -109,10 +138,57 @@ commons.switchState = function (state, arg) {
                     });
             });
 
-            $('#commons-editor-cancel-button').click(function (e) {
+            editorCancelButton.click(function (e) {
 
                 editor.html(commons.i18n.post_editor_initial_text);
-                $('#commons-editor-post-button').prop('disabled', true);
+                editorPostButton.prop('disabled', true);
+                editorCancelButton.prop('disabled', true);
+                editorLinkButton.prop('disabled', true);
+            });
+
+            var textField = $('#commons-link-dialog-text');
+
+            $('#commons-editor-link-button').qtip({
+                suppress: false,
+				content: { text: $('#commons-link-dialog') },
+				style: { classes: 'commons-qtip qtip-shadow' },
+				show: {event: 'click', delay: 0},
+				hide: {event: 'click', delay: 0},
+                events: {
+                    show: function (event, api) {
+                        textField.val(commons.selectedText);
+                    }
+                }
+			});
+
+            var urlField = $('#commons-link-dialog-url');
+            var textField = $('#commons-link-dialog-text');
+            var thumbnailCheckbox = $('#commons-link-dialog-load-thumbnail');
+            var linkInsertButton = $('#commons-link-dialog-insert-button');
+
+            linkInsertButton.click(function (e) {
+
+                if (commons.currentRange) {
+                    commons.getSelection().addRange(commons.currentRange);
+                }
+                var loadThumbnail = thumbnailCheckbox.prop('checked');
+                wrapAndInsert(urlField.val(), loadThumbnail, textField.val());
+                urlField.val('');
+                textField.val('');
+                thumbnailCheckbox.prop('checked', false);
+                $('#commons-editor-link-button').qtip('api').hide();
+            });
+
+            $('#commons-link-dialog-cancel-button').click(function (e) {
+
+                urlField.val('');
+                textField.val('');
+                thumbnailCheckbox.prop('checked', false);
+                $('#commons-editor-link-button').qtip('api').hide();
+            });
+
+            urlField.keydown(function (e) {
+                linkInsertButton.prop('disabled', false);
             });
             
             if (window.parent === window) {
@@ -196,7 +272,6 @@ commons.switchState = function (state, arg) {
 
                 if (commons.currentUserPermissions.postReadAny || commons.currentUserPermissions.postCreate) {
                     if (commons.postId !== '') {
-                        console.log('post supplied');
                         commons.switchState(commons.states.POST, {postId: commons.postId});
                     } else {
                         commons.switchState(commons.states.POSTS, {});
