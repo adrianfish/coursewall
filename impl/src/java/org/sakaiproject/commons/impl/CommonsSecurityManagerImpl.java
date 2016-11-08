@@ -18,7 +18,9 @@
 package org.sakaiproject.commons.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.sakaiproject.assignment.api.AssignmentService;
 import org.sakaiproject.authz.api.Role;
@@ -127,6 +129,8 @@ public class CommonsSecurityManagerImpl implements CommonsSecurityManager {
     public List<Post> filter(List<Post> posts, String siteId, String embedder) {
 
         if (posts != null && posts.size() > 0) {
+            long now = (new Date()).getTime();
+            posts = posts.stream().filter(p -> p.getReleaseDate() <= now).collect(Collectors.toList());
             if (embedder.equals(CommonsConstants.SITE)) {
                 boolean readAny = securityService.unlock(CommonsFunctions.POST_READ_ANY, "/site/" + siteId);
                 return (readAny) ? posts : new ArrayList();
