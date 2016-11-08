@@ -33,6 +33,7 @@ public class Post implements Entity {
     private String creatorId = null;
     private String id = "";
     private long modifiedDate = -1L;
+    private long releaseDate = -1L;
     private int numberOfComments = 0;
     private String embedder;
     private String siteId;
@@ -44,6 +45,7 @@ public class Post implements Entity {
         long now = new Date().getTime();
         createdDate = now;
         modifiedDate = now;
+        releaseDate = now;
     }
 
     public Post(ResultSet rs) throws SQLException {
@@ -55,6 +57,7 @@ public class Post implements Entity {
         this.setContent(rs.getString("CONTENT"));
         this.setCreatedDate(rs.getTimestamp("CREATED_DATE").getTime());
         this.setModifiedDate(rs.getTimestamp("MODIFIED_DATE").getTime());
+        this.setReleaseDate(rs.getTimestamp("RELEASE_DATE").getTime());
         this.setCreatorId(rs.getString("CREATOR_ID"));
     }
 

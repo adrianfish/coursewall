@@ -20,6 +20,7 @@ CREATE TABLE COMMONS_POST
     CREATOR_ID varchar(99) NOT NULL,
     CREATED_DATE datetime NOT NULL,
     MODIFIED_DATE datetime NOT NULL,
+    RELEASE_DATE datetime NOT NULL,
     INDEX creator_id (CREATOR_ID),
     PRIMARY KEY(ID)
 );
