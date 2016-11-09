@@ -17,7 +17,7 @@
                     <a href="javascript:;" id="commons-post-delete-link-{{id}}" class="commons-post-delete-link" data-post-id="{{id}}">{{translate 'del'}}</a>
                     {{/if}}
                     {{#if isModified}}
-                    <span class="commons-date">{{formattedModifiedDate}}</span>
+                    <span class="commons-date">{{translate 'modified_at'}} {{formattedModifiedDate}}</span>
                     {{else}}
                     <span class="commons-date">{{formattedCreatedDate}}</span>
                     {{/if}}
