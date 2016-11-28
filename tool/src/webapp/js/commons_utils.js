@@ -305,6 +305,7 @@ commons.utils = {
     addFormattedDateToPost: function (post) {
 
         post.formattedCreatedDate = this.formatDate(post.createdDate);
+        post.formattedReleaseDate = this.formatDate(post.releaseDate);
         post.formattedModifiedDate = this.formatDate(post.modifiedDate);
 
         post.comments.forEach(function (c, index) {
@@ -422,7 +423,7 @@ commons.utils = {
                         || (commons.currentUserPermissions.postDeleteOwn && p.creatorId === commons.userId);
         p.canEdit = commons.currentUserPermissions.postUpdateAny
                         || (commons.currentUserPermissions.postUpdateOwn && p.creatorId === commons.userId);
-        p.isModified = p.modifiedDate > p.createdDate;
+        p.isModified = p.modifiedDate > p.releaseDate;
 
         p.comments.forEach(function (c) { commons.utils.addPermissionsToComment(c); });
     },
