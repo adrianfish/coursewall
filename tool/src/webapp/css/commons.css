@@ -21,6 +21,9 @@
 #commons-link-dialog {
     display: none;
 }
+#commons-image-dialog {
+	display: none;
+}
 .commons-dialog-container {
 }
         #commons-link-dialog-table {
@@ -38,7 +41,7 @@
                 .commons-link-dialog-row input {
                     display: table-cell;
                 }
-        #commons-link-dialog button {
+        .commons-dialog-container button {
             border-radius: 0px;
             font-weight: bold;
             margin-right: 5px;
@@ -219,9 +222,10 @@
         font-size: smaller;
     }
 
-.commons-qtip {
+.qtip.commons-qtip {
     border: 1px #E0E0E0 solid !important;
     background-color: #F8F8F8 !important;
+    max-width: 310px;
 }
 
 #commons-single-post-title {
