@@ -31,14 +31,14 @@ commons.getSelection = function () {
 
 commons.switchState = function (state, arg) {
 
-	commons.currentState = state;
+    commons.currentState = state;
 
-	// Just in case we have a floating cluetip hanging about
-	$('#cluetip').hide();
+    // Just in case we have a floating cluetip hanging about
+    $('#cluetip').hide();
 
     $("#commons-post-editor").toggle(commons.currentUserPermissions.postCreate);
 
-	if (commons.states.POSTS === state) {
+    if (commons.states.POSTS === state) {
 
         var templateData = {
                 currentUserId: commons.userId,
@@ -98,6 +98,10 @@ commons.switchState = function (state, arg) {
             var editorLinkButton = $('#commons-editor-link-button');
             var editorImageButton = $('#commons-editor-image-button');
 
+            if (commons.isUserSite) {
+                editorImageButton.hide();
+            }
+
             editor.click(function (e) {
 
                 if (this.innerHTML == commons.i18n.post_editor_initial_text) {
@@ -154,16 +158,16 @@ commons.switchState = function (state, arg) {
 
             editorLinkButton.qtip({
                 suppress: false,
-				content: { text: $('#commons-link-dialog') },
-				style: { classes: 'commons-qtip qtip-shadow' },
-				show: {event: 'click', delay: 0},
-				hide: {event: 'click', delay: 0},
+                content: { text: $('#commons-link-dialog') },
+                style: { classes: 'commons-qtip qtip-shadow' },
+                show: {event: 'click', delay: 0},
+                hide: {event: 'click', delay: 0},
                 events: {
                     show: function (event, api) {
                         textField.val(commons.selectedText);
                     }
                 }
-			});
+            });
 
             var urlField = $('#commons-link-dialog-url');
             var textField = $('#commons-link-dialog-text');
@@ -195,13 +199,15 @@ commons.switchState = function (state, arg) {
                 linkInsertButton.prop('disabled', false);
             });
 
-            editorImageButton.qtip({
-                suppress: false,
-				content: { text: $('#commons-image-dialog') },
-				style: { classes: 'commons-qtip qtip-shadow' },
-				show: {event: 'click', delay: 0},
-				hide: {event: 'click', delay: 0}
-			});
+            if (!commons.isUserSite) {
+                editorImageButton.qtip({
+                    suppress: false,
+                    content: { text: $('#commons-image-dialog') },
+                    style: { classes: 'commons-qtip qtip-shadow' },
+                    show: {event: 'click', delay: 0},
+                    hide: {event: 'click', delay: 0}
+                });
+            }
 
             var fileInsertButton = $('#commons-image-dialog-insert-button');
             var fileField = $('#commons-image-dialog-file');
@@ -262,9 +268,9 @@ commons.switchState = function (state, arg) {
                 });
             }).fail(function (xmlHttpRequest, textStatus, errorThrown) {
             });
-	} else if (commons.states.PERMISSIONS === state) {
-	    $('#commons-toolbar > li > span').removeClass('current');
-	    $('#commons-permissions-link > span').addClass('current');
+    } else if (commons.states.PERMISSIONS === state) {
+        $('#commons-toolbar > li > span').removeClass('current');
+        $('#commons-permissions-link > span').addClass('current');
 
         var permissionsCallback = function (perms) {
 
@@ -275,18 +281,18 @@ commons.switchState = function (state, arg) {
                 });
             };
 
-		commons.utils.getSitePermissionMatrix(permissionsCallback);
-	} else if (commons.states.PERMISSIONS_NOT_SET === state) {
+        commons.utils.getSitePermissionMatrix(permissionsCallback);
+    } else if (commons.states.PERMISSIONS_NOT_SET === state) {
         commons.utils.renderTemplate('permissions_not_set', {}, 'commons-content');
     }
 };
 
 (function ($) {
 
-	if (!commons.isUserSite && !commons.commonsId) {
-		alert('The commonsId MUST be supplied as page parameters');
-		return;
-	}
+    if (!commons.isUserSite && !commons.commonsId) {
+        alert('The commonsId MUST be supplied as page parameters');
+        return;
+    }
 
     moment.locale(sakai.locale.userLocale);
 
