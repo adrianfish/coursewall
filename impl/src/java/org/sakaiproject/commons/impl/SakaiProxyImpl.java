@@ -30,6 +30,8 @@ import org.sakaiproject.commons.api.SakaiProxy;
 import org.sakaiproject.component.api.ServerConfigurationService;
 import org.sakaiproject.content.api.ContentHostingService;
 import org.sakaiproject.content.api.ContentResourceEdit;
+import org.sakaiproject.content.api.ContentCollectionEdit;
+import org.sakaiproject.entity.api.Entity;
 import org.sakaiproject.entity.api.EntityManager;
 import org.sakaiproject.entity.api.EntityProducer;
 import org.sakaiproject.entity.api.ResourceProperties;
@@ -471,8 +473,20 @@ public class SakaiProxyImpl implements SakaiProxy {
                 suffix = fileName.substring(lastIndexOf + 1);
                 fileName = fileName.substring(0, lastIndexOf);
             }
+            String toolCollection = Entity.SEPARATOR + "group" + Entity.SEPARATOR +
+                siteId + Entity.SEPARATOR + "commons" + Entity.SEPARATOR;
+            try
+            {
+                contentHostingService.checkCollection(toolCollection);
+            } catch (Exception e) {
+                // add this collection
+                ContentCollectionEdit toolEdit = contentHostingService.addCollection(toolCollection);
+                toolEdit.getPropertiesEdit().addProperty(ResourceProperties.PROP_DISPLAY_NAME, "commons");
+                contentHostingService.commitCollection(toolEdit);
+            }
+
             ContentResourceEdit edit
-                = contentHostingService.addResource("/group/" + siteId + "/", fileName, suffix , 2);
+                = contentHostingService.addResource(toolCollection, fileName, suffix , 2);
             edit.setContent(fileItem.getInputStream());
             contentHostingService.commitResource(edit);
             return edit.getUrl();
