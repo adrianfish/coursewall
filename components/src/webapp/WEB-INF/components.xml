@@ -29,6 +29,8 @@
         <property name="entityManager"><ref bean="org.sakaiproject.entity.api.EntityManager"/></property>
         <property name="memoryService"><ref bean="org.sakaiproject.memory.api.MemoryService"/></property>
         <property name="eventTrackingService"><ref bean="org.sakaiproject.event.api.EventTrackingService"/></property>
+        <property name="projectLogic"><ref bean="org.sakaiproject.delegatedaccess.logic.ProjectLogic"/></property>
+
     </bean>
     
     <bean id="org.sakaiproject.commons.api.CommonsSecurityManager"
