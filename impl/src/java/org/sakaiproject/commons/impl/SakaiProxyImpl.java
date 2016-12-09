@@ -31,6 +31,7 @@ import org.sakaiproject.component.api.ServerConfigurationService;
 import org.sakaiproject.content.api.ContentHostingService;
 import org.sakaiproject.content.api.ContentResourceEdit;
 import org.sakaiproject.content.api.ContentCollectionEdit;
+import org.sakaiproject.delegatedaccess.logic.ProjectLogic;
 import org.sakaiproject.entity.api.Entity;
 import org.sakaiproject.entity.api.EntityManager;
 import org.sakaiproject.entity.api.EntityProducer;
@@ -72,6 +73,7 @@ public class SakaiProxyImpl implements SakaiProxy {
     private SiteService siteService;
     private ToolManager toolManager;
     private UserDirectoryService userDirectoryService;
+    private ProjectLogic projectLogic;
 
     public void init() {
     }
@@ -180,7 +182,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 
         try {
             Site site = siteService.getSite(siteId);
-            Role role = site.getUserRole(getCurrentUserId());
+            Role role = getCurrentUserRoleForSite(site);
             return isAllowedFunction(function, role);
         } catch (Exception e) {
             return false;
@@ -235,30 +237,36 @@ public class SakaiProxyImpl implements SakaiProxy {
 
     public Set<String> getSitePermissionsForCurrentUser(String siteId, String embedder) {
 
+        Set<String> filteredFunctions = new TreeSet();
+
+        Site site = null;
+        try {
+            site = siteService.getSite(siteId);
+        } catch (IdUnusedException e) {
+            log.error("Trying to get commons permissions for unknown site " + siteId, e);
+        }
+    
         String userId = getCurrentUserId();
 
         if (userId == null) {
             throw new SecurityException("This action (userPerms) is not accessible to anon and there is no current user.");
         }
 
-        Set<String> filteredFunctions = new TreeSet();
-
         if (securityService.isSuperUser(userId)) {
             // Special case for the super admin
             filteredFunctions.addAll(functionManager.getRegisteredFunctions("commons"));
-        } else {
+            return filteredFunctions;
+        }
+
+        Role siteRole = getCurrentUserRoleForSite(site);
+
+        // Check to see if this is the user's own workspace
+        if (siteService.getUserSiteId(userId).equals(siteId)) {
+            // Make sure the basic set are allowed so that
+            // the security manager can make the right decisions.
             AuthzGroup siteRealm = null;
             try {
                 siteRealm = authzGroupService.getAuthzGroup("/site/" + siteId);
-            } catch (Exception e) {
-                log.error("Error calling authzGroupService.getAuthzGroup(\"/site/" + siteId + "\")", e);
-            }
-
-            Role siteRole = siteRealm.getUserRole(userId);
-
-            if (siteService.getUserSiteId(userId).equals(siteId)) {
-                // This is a my workspace. Make sure the basic set are allowed so that
-                // the security manager can make the right decisions.
                 if (!siteRole.isAllowed(CommonsFunctions.POST_CREATE)
                         || !siteRole.isAllowed(CommonsFunctions.POST_READ_ANY)
                         || !siteRole.isAllowed(CommonsFunctions.POST_UPDATE_OWN)
@@ -276,67 +284,100 @@ public class SakaiProxyImpl implements SakaiProxy {
                     siteRole.allowFunction(CommonsFunctions.COMMENT_READ_ANY);
                     siteRole.allowFunction(CommonsFunctions.COMMENT_UPDATE_OWN);
                     siteRole.allowFunction(CommonsFunctions.COMMENT_DELETE_OWN);
-
-                    try {
-                        authzGroupService.save(siteRealm);
-                    } catch (Exception e) {
-                        // This should never happen.
-                        log.error("Exception while saving user workspace role " + siteRole.getId() + " in site " + siteId, e);
-                    }
+                    authzGroupService.save(siteRealm);
                 }
-            } else if (embedder.equals(CommonsConstants.ASSIGNMENT)) {
-                if (siteRole.isAllowed(AssignmentService.SECURE_ADD_ASSIGNMENT_SUBMISSION)) {
-                    filteredFunctions.add(CommonsFunctions.POST_CREATE);
-                    filteredFunctions.add(CommonsFunctions.POST_READ_ANY);
-                    filteredFunctions.add(CommonsFunctions.POST_UPDATE_OWN);
-                    filteredFunctions.add(CommonsFunctions.POST_DELETE_OWN);
-                    filteredFunctions.add(CommonsFunctions.COMMENT_CREATE);
-                    filteredFunctions.add(CommonsFunctions.COMMENT_READ_ANY);
-                    filteredFunctions.add(CommonsFunctions.COMMENT_UPDATE_OWN);
-                    filteredFunctions.add(CommonsFunctions.COMMENT_DELETE_OWN);
-                }
-
-                if (siteRole.isAllowed(AssignmentService.SECURE_ADD_ASSIGNMENT)) {
-                    filteredFunctions.add(CommonsFunctions.POST_CREATE);
-                    filteredFunctions.add(CommonsFunctions.POST_READ_ANY);
-                    filteredFunctions.add(CommonsFunctions.POST_DELETE_ANY);
-                    filteredFunctions.add(CommonsFunctions.POST_UPDATE_OWN);
-                    filteredFunctions.add(CommonsFunctions.POST_DELETE_OWN);
-                    filteredFunctions.add(CommonsFunctions.COMMENT_CREATE);
-                    filteredFunctions.add(CommonsFunctions.COMMENT_READ_ANY);
-                    filteredFunctions.add(CommonsFunctions.COMMENT_UPDATE_OWN);
-                    filteredFunctions.add(CommonsFunctions.COMMENT_DELETE_OWN);
-                    filteredFunctions.add(CommonsFunctions.COMMENT_DELETE_ANY);
-                }
-
-                return filteredFunctions;
-            }
-
-            Set<String> functions = siteRole.getAllowedFunctions();
-
-            AuthzGroup siteHelperRealm = null;
-            try {
-                siteHelperRealm = authzGroupService.getAuthzGroup("!site.helper");
             } catch (Exception e) {
-                log.error("Error calling authzGroupService.getAuthzGroup(\"!site.helper\")", e);
+                log.error("Exception while looking up or modifying user workspace role " +
+                    siteRole.getId() + " in site " + siteId, e);
             }
-            if (siteHelperRealm != null) {
-                Role siteHelperRole = siteHelperRealm.getRole(siteRole.getId());
-                if (siteHelperRole != null) {
-                    // Merge in all the functions from the same role in !site.helper
-                    functions.addAll(siteHelperRole.getAllowedFunctions());
-                }
+        }
+
+        // If the commons is attached to an assignment, then it gets the permissions of
+        // user relative to the assignment
+        if (embedder.equals(CommonsConstants.ASSIGNMENT)) {
+            // This won't generally apply to workspace sites, but it's harmless
+            if (siteRole.isAllowed(AssignmentService.SECURE_ADD_ASSIGNMENT_SUBMISSION)) {
+                filteredFunctions.add(CommonsFunctions.POST_CREATE);
+                filteredFunctions.add(CommonsFunctions.POST_READ_ANY);
+                filteredFunctions.add(CommonsFunctions.POST_UPDATE_OWN);
+                filteredFunctions.add(CommonsFunctions.POST_DELETE_OWN);
+                filteredFunctions.add(CommonsFunctions.COMMENT_CREATE);
+                filteredFunctions.add(CommonsFunctions.COMMENT_READ_ANY);
+                filteredFunctions.add(CommonsFunctions.COMMENT_UPDATE_OWN);
+                filteredFunctions.add(CommonsFunctions.COMMENT_DELETE_OWN);
             }
 
-            filteredFunctions.addAll(functions.stream().filter(f -> f.startsWith("commons")).collect(Collectors.toSet()));
-
-            if (functions.contains("site.upd")) {
-                filteredFunctions.add(CommonsFunctions.MODIFY_PERMISSIONS);
+            if (siteRole.isAllowed(AssignmentService.SECURE_ADD_ASSIGNMENT)) {
+                filteredFunctions.add(CommonsFunctions.POST_CREATE);
+                filteredFunctions.add(CommonsFunctions.POST_READ_ANY);
+                filteredFunctions.add(CommonsFunctions.POST_DELETE_ANY);
+                filteredFunctions.add(CommonsFunctions.POST_UPDATE_OWN);
+                filteredFunctions.add(CommonsFunctions.POST_DELETE_OWN);
+                filteredFunctions.add(CommonsFunctions.COMMENT_CREATE);
+                filteredFunctions.add(CommonsFunctions.COMMENT_READ_ANY);
+                filteredFunctions.add(CommonsFunctions.COMMENT_UPDATE_OWN);
+                filteredFunctions.add(CommonsFunctions.COMMENT_DELETE_OWN);
+                filteredFunctions.add(CommonsFunctions.COMMENT_DELETE_ANY);
             }
+
+            return filteredFunctions;
+        }
+
+        Set<String> functions = siteRole.getAllowedFunctions();
+
+        AuthzGroup siteHelperRealm = null;
+        try {
+            siteHelperRealm = authzGroupService.getAuthzGroup("!site.helper");
+        } catch (Exception e) {
+            log.error("Error calling authzGroupService.getAuthzGroup(\"!site.helper\")", e);
+        }
+        if (siteHelperRealm != null) {
+            Role siteHelperRole = siteHelperRealm.getRole(siteRole.getId());
+            if (siteHelperRole != null) {
+                // Merge in all the functions from the same role in !site.helper
+                functions.addAll(siteHelperRole.getAllowedFunctions());
+            }
+        }
+
+        // Don't like this startsWith use. Things could start with "commons" but
+        // still not be relevant here
+        filteredFunctions.addAll(functions.stream().filter(f -> f.startsWith("commons")).collect(Collectors.toSet()));
+
+        if (functions.contains("site.upd")) {
+            filteredFunctions.add(CommonsFunctions.MODIFY_PERMISSIONS);
         }
 
         return filteredFunctions;
     }
+
+
+    public Role getCurrentUserRoleForSite(Site site) {
+        String[] delegatedAccess = projectLogic.getCurrentUsersAccessToSite("/site/" + site.getId());
+        if (delegatedAccess != null && delegatedAccess.length >= 2) {
+            Role role = null;
+            try {
+                role = site.getRole(delegatedAccess[1]);
+            } catch (Exception e) {
+                log.error("Exception getting role for delegatedAccess role " +
+                    delegatedAccess[1] + " in site " + site.getId(), e);
+            }
+            // This user has been delegated a role that doesn't exist in this site
+            // Try "Student" and "access"
+            if(role == null) {
+                role = site.getRole("Student");
+            }
+            if(role == null) {
+                role = site.getRole("access");
+            }
+            if(role == null) {
+                log.error("Unable to find a role for user with delegatedAccess role " +
+                    delegatedAccess[1] + " in site " + site.getId());
+            }
+            return role;
+        }
+        return site.getUserRole(getCurrentUserId());
+    }
+
 
     public Map<String, Set<String>> getSitePermissions(String siteId) {
 
@@ -387,7 +428,7 @@ public class SakaiProxyImpl implements SakaiProxy {
             // admin can update permissions. check for anyone else
             if (!securityService.isSuperUser()) {
 
-                Role siteRole = authzGroup.getUserRole(userId);
+                Role siteRole = getCurrentUserRoleForSite(site);
                 AuthzGroup siteHelperAuthzGroup = authzGroupService.getAuthzGroup("!site.helper");
                 Role siteHelperRole = siteHelperAuthzGroup.getRole(siteRole.getId());
 
