@@ -199,6 +199,10 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
                 sakaiProxy.postEvent(CommonsEvents.POST_CREATED,
                                         createdOrUpdatedPost.getReference(),
                                         createdOrUpdatedPost.getSiteId());
+            } else {
+                sakaiProxy.postEvent(CommonsEvents.POST_UPDATED,
+                                        createdOrUpdatedPost.getReference(),
+                                        createdOrUpdatedPost.getSiteId());
             }
             return new ActionReturn(createdOrUpdatedPost);
         } else {
@@ -294,9 +298,11 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
 
         Comment savedComment = commonsManager.saveComment(commonsId, comment);
         if (savedComment != null) {
+            String reference = CommonsManager.REFERENCE_ROOT + "/" + commonsId + "/posts/" + postId + "/comments/" + comment.getId();
             if (isNew) {
-                String reference = CommonsManager.REFERENCE_ROOT + "/" + commonsId + "/posts/" + postId + "/comments/" + comment.getId();
                 sakaiProxy.postEvent(CommonsEvents.COMMENT_CREATED, reference, siteId);
+            } else {
+                sakaiProxy.postEvent(CommonsEvents.COMMENT_UPDATED, reference, siteId);
             }
             return new ActionReturn(savedComment);
         } else {
