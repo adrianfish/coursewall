@@ -1,6 +1,9 @@
 package org.sakaiproject.commons.tool.entityprovider;
 
 import java.io.*;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
 import java.net.MalformedURLException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -365,6 +368,7 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
         }
 
         try {
+            CookieHandler.setDefault( new CookieManager(null, CookiePolicy.ACCEPT_ALL));
             URL url = new URL(urlString);
             URLConnection c = url.openConnection();
 
@@ -381,7 +385,7 @@ public class CommonsEntityProvider extends AbstractEntityProvider implements Req
                 int redirectCounter = 1;
                 while ((responseCode == HttpURLConnection.HTTP_MOVED_PERM
                         || responseCode == HttpURLConnection.HTTP_MOVED_TEMP
-                        || responseCode == HttpURLConnection.HTTP_SEE_OTHER) && redirectCounter < 10) {
+                        || responseCode == HttpURLConnection.HTTP_SEE_OTHER) && redirectCounter < 20) {
                     String newUri = conn.getHeaderField("Location");
                     log.debug("{}. New URI: {}", responseCode, newUri);
                     String cookies = conn.getHeaderField("Set-Cookie");
