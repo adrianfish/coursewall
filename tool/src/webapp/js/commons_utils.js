@@ -2,7 +2,7 @@ commons.utils = {
 
     POST_WITHOUT_COMMENTS_STYLE: 'commons-post-without-comments',
     POST_WITH_COMMENTS_STYLE: 'commons-post-with-comments',
-    OGP_IMAGE_REGEX: /og:image" content="([^"]*)"/,
+    OGP_IMAGE_REGEX: /og:image" content=["']([^"]*)["']\s*\//,
     TWITTER_IMAGE_REGEX: /twitter:image" content="([^"]*)"/,
     OGP_TITLE_REGEX: /og:title" content="([^"]*)"/,
     OGP_DESCRIPTION_REGEX: /og:description" content="([^"&#]*)"/,
