@@ -6,7 +6,7 @@ commons.currentState = null;
 commons.page = 0;
 commons.postsTotal = 0;
 commons.postsRendered = 0;
-commons.urlRegex = /^(ftp|http|https):\/\/[^ "]+$/;
+commons.urlRegex = /(ftp|http|https):\/\/[^ "]+/;
 
 commons.LOCAL_STORAGE_KEY = 'commons';
 commons.AJAX_TIMEOUT = 5000;
@@ -54,42 +54,45 @@ commons.switchState = function (state, arg) {
         commons.utils.renderTemplate(commons.states.POSTS, templateData, 'commons-content');
 
         $(document).ready(function () {
-
             $('.commons-post-editor').toggle(commons.currentUserPermissions.postCreate);
 
             var editor = $('#commons-post-creator-editor');
-
-            var wrapAndInsert = function (url, loadThumbnail, text) {
-
-                    if (commons.urlRegex.test(url)) {
+            var wrapAndInsert = function (link, loadThumbnail, text) {
+                    var url;
+                    var wrapped;
+                    if (commons.urlRegex.test(link)) {
+                        var matched_url = link.match(commons.urlRegex)[0];
                         var a = document.createElement('a');
-                        a.href = url;
+                        a.href = matched_url;
                         // We need to add the protocol for the server side code. It needs a valid URL.
+                        url = matched_url;
                         if (url.slice(0, a.protocol.length) !== a.protocol) {
                             url = a.protocol + '//' + url;
                         }
+                        text = text || matched_url;
 
-                        text = text || url;
+                        wrapped = link.replace(matched_url, '<a href=\"' + url + '" target="_blank">' + text + "</a>");
+					} else {
+						text = text || link;
+					    loadThumbnail = false;
+						wrapped = text;
+					}
+                    if (!document.execCommand('insertHtml', false, wrapped)) {
+                        var sel = commons.getSelection();
+                        var range = sel.getRangeAt(0);
+                        a.innerHTML = text;
+                        a.target = '_blank';
+                        range.deleteContents();
+                        range.insertNode(a);
+                    }
 
-                        var wrapped = '<a href=\"' + url + '" target="_blank">' + text + "</a>";
+                    if (loadThumbnail) {
+                       commons.utils.getOGPMarkup(url, function (fragment) {
 
-                        if (!document.execCommand('insertHtml', false, wrapped)) {
-                            var sel = commons.getSelection();
-                            var range = sel.getRangeAt(0);
-                            a.innerHTML = text;
-                            a.target = '_blank';
-                            range.deleteContents();
-                            range.insertNode(a);
-                        }
-
-                        if (loadThumbnail) {
-                            commons.utils.getOGPMarkup(url, function (fragment) {
-
-                                if (fragment) {
-                                    editor.append(fragment);
-                                }
-                            });
-                        }
+                            if (fragment) {
+                                editor.append(fragment);
+                            }
+                        });
                     }
                 };
 
