@@ -109,8 +109,6 @@ commons.switchState = function (state, arg) {
                     $('#commons-editor-post-button').prop('disabled', false);
                     editorPostButton.prop('disabled', false);
                     editorCancelButton.prop('disabled', false);
-                    editorLinkButton.prop('disabled', false);
-                    editorImageButton.prop('disabled', false);
                 }
             }).on('paste', function (e) {
 
@@ -133,8 +131,6 @@ commons.switchState = function (state, arg) {
                         editor.html(commons.i18n.post_editor_initial_text);
                         editorPostButton.prop('disabled', true);
                         editorCancelButton.prop('disabled', true);
-                        editorLinkButton.prop('disabled', true);
-                        editorImageButton.prop('disabled', true);
                         fileField.val('');
 
                         var newPlaceholderId = 'commons-post-' + post.id;
@@ -151,10 +147,16 @@ commons.switchState = function (state, arg) {
                 editor.html(commons.i18n.post_editor_initial_text);
                 editorPostButton.prop('disabled', true);
                 editorCancelButton.prop('disabled', true);
-                editorLinkButton.prop('disabled', true);
             });
 
             var textField = $('#commons-link-dialog-text');
+
+            $('.commons-editor-special-button').click(function (e) {
+
+                if (!editor.is(":focus")) {
+                    editor.click();
+                }
+            });
 
             editorLinkButton.qtip({
                 suppress: false,
