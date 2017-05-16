@@ -318,7 +318,7 @@ commons.switchState = function (state, arg) {
                     return;
                 }
 
-                $("#commons-permissions-link").toggle(commons.currentUserPermissions.modifyPermissions);
+                $("#commons-toolbar").toggle(commons.currentUserPermissions.modifyPermissions);
 
                 if (commons.currentUserPermissions.postReadAny || commons.currentUserPermissions.postCreate) {
                     if (commons.postId !== '') {
