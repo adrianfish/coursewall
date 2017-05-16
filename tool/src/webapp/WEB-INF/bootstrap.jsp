@@ -40,7 +40,7 @@
         <script type="text/javascript" src="/commons-tool/js/commons_permissions.js"></script>
         <script type="text/javascript" src="/profile2-tool/javascript/profile2-eb.js"></script>
 
-        <div class="portletBody">
+        <div class="portletBody commons-portletBody">
 
             <ul id="commons-toolbar" class="navIntraTool actionToolBar" role="menu"></ul>
 

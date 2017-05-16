@@ -1,5 +1,6 @@
-.commons-post-editor {
-    margin-top: 10px;
+#commons-toolbar {
+    margin-top: 0px !important;
+    margin-bottom: 10px !important;
 }
     .commons-photo-text-wrapper {
         border: solid #E0E0E0 1px;
@@ -77,6 +78,10 @@
 #commons-posts-wrapper{
 	clear: both;
 	margin-left: 0px;
+}
+
+.commons-portletBody {
+    padding-top: 2px !important;
 }
 
 .commons-post {
