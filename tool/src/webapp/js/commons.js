@@ -322,6 +322,7 @@ commons.switchState = function (state, arg) {
                 }
 
                 $("#commons-toolbar").toggle(commons.currentUserPermissions.modifyPermissions);
+                $("#commons-toolbar").toggle(!commons.isUserSite);
 
                 if (commons.currentUserPermissions.postReadAny || commons.currentUserPermissions.postCreate) {
                     if (commons.postId !== '') {
