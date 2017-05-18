@@ -321,8 +321,11 @@ commons.switchState = function (state, arg) {
                     return;
                 }
 
-                $("#commons-toolbar").toggle(commons.currentUserPermissions.modifyPermissions);
-                $("#commons-toolbar").toggle(!commons.isUserSite);
+                if (commons.isUserSite) {
+                    $("#commons-toolbar").hide();
+                } else {
+                    $("#commons-toolbar").toggle(commons.currentUserPermissions.modifyPermissions);
+                }
 
                 if (commons.currentUserPermissions.postReadAny || commons.currentUserPermissions.postCreate) {
                     if (commons.postId !== '') {
