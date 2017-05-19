@@ -341,11 +341,7 @@ public class SakaiProxyImpl implements SakaiProxy {
 
         // Don't like this startsWith use. Things could start with "commons" but
         // still not be relevant here
-        filteredFunctions.addAll(functions.stream().filter(f -> f.startsWith("commons")).collect(Collectors.toSet()));
-
-        if (functions.contains("site.upd")) {
-            filteredFunctions.add(CommonsFunctions.MODIFY_PERMISSIONS);
-        }
+        filteredFunctions.addAll(functions.stream().filter(f -> f.startsWith("commons") || f.equals(SiteService.SECURE_UPDATE_SITE)).collect(Collectors.toSet()));
 
         return filteredFunctions;
     }
@@ -432,11 +428,9 @@ public class SakaiProxyImpl implements SakaiProxy {
                 AuthzGroup siteHelperAuthzGroup = authzGroupService.getAuthzGroup("!site.helper");
                 Role siteHelperRole = siteHelperAuthzGroup.getRole(siteRole.getId());
 
-                if (!siteRole.isAllowed(CommonsFunctions.MODIFY_PERMISSIONS) && !siteRole.isAllowed("site.upd")) {
-                    if (siteHelperRole == null || !siteHelperRole.isAllowed(CommonsFunctions.MODIFY_PERMISSIONS)) {
-                        log.warn(userId + " attempted to update COMMONS permissions for site " + site.getTitle());
-                        return false;
-                    }
+                if (!siteRole.isAllowed(SiteService.SECURE_UPDATE_SITE)) {
+                    log.warn(userId + " attempted to update COMMONS permissions for site " + site.getTitle());
+                    return false;
                 }
             }
 

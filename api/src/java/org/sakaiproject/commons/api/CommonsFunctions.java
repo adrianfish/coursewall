@@ -18,5 +18,4 @@ public class CommonsFunctions {
     public static final String COMMENT_UPDATE_OWN = "commons.comment.update.own";
     public static final String COMMENT_DELETE_ANY = "commons.comment.delete.any";
     public static final String COMMENT_DELETE_OWN = "commons.comment.delete.own";
-    public static final String MODIFY_PERMISSIONS = "commons.modify.permissions";
 }

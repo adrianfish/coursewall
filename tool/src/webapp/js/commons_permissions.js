@@ -13,7 +13,7 @@ function CommonsPermissions(data) {
 	this.commentDeleteOwn = false;
 	this.commentUpdateAny = false;
 	this.commentUpdateOwn = false;
-	this.modifyPermissions = false;
+	this.updateSite = false;
 
 	for(var i=0,j=data.length;i<j;i++) {
 		if('commons.post.read.any' === data[i])
@@ -38,7 +38,7 @@ function CommonsPermissions(data) {
 			this.commentUpdateAny = true;
 		else if('commons.comment.update.own' === data[i])
 			this.commentUpdateOwn = true;
-		else if('commons.modify.permissions' === data[i])
-			this.modifyPermissions = true;
+		else if('site.upd' === data[i])
+			this.updateSite = true;
 	}
 }
