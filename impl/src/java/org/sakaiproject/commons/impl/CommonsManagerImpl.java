@@ -50,7 +50,6 @@ public class CommonsManagerImpl implements CommonsManager, Observer {
         sakaiProxy.registerFunction(CommonsFunctions.COMMENT_UPDATE_OWN);
         sakaiProxy.registerFunction(CommonsFunctions.COMMENT_DELETE_ANY);
         sakaiProxy.registerFunction(CommonsFunctions.COMMENT_DELETE_OWN);
-        sakaiProxy.registerFunction(CommonsFunctions.MODIFY_PERMISSIONS);
 
         log.info("Registered Commons functions.");
 
