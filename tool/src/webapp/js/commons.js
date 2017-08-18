@@ -11,7 +11,12 @@ commons.urlRegex = /(ftp|http|https):\/\/[^ "]+/;
 commons.LOCAL_STORAGE_KEY = 'commons';
 commons.AJAX_TIMEOUT = 5000;
 
-commons.postEditorInitialText = '';
+Handlebars.registerPartial('comment', Handlebars.partials['comment']);
+Handlebars.registerPartial('wrapped_comment', Handlebars.partials['wrapped_comment']);
+Handlebars.registerPartial('inplace_comment_editor', Handlebars.partials['inplace_comment_editor']);
+Handlebars.registerHelper('translate', function (key) {
+    return commons.i18n[key];
+});
 
 commons.states = {
         POSTS: 'posts',
@@ -102,7 +107,7 @@ commons.switchState = function (state, arg) {
 
             editor.click(function (e) {
 
-                if (this.innerHTML == commons.postEditorInitialText) {
+                if (this.innerHTML == commons.i18n.post_editor_initial_text) {
                     this.innerHTML = '';
                     $('#commons-editor-post-button').prop('disabled', false);
                     editorPostButton.prop('disabled', false);
@@ -126,7 +131,7 @@ commons.switchState = function (state, arg) {
 
                 commons.utils.savePost('', editor.html(), function (post) {
 
-                        editor.html(commons.postEditorInitialText);
+                        editor.html(commons.i18n.post_editor_initial_text);
                         editorPostButton.prop('disabled', true);
                         editorCancelButton.prop('disabled', true);
                         fileField.val('');
@@ -142,7 +147,7 @@ commons.switchState = function (state, arg) {
 
             editorCancelButton.click(function (e) {
 
-                editor.html(commons.postEditorInitialText);
+                editor.html(commons.i18n.post_editor_initial_text);
                 editorPostButton.prop('disabled', true);
                 editorCancelButton.prop('disabled', true);
             });
@@ -310,8 +315,6 @@ commons.switchState = function (state, arg) {
 
         var permissionsCallback = function (permissions) {
 
-                commons.postEditorInitialText = portal.i18n.translate('post_editor_initial_text');
-
                 commons.currentUserPermissions = new CommonsPermissions(permissions);
 
                 if (commons.currentUserPermissions == null) {
@@ -338,25 +341,19 @@ commons.switchState = function (state, arg) {
         commons.utils.getCurrentUserPermissions(permissionsCallback);
     };
 
+    $.i18n.properties({
+        name:'ui',
+        path:'/commons-tool/i18n/',
+        mode: 'both',
+        checkAvailableLanguages: true,
+        async: true,
+        language: sakai.locale.userLocale,
+        callback: function () { languagesLoaded(); }
+    });
+
     if (CKEDITOR) {
         CKEDITOR.disableAutoInline = true;
     }
-
-    $(document).ready(function () {
-
-        if (portal.i18n) {
-            portal.i18n.loadProperties('ui', '/commons-tool/i18n/', false, function () { languagesLoaded();});
-        } else {
-            console.log('portal.i18n not loaded');
-        }
-
-        $.getScript('/commons-tool/templates/templates.js', function () {
-
-                Handlebars.registerPartial('comment', Handlebars.partials['comment']);
-                Handlebars.registerPartial('wrapped_comment', Handlebars.partials['wrapped_comment']);
-                Handlebars.registerPartial('inplace_comment_editor', Handlebars.partials['inplace_comment_editor']);
-            });
-    });
 
     commons.scrollable = $(window.frameElement ? window.frameElement.ownerDocument.defaultView : window);
     commons.doc = $(window.frameElement ? window.frameElement.ownerDocument : document);
